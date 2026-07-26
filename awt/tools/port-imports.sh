@@ -25,6 +25,7 @@ else
         -e 's/^import javax\.swing\.SwingUtilities;/import swing.SwingUtilities;/'
         -e 's/^import java\.util\.concurrent\.\(Executors\|ExecutorService\|ScheduledExecutorService\|CompletableFuture\|CompletionStage\|ScheduledFuture\|Future\);/import concurrent.\1;/'
         -e 's/^import java\.net\.http\.\(HttpClient\|WebSocket\);/import nethttp.\1;/'
+        -e 's/^import java\.net\.Socket;/import net.Socket;/'
         -e 's/^import java\.time\.\(Duration\|Instant\|Clock\);/import time.\1;/'
         -e 's/^import javax\.imageio\.ImageIO;/import imageio.ImageIO;/'
         -e 's/^import javax\.sound\.sampled\.\(Clip\|AudioSystem\|AudioInputStream\|FloatControl\);/import sound.\1;/'

@@ -312,6 +312,7 @@ node concurrency.test.mjs   # 23   executors, futures, SwingUtilities
 node websocket.test.mjs     # 34   socket path plus all header modes
 node image.test.mjs         # 13   decoding gap, byte[] decode, post-load
 node soundcrypto.test.mjs   # 32   audio, dB conversion, real Ed25519
+node socket.test.mjs        # 14   blocking readLine() over WebSocket
 ```
 
 All five share `dom-stub.mjs`. They did not, at first — each grew its own copy,
@@ -437,6 +438,69 @@ are on the path to running this game.
 `security.Jwt` is also there for reading claims without verifying — useful for
 an expiry check before bothering with the signature — but it is now a
 convenience, not a substitute.
+
+## Beyond AWT: java.net.Socket
+
+The hardest one, and the reason the gateway exists.
+
+Futura's protocol is line-based text over `ServerSocket` on port 5555. **A
+browser cannot open a TCP socket** — not a missing library, the capability does
+not exist. So this pairs with `ankillousj/gateway`: the gateway translates
+WebSocket to TCP at the far end without touching the server, and `net.Socket`
+does the near end without touching the client.
+
+```java
+Socket socket = new Socket("localhost", 5556);
+BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+PrintWriter    out = new PrintWriter(socket.getOutputStream(), true);
+
+new Thread(() -> {
+    String line;
+    while ((line = in.readLine()) != null) {   // blocks, in a browser
+        processMessage(line);
+    }
+}).start();
+```
+
+That is `NetworkManager.connect()` and `ServerMessageWatcher.run()` verbatim,
+and it runs in a browser unchanged.
+
+### How a blocking read is possible
+
+`readLine()` blocks, and blocking the browser's only thread would freeze the
+event loop that delivers the very message being waited for — a deadlock, not a
+delay.
+
+TeaVM's `@Async` is the way out. A method annotated with it compiles into a
+coroutine: it suspends, hands control back to the event loop, and resumes when
+its `AsyncCallback` fires. To the calling code it simply blocked and returned.
+The compiler splits every intermediate frame at the call site, so
+`ServerMessageWatcher` needs to know nothing about any of it.
+
+This is why the port targets TeaVM 0.13 or later. Coroutine support in the
+WebAssembly GC backend landed there; before it, this was not possible at all.
+
+`Thread` works on the same machinery — cooperative rather than parallel, which
+is exactly right for a loop that yields whenever it waits for a message.
+
+### Details that matter
+
+- **One line, one message.** `PrintWriter.println` sends a message per newline;
+  the gateway turns each back into a line. `flush()` is deliberately a no-op —
+  flushing a partial line would send a fragment the server reads as a complete
+  command.
+- **Closing wakes a parked reader.** `readLine()` returns null rather than
+  suspending forever. There is a test for exactly this, because a reader that
+  never wakes is a hang with no error.
+- **UTF-8 is decoded properly** in both directions. Appending bytes as chars
+  would mangle accented chat — a bug this suite caught in the gateway.
+
+Point the client at the gateway's port instead of the game's, or call
+`Socket.setUrlMapper(...)` at startup to leave even that alone.
+
+```bash
+cd render && node socket.test.mjs     # 14 assertions
+```
 
 ## Tools
 

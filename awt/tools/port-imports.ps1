@@ -36,6 +36,7 @@ $rules = if ($Revert) {
     @{ From='^import swing\.SwingUtilities;'; To='import javax.swing.SwingUtilities;' }
     @{ From='^import concurrent\.(Executors|ExecutorService|ScheduledExecutorService|CompletableFuture|CompletionStage|ScheduledFuture|Future);'; To='import java.util.concurrent.$1;' }
     @{ From='^import nethttp\.(HttpClient|WebSocket);'; To='import java.net.http.$1;' }
+    @{ From='^import net\.Socket;'; To='import java.net.Socket;' }
     @{ From='^import time\.(Duration|Instant|Clock);'; To='import java.time.$1;' }
     @{ From='^import imageio\.ImageIO;'; To='import javax.imageio.ImageIO;' }
     @{ From='^import sound\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import javax.sound.sampled.$1;' }
@@ -56,6 +57,7 @@ $rules = if ($Revert) {
     @{ From='^import javax\.swing\.SwingUtilities;'; To='import swing.SwingUtilities;' }
     @{ From='^import java\.util\.concurrent\.(Executors|ExecutorService|ScheduledExecutorService|CompletableFuture|CompletionStage|ScheduledFuture|Future);'; To='import concurrent.$1;' }
     @{ From='^import java\.net\.http\.(HttpClient|WebSocket);'; To='import nethttp.$1;' }
+    @{ From='^import java\.net\.Socket;'; To='import net.Socket;' }
     @{ From='^import java\.time\.(Duration|Instant|Clock);'; To='import time.$1;' }
     @{ From='^import javax\.imageio\.ImageIO;'; To='import imageio.ImageIO;' }
     @{ From='^import javax\.sound\.sampled\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import sound.$1;' }
