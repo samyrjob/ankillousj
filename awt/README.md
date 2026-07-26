@@ -297,13 +297,68 @@ the paths themselves can stay as they are.
 cd render
 node events.test.mjs        #  9   DOM events reaching game code
 node concurrency.test.mjs   # 23   executors, futures, SwingUtilities
-node websocket.test.mjs     # 13   the socket path end to end
-node image.test.mjs         # 11   decoding gap and post-load state
+node websocket.test.mjs     # 14   the socket path end to end
+node image.test.mjs         # 12   decoding gap and post-load state
+node soundcrypto.test.mjs   # 26   audio, dB conversion, JWT claims
 ```
 
-All four share `dom-stub.mjs`. They did not, at first — each grew its own copy,
+All five share `dom-stub.mjs`. They did not, at first — each grew its own copy,
 and the moment `ImageIO` needed a stubbed `Image` the other three broke at once.
-The duplication was the bug; one stub is the fix.
+Adding audio broke them again the same way, for the same reason, until the
+`Audio` stub went into the shared file where it belonged. A new shim needing a
+new browser API should only ever touch `dom-stub.mjs`.
+
+## Beyond AWT: sound
+
+`sound.Clip` over an HTML audio element, covering the 110 `Clip` references in
+`Sound.java` and `RadioPlayer.java`.
+
+**Autoplay is blocked** until the user has interacted with the page. `start()`
+does nothing before then — the browser rejects the play promise, which the
+shim swallows so it does not litter the console. Trigger the first sound from a
+click or key press. No shim can work around this; it is deliberate policy.
+
+**`MASTER_GAIN` is decibels; HTML volume is linear 0..1.** Passing a decibel
+value straight through would mute everything, so the conversion happens in
+`FloatControl`: `amplitude = 10^(dB/20)`, with -80 dB treated as silence. It is
+exposed as `FloatControl.dbToLinear` because it is the number most worth being
+able to reason about.
+
+**Frames become seconds** at a nominal 44.1kHz. `setFramePosition(0)` — rewind,
+which is the common case — is exact regardless.
+
+Format support is the browser's, so MP3, AAC, WAV and OGG all work. That makes
+the `javazoom` MP3 player redundant.
+
+## Beyond AWT: crypto, and what cannot be done
+
+`Signature.verify()` returns a boolean synchronously. WebCrypto's
+`subtle.verify()` returns a Promise. **These cannot be bridged** — awaiting a
+promise means yielding to the event loop, and a synchronous method cannot
+yield. This is the shape of the platform, not a missing feature.
+
+So `java.security.Signature` and `KeyFactory` throw, with the reason and the
+alternative in the message.
+
+**The real answer is to stop verifying on the client.** A signature check
+protects the party that trusts the token, and the client already holds it. An
+attacker controlling the browser can edit the token, patch out the check, or
+skip it. Client-side verification stops nobody. The server has to verify, and
+once it does, a second check in the browser catches nothing but accidental
+corruption.
+
+What client code usually actually wants — expiry, user id — needs no crypto:
+
+```java
+Jwt.decodePayload(token);            // claims, unverified
+Jwt.numericClaim(token, "exp");
+Jwt.isExpired(token, epochSeconds);
+```
+
+If a genuine client-side check is still wanted, `Signature.verifyAsync(...)`
+does it properly through WebCrypto and returns a future. The cost is that the
+call site becomes asynchronous. Note also that Ed25519 in WebCrypto requires a
+secure context and browser support still varies.
 
 ## Tools
 

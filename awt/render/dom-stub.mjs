@@ -84,12 +84,28 @@ export function installDom({ width = 560, height = 200, traceCanvas = false } = 
     }
   }
 
+  // --- stub HTMLAudioElement ---
+  const audios = []
+  globalThis.Audio = class {
+    constructor(url) {
+      this.src = url; this.paused = true; this.ended = false
+      this.volume = 1; this.currentTime = 0; this.duration = 120
+      this._loop = false
+      this.loopHistory = []      // close() clears loop, so record every change
+      audios.push(this)
+    }
+    get loop() { return this._loop }
+    set loop(v) { this._loop = v; this.loopHistory.push(v) }
+    play() { this.paused = false; return Promise.resolve() }
+    pause() { this.paused = true }
+  }
+
   const results = []
   globalThis.__ankTest = (m) => results.push(m)
   globalThis.__ankLog = () => {}
 
   return {
-    canvas, ctx, el, listeners, sockets, images, results, counts,
+    canvas, ctx, el, listeners, sockets, images, audios, results, counts,
     pump(n = 3) {
       for (let i = 0; i < n; i++) { const q = rafQueue; rafQueue = []; q.forEach((f) => f()) }
     },

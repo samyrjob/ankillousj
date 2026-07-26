@@ -19,6 +19,7 @@ public final class Main {
         ConcurrencyTest.run();
         WebSocketTest.run();
         ImageTest.run();
+        SoundCryptoTest.run();
         log("java.awt.Component live on <canvas> — no AnkillousJ types in the source");
     }
 }

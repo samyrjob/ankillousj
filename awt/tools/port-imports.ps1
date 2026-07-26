@@ -38,6 +38,8 @@ $rules = if ($Revert) {
     @{ From='^import nethttp\.(HttpClient|WebSocket);'; To='import java.net.http.$1;' }
     @{ From='^import time\.(Duration|Instant|Clock);'; To='import java.time.$1;' }
     @{ From='^import imageio\.ImageIO;'; To='import javax.imageio.ImageIO;' }
+    @{ From='^import sound\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import javax.sound.sampled.$1;' }
+    @{ From='^import security\.(Signature|KeyFactory);'; To='import java.security.$1;' }
     @{ From='(?<!java\.)\btime\.(Duration|Instant|Clock)\b'; To='java.time.$1' }
     @{ From='\bnethttp\.(HttpClient|WebSocket)\b'; To='java.net.http.$1' }
   )
@@ -55,6 +57,8 @@ $rules = if ($Revert) {
     @{ From='^import java\.net\.http\.(HttpClient|WebSocket);'; To='import nethttp.$1;' }
     @{ From='^import java\.time\.(Duration|Instant|Clock);'; To='import time.$1;' }
     @{ From='^import javax\.imageio\.ImageIO;'; To='import imageio.ImageIO;' }
+    @{ From='^import javax\.sound\.sampled\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import sound.$1;' }
+    @{ From='^import java\.security\.(Signature|KeyFactory);'; To='import security.$1;' }
     @{ From='\bjava\.time\.(Duration|Instant|Clock)\b'; To='time.$1' }
     @{ From='\bjava\.net\.http\.(HttpClient|WebSocket)\b'; To='nethttp.$1' }
   )
