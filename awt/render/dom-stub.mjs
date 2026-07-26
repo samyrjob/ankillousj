@@ -49,8 +49,9 @@ export function installDom({ width = 560, height = 200, traceCanvas = false } = 
   // --- stub browser WebSocket ---
   const sockets = []
   globalThis.WebSocket = class {
-    constructor(url) {
-      this.url = url; this.readyState = 0; this.sent = []; this.closed = null
+    constructor(url, protocols) {
+      this.url = url; this.protocols = protocols || []
+      this.readyState = 0; this.sent = []; this.closed = null
       sockets.push(this)
     }
     send(text) {
@@ -99,6 +100,9 @@ export function installDom({ width = 560, height = 200, traceCanvas = false } = 
     play() { this.paused = false; return Promise.resolve() }
     pause() { this.paused = true }
   }
+
+  globalThis.URL = { createObjectURL: () => 'blob:stub' }
+  globalThis.Blob = class { constructor(parts, opts) { this.parts = parts; this.type = opts && opts.type } }
 
   const results = []
   globalThis.__ankTest = (m) => results.push(m)

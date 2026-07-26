@@ -10,6 +10,7 @@ import java.util.Map;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
+import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
 /**
@@ -77,8 +78,28 @@ public final class ImageIO {
     }
 
     /**
+     * Decodes bytes you already hold — downloaded, cached, or unpacked from an
+     * archive. The bytes become a blob URL, which the browser decodes exactly
+     * as it would a fetched file.
+     *
+     * <p>This covers the {@code ImageIO.read(new ByteArrayInputStream(bytes))}
+     * shape without any change to how the bytes were obtained.
+     */
+    public static BufferedImage read(byte[] bytes) {
+        return read(bytes, "image/png");
+    }
+
+    public static BufferedImage read(byte[] bytes, String mimeType) {
+        HTMLImageElement img = newImage();
+        BufferedImage bi = new BufferedImage(img);
+        setSrc(img, blobUrl(toJs(bytes), mimeType));
+        return bi;
+    }
+
+    /**
      * @throws UnsupportedOperationException always — see the class docs. A
      *     stream implies a synchronous read the browser cannot perform.
+     *     If the bytes are already in hand, use {@link #read(byte[])}.
      */
     public static BufferedImage read(InputStream stream) {
         throw new UnsupportedOperationException(
@@ -135,6 +156,13 @@ public final class ImageIO {
 
     @JSBody(params = { "img", "src" }, script = "img.src = src;")
     private static native void setSrc(HTMLImageElement img, String src);
+
+    @JSBody(params = "a", script = "return new Uint8Array(a);")
+    private static native JSObject toJs(byte[] a);
+
+    @JSBody(params = { "bytes", "mime" }, script =
+            "return URL.createObjectURL(new Blob([bytes], { type: mime }));")
+    private static native String blobUrl(JSObject bytes, String mime);
 
     /** Fires on load or error, so a broken asset cannot stall preload forever. */
     @JSBody(params = { "img", "cb" }, script =

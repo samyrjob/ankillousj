@@ -32,7 +32,7 @@ public final class SoundCryptoTest {
 
     public static void run() {
         audio();
-        crypto();
+        try { crypto(); } catch (Exception e) { check("crypto threw: " + e, false); }
     }
 
     private static void audio() {
@@ -86,7 +86,7 @@ public final class SoundCryptoTest {
         return out;
     }
 
-    private static void crypto() {
+    private static void crypto() throws Exception {
         // The whole point: this runs synchronously, in the browser, unchanged.
         KeyFactory kf = KeyFactory.getInstance("Ed25519");
         PublicKey pk = kf.generatePublic(new X509EncodedKeySpec(hex(RFC_PUB)));

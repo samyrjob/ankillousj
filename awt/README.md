@@ -217,20 +217,32 @@ repeating timer really repeats before it is cancelled.
 Plain HTTP is not shimmed — TeaVM already ships `java.net.HttpURLConnection`,
 which is what the client code uses for REST.
 
-### WebSocket: headers do not work, and that is not fixable here
+### WebSocket headers: a browser boundary, and the three ways round it
 
-The browser issues the WebSocket handshake itself and exposes no way to set
-request headers. `Builder.header(name, value)` therefore appends the value to
-the URL as a query parameter:
+The browser builds the WebSocket handshake itself and exposes no header API.
+This is a security boundary, not a gap in this project — no JavaScript library
+can set arbitrary handshake headers, and neither can CheerpJ. It is the same
+rule that stops a page setting `Origin` or `Cookie` on a cross-site request.
 
-```
-wss://host/socket            ->  wss://host/socket?X-Game-Version=1.4.2
-```
+Your *client code* still compiles and runs unchanged. What differs is where the
+value appears on the wire. Three channels exist, and
+`BrowserWebSocket.setHeaderMode(...)` picks between them:
 
-**The server has to read it from there.** A server that authenticates on a
-header will refuse the connection until it also checks the query string. This
-is surfaced loudly rather than dropped silently, because a silently discarded
-auth header is an afternoon of debugging.
+| Mode | Where the value lands | Risk |
+|---|---|---|
+| `QUERY` *(default)* | URL query string | none — cannot break the handshake |
+| `SUBPROTOCOL` | `Sec-WebSocket-Protocol`, a real header | **breaks the connection unless the server echoes it back** |
+| `FIRST_MESSAGE` | JSON message sent on open | arrives after the upgrade, so it cannot gate it |
+| `QUERY_AND_FIRST_MESSAGE` | both of the above | none |
+
+`SUBPROTOCOL` is the closest thing to a genuine header — it *is* one — but RFC
+6455 requires the client to fail the connection if the server selects none of
+the offered protocols, and browsers enforce that. Only use it against a server
+that handles subprotocols.
+
+If your server must see the literal `X-Game-Version:` request header, no
+browser can produce that. The smallest change on the other side is to read the
+same value from the query string; the client side needs nothing.
 
 ### Other differences
 
@@ -297,8 +309,8 @@ the paths themselves can stay as they are.
 cd render
 node events.test.mjs        #  9   DOM events reaching game code
 node concurrency.test.mjs   # 23   executors, futures, SwingUtilities
-node websocket.test.mjs     # 14   the socket path end to end
-node image.test.mjs         # 12   decoding gap and post-load state
+node websocket.test.mjs     # 34   socket path plus all header modes
+node image.test.mjs         # 13   decoding gap, byte[] decode, post-load
 node soundcrypto.test.mjs   # 32   audio, dB conversion, real Ed25519
 ```
 
@@ -392,6 +404,35 @@ unconditionally would pass every positive test. It must reject a signature with
 one bit flipped, a message with one bit flipped, a different key, malformed
 lengths, an all-zero signature, a key that is not on the curve, and `S >= L`,
 which would otherwise leave signatures malleable.
+
+### What else the JCA would need — and what Futura needs
+
+A general-purpose port would eventually want RSA, ECDSA, AES, HMAC, secure
+random, certificate parsing and key storage. Futura needs none of them. Its
+entire security surface is:
+
+```
+import java.security.KeyFactory;                       x2
+import java.security.PublicKey;                        x2
+import java.security.Signature;                        x1
+import java.security.spec.X509EncodedKeySpec;          x2
+import java.security.NoSuchAlgorithmException;         x1
+import java.security.spec.InvalidKeySpecException;     x1
+```
+
+One algorithm string, `"Ed25519"`, requested three times. No `Cipher`, no
+`Mac`, no `KeyGenerator`, no `KeyStore`, no `SSLContext`, no certificate
+handling. Randomness is a single `Math.random()`.
+
+`NoSuchAlgorithmException` and `GeneralSecurityException` come from TeaVM;
+`InvalidKeySpecException` does not, so it is provided here along with
+`InvalidKeyException` and `SignatureException`, and the methods declare them
+where the JCA does — otherwise existing `catch` blocks fail to compile.
+
+For the record, if those primitives are ever needed: `SecureRandom` is easy
+(`crypto.getRandomValues`), HMAC and the SHA family follow the same pure-Java
+route as SHA-512 here, and AES-GCM and RSA are the genuinely large ones. None
+are on the path to running this game.
 
 `security.Jwt` is also there for reading claims without verifying — useful for
 an expiry check before bothering with the signature — but it is now a

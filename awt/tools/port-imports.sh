@@ -28,7 +28,8 @@ else
         -e 's/^import java\.time\.\(Duration\|Instant\|Clock\);/import time.\1;/'
         -e 's/^import javax\.imageio\.ImageIO;/import imageio.ImageIO;/'
         -e 's/^import javax\.sound\.sampled\.\(Clip\|AudioSystem\|AudioInputStream\|FloatControl\);/import sound.\1;/'
-        -e 's/^import java\.security\.\(Signature\|KeyFactory\);/import security.\1;/'
+        -e 's/^import java\.security\.spec\.\(X509EncodedKeySpec\|InvalidKeySpecException\);/import security.\1;/'
+        -e 's/^import java\.security\.\(Signature\|KeyFactory\|PublicKey\|InvalidKeyException\|SignatureException\);/import security.\1;/'
         -e 's/\bjava\.net\.http\.\(HttpClient\|WebSocket\)\b/nethttp.\1/g'
         -e 's/\bjava\.time\.\(Duration\|Instant\|Clock\)\b/time.\1/g')
 fi

@@ -33,7 +33,7 @@ public class Signature {
 
     public String getAlgorithm() { return algorithm; }
 
-    public void initVerify(PublicKey publicKey) {
+    public void initVerify(PublicKey publicKey) throws InvalidKeyException {
         this.key = publicKey;
         buffer.reset();
     }
@@ -50,8 +50,8 @@ public class Signature {
         buffer.write(b);
     }
 
-    public boolean verify(byte[] signature) {
-        if (key == null) throw new IllegalStateException("initVerify was not called");
+    public boolean verify(byte[] signature) throws SignatureException {
+        if (key == null) throw new SignatureException("initVerify was not called");
         boolean ok = Ed25519.verify(key.raw(), buffer.toByteArray(), signature);
         buffer.reset();
         return ok;

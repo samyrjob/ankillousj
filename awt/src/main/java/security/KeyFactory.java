@@ -32,7 +32,7 @@ public class KeyFactory {
             || "1.3.101.112".equals(algorithm);
     }
 
-    public PublicKey generatePublic(X509EncodedKeySpec spec) {
+    public PublicKey generatePublic(X509EncodedKeySpec spec) throws InvalidKeySpecException {
         byte[] enc = spec.getEncoded();
 
         // Already raw
@@ -41,7 +41,7 @@ public class KeyFactory {
         if (enc.length == ED25519_SPKI_PREFIX.length + 32) {
             for (int i = 0; i < ED25519_SPKI_PREFIX.length; i++) {
                 if (enc[i] != ED25519_SPKI_PREFIX[i]) {
-                    throw new IllegalArgumentException(
+                    throw new InvalidKeySpecException(
                         "not an Ed25519 SubjectPublicKeyInfo: prefix mismatch at byte " + i);
                 }
             }
@@ -50,7 +50,7 @@ public class KeyFactory {
             return new PublicKey(raw, algorithm);
         }
 
-        throw new IllegalArgumentException(
+        throw new InvalidKeySpecException(
             "expected 32 raw bytes or a 44-byte Ed25519 SubjectPublicKeyInfo, got " + enc.length);
     }
 }

@@ -2,6 +2,7 @@ package demo;
 
 import concurrent.CompletableFuture;
 import concurrent.CompletionStage;
+import nethttp.BrowserWebSocket;
 import nethttp.HttpClient;
 import nethttp.WebSocket;
 
@@ -30,6 +31,23 @@ public final class WebSocketTest {
     static final List<String> events = new ArrayList<>();
 
     public static void run() {
+        // Socket 0: the default. Query string is the only mode that cannot
+        // break the handshake, so it is what you get unless you ask otherwise.
+        connect();
+
+        // Sockets 1-3: the other channels the browser permits, so the harness
+        // can confirm each one actually carries the value.
+        for (BrowserWebSocket.HeaderMode mode : new BrowserWebSocket.HeaderMode[] {
+                BrowserWebSocket.HeaderMode.SUBPROTOCOL,
+                BrowserWebSocket.HeaderMode.FIRST_MESSAGE,
+                BrowserWebSocket.HeaderMode.QUERY_AND_FIRST_MESSAGE }) {
+            BrowserWebSocket.setHeaderMode(mode);
+            connect();
+        }
+        BrowserWebSocket.setHeaderMode(BrowserWebSocket.HeaderMode.QUERY);
+    }
+
+    private static void connect() {
         HttpClient client = HttpClient.newHttpClient();
 
         Listener listener = new Listener();

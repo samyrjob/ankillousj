@@ -4,6 +4,7 @@ import awt.image.BufferedImage;
 import imageio.ImageIO;
 
 import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 
 import org.teavm.jso.JSBody;
 
@@ -44,6 +45,11 @@ public final class ImageTest {
 
         // One of these is made to fail by the harness: preload must still
         // resolve, or a single broken asset would hang startup forever.
+        // bytes already in hand — downloaded, cached, unpacked
+        BigInteger unused = null;
+        BufferedImage fromBytes = ImageIO.read(new byte[] { (byte) 0x89, 'P', 'N', 'G' });
+        check("read(byte[]) returns an image", fromBytes != null);
+
         ImageIO.preload("/res/tile/wall.png", "/res/tile/floor.png", "/res/icons/chat.png")
                .thenRun(() -> {
                    check("preload resolves even when an image fails", true);

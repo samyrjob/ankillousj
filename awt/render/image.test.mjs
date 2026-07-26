@@ -25,4 +25,4 @@ dom.images.filter((i) => i !== wall).forEach((i, n) => (n === 0 ? i._fail() : i.
 await dom.settle(40)
 
 reportAndExit('imageio shim', dom.results,
-  /decoding|shares one|bypass|loudly|preload|Image element|resource base|absolute URL|after load/)
+  /decoding|shares one|bypass|loudly|preload|Image element|resource base|absolute URL|after load|byte\[\]/)

@@ -94,6 +94,9 @@ public interface WebSocket {
         @JSBody(params = "url", script = "return new WebSocket(url);")
         static native JSObject open(String url);
 
+        @JSBody(params = { "url", "protocols" }, script = "return new WebSocket(url, protocols);")
+        static native JSObject openWithProtocols(String url, String[] protocols);
+
         @JSBody(params = { "ws", "onOpen", "onMessage", "onClose", "onError" }, script =
                 "ws.onopen = function() { onOpen(); };"
               + "ws.onmessage = function(e) { onMessage(typeof e.data === 'string' ? e.data : ''); };"
