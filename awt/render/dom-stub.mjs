@@ -126,6 +126,7 @@ export function reportAndExit(title, results, filter = null) {
   let pass = 0, fail = 0
   for (const r of results) {
     if (filter && !filter.test(r)) continue
+    if (r.startsWith('INFO')) { console.log(`  \u00b7 ${r.slice(5)}`); continue }
     const ok = r.startsWith('PASS')
     console.log(`  ${ok ? '\u2713' : '\u2717'} ${r.slice(5)}`)
     ok ? pass++ : fail++

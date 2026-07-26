@@ -21,4 +21,4 @@ check('close() cleared loop again', a && a.loop === false)
 check('close() paused the element', a && a.paused === true)
 
 reportAndExit('sound + crypto shims', dom.results,
-  /clip|gain|dB|silence|unity|rewind|MASTER_GAIN|stream overload|Signature|KeyFactory|payload|header|claim|expired|malformed|null token|Audio element|URL reached|loop\(|close\(\)/)
+  /clip|gain|dB|silence|unity|rewind|MASTER_GAIN|stream overload|Signature|KeyFactory|payload|header|claim|expired|malformed|null token|Audio element|URL reached|loop\(|close\(\)|RFC 8032|tampered|S >= L|X.509|signing is refused|raw 32-byte|under 400 ms|INFO/)

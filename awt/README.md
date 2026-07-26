@@ -299,7 +299,7 @@ node events.test.mjs        #  9   DOM events reaching game code
 node concurrency.test.mjs   # 23   executors, futures, SwingUtilities
 node websocket.test.mjs     # 14   the socket path end to end
 node image.test.mjs         # 12   decoding gap and post-load state
-node soundcrypto.test.mjs   # 26   audio, dB conversion, JWT claims
+node soundcrypto.test.mjs   # 32   audio, dB conversion, real Ed25519
 ```
 
 All five share `dom-stub.mjs`. They did not, at first — each grew its own copy,
@@ -330,35 +330,72 @@ which is the common case — is exact regardless.
 Format support is the browser's, so MP3, AAC, WAV and OGG all work. That makes
 the `javazoom` MP3 player redundant.
 
-## Beyond AWT: crypto, and what cannot be done
+## Beyond AWT: crypto
 
-`Signature.verify()` returns a boolean synchronously. WebCrypto's
-`subtle.verify()` returns a Promise. **These cannot be bridged** — awaiting a
-promise means yielding to the event loop, and a synchronous method cannot
-yield. This is the shape of the platform, not a missing feature.
-
-So `java.security.Signature` and `KeyFactory` throw, with the reason and the
-alternative in the message.
-
-**The real answer is to stop verifying on the client.** A signature check
-protects the party that trusts the token, and the client already holds it. An
-attacker controlling the browser can edit the token, patch out the check, or
-skip it. Client-side verification stops nobody. The server has to verify, and
-once it does, a second check in the browser catches nothing but accidental
-corruption.
-
-What client code usually actually wants — expiry, user id — needs no crypto:
+`java.security.Signature`, `KeyFactory`, `X509EncodedKeySpec` and `PublicKey`
+for Ed25519 — **synchronous**, so `GameJwtValidator` compiles and runs
+unchanged:
 
 ```java
-Jwt.decodePayload(token);            // claims, unverified
-Jwt.numericClaim(token, "exp");
-Jwt.isExpired(token, epochSeconds);
+KeyFactory kf = KeyFactory.getInstance("Ed25519");
+PublicKey  pk = kf.generatePublic(new X509EncodedKeySpec(der));
+Signature  s  = Signature.getInstance("Ed25519");
+s.initVerify(pk);
+s.update(signingInput);
+boolean ok = s.verify(signature);       // returns a boolean, right now
 ```
 
-If a genuine client-side check is still wanted, `Signature.verifyAsync(...)`
-does it properly through WebCrypto and returns a future. The cost is that the
-call site becomes asynchronous. Note also that Ed25519 in WebCrypto requires a
-secure context and browser support still varies.
+### Why this is implemented rather than shimmed
+
+WebCrypto is asynchronous and this API is not, and no amount of shimming
+bridges that. But Ed25519 is arithmetic, and arithmetic compiles. RFC 8032
+verification is implemented directly, along with the SHA-512 it depends on,
+because TeaVM's class library has no `MessageDigest` either.
+
+Nothing in it touches the platform, so it runs synchronously wherever the rest
+of the code runs.
+
+### Design notes
+
+**BigInteger, not packed limbs.** Slower, but far less likely to be subtly
+wrong, and wrong crypto is worse than slow crypto.
+
+**Extended coordinates, not affine.** Affine addition needs a modular inverse
+per operation — around five hundred per scalar multiplication, and by far the
+dominant cost. Extended twisted Edwards coordinates need none at all; even the
+final point comparison cross-multiplies instead of normalising. That change
+alone took a verification from 66 ms to 15 ms on a JVM.
+
+**Not constant time, deliberately.** BigInteger branches on data, which matters
+when handling a secret. Verification handles only public values — the key, the
+signature, the message — so there is nothing to leak. Signing is *not*
+implemented, for the same reason: it would need constant-time arithmetic to be
+safe, and a browser client should not hold a signing key.
+
+**Cost: about 186 ms per verification** in compiled JS, measured, and reported
+by the test suite rather than estimated. That is fine for a once-per-session
+token check and would not be fine in a loop. Packed-limb field arithmetic would
+take it well under 10 ms if that ever matters; it is a lot more code and a lot
+more room for error, which is why it is not there yet.
+
+### Verified against two independent references
+
+```
+SHA-512:            2301 messages,  0 mismatches   (vs MessageDigest)
+RFC 8032 vectors:   all pass
+Ed25519:            1207 checks,    0 failures     (vs the JDK)
+```
+
+The harness ships in `verification/` so this is checkable rather than claimed.
+It requires rejection as well as acceptance — a verifier that returned `true`
+unconditionally would pass every positive test. It must reject a signature with
+one bit flipped, a message with one bit flipped, a different key, malformed
+lengths, an all-zero signature, a key that is not on the curve, and `S >= L`,
+which would otherwise leave signatures malleable.
+
+`security.Jwt` is also there for reading claims without verifying — useful for
+an expiry check before bothering with the signature — but it is now a
+convenience, not a substitute.
 
 ## Tools
 

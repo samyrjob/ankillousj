@@ -1,98 +1,71 @@
 package security;
 
-import concurrent.CompletableFuture;
-
-import org.teavm.jso.JSBody;
-import org.teavm.jso.JSFunctor;
-import org.teavm.jso.JSObject;
+import java.io.ByteArrayOutputStream;
 
 /**
- * java.security.Signature — and the one shim in this project that cannot be
- * made to work.
+ * java.security.Signature for Ed25519, synchronous.
  *
- * <h3>Why</h3>
+ * <p>The browser's own primitive, WebCrypto, is asynchronous, and this API is
+ * not — so rather than force every call site to change, the verification
+ * arithmetic is implemented directly in {@link Ed25519}. It is pure
+ * computation and runs like any other code.
  *
- * {@code Signature.verify()} returns a boolean synchronously. The browser's
- * only signature primitive is WebCrypto's {@code subtle.verify()}, which
- * returns a Promise. There is no way to turn one into the other: waiting for
- * the promise means yielding to the event loop, and a synchronous method
- * cannot yield. This is not a missing feature, it is the shape of the
- * platform.
- *
- * <h3>What to do instead</h3>
- *
- * <b>Stop verifying on the client.</b> A JWT signature check protects the
- * party that trusts the token, and the client already holds it. An attacker
- * controlling the browser can edit the token, patch out the check, or skip it
- * entirely — so client-side verification stops nobody. The server has to
- * verify, and once it does, the client verifying again buys nothing beyond
- * catching accidental corruption.
- *
- * <p>If a client-side check is still wanted — to fail fast on an expired
- * token, say — {@link #verifyAsync} does it properly through WebCrypto and
- * hands back a future. That requires the call site to become asynchronous,
- * which is the honest cost.
- *
- * <p>Decoding a JWT's claims without checking the signature needs no crypto at
- * all: split on '.', Base64url-decode the payload. That covers expiry and
- * user-id checks, which is what most client code actually wants.
+ * <p>Verification only. Signing requires constant-time arithmetic to be safe,
+ * and a client has no business holding a signing key anyway.
  */
-public final class Signature {
+public class Signature {
 
-    private Signature() { }
+    private final String algorithm;
+    private PublicKey key;
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-    /**
-     * @throws UnsupportedOperationException always.
-     */
+    private Signature(String algorithm) { this.algorithm = algorithm; }
+
     public static Signature getInstance(String algorithm) {
-        throw new UnsupportedOperationException(
-            "java.security.Signature cannot work in a browser: verify() is synchronous "
-            + "and WebCrypto is asynchronous, and a synchronous method cannot await a "
-            + "promise. Verify the token on the server — the client holding it cannot "
-            + "meaningfully verify it anyway. If a client-side check is still needed, "
-            + "use security.Signature.verifyAsync(...), which returns a future.");
+        if (!KeyFactory.isEd25519(algorithm)) {
+            throw new UnsupportedOperationException(
+                "Signature supports Ed25519 only; asked for " + algorithm
+                + ". Other algorithms would need their own implementation, since "
+                + "WebCrypto is asynchronous and cannot back this API.");
+        }
+        return new Signature(algorithm);
+    }
+
+    public String getAlgorithm() { return algorithm; }
+
+    public void initVerify(PublicKey publicKey) {
+        this.key = publicKey;
+        buffer.reset();
+    }
+
+    public void update(byte[] data) {
+        buffer.write(data, 0, data.length);
+    }
+
+    public void update(byte[] data, int off, int len) {
+        buffer.write(data, off, len);
+    }
+
+    public void update(byte b) {
+        buffer.write(b);
+    }
+
+    public boolean verify(byte[] signature) {
+        if (key == null) throw new IllegalStateException("initVerify was not called");
+        boolean ok = Ed25519.verify(key.raw(), buffer.toByteArray(), signature);
+        buffer.reset();
+        return ok;
     }
 
     /**
-     * Verifies an Ed25519 signature through WebCrypto.
+     * Signing is not supported.
      *
-     * @param publicKeyRaw the 32-byte raw Ed25519 public key
-     * @param message      the signed bytes
-     * @param signature    the 64-byte signature
+     * @throws UnsupportedOperationException always
      */
-    public static CompletableFuture<Boolean> verifyAsync(byte[] publicKeyRaw,
-                                                         byte[] message,
-                                                         byte[] signature) {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
-        Native.verifyEd25519(toJs(publicKeyRaw), toJs(message), toJs(signature),
-                result::complete,
-                () -> result.completeExceptionally(
-                        new RuntimeException("WebCrypto rejected the Ed25519 verification; "
-                                + "Ed25519 support varies by browser and requires a secure context")));
-        return result;
-    }
-
-    @JSFunctor
-    interface BoolCallback extends JSObject { void call(boolean ok); }
-
-    @JSFunctor
-    interface ErrCallback extends JSObject { void call(); }
-
-    @JSBody(params = "a", script = "return new Uint8Array(a);")
-    private static native JSObject toJs(byte[] a);
-
-    static final class Native {
-        private Native() { }
-
-        @JSBody(params = { "key", "msg", "sig", "ok", "err" }, script =
-                "if (!globalThis.crypto || !globalThis.crypto.subtle) { err(); return; }"
-              + "globalThis.crypto.subtle.importKey('raw', key, {name:'Ed25519'}, false, ['verify'])"
-              + "  .then(function(k) {"
-              + "    return globalThis.crypto.subtle.verify({name:'Ed25519'}, k, sig, msg);"
-              + "  })"
-              + "  .then(function(r) { ok(!!r); })"
-              + "  .catch(function() { err(); });")
-        static native void verifyEd25519(JSObject key, JSObject msg, JSObject sig,
-                                         BoolCallback ok, ErrCallback err);
+    public void initSign(Object privateKey) {
+        throw new UnsupportedOperationException(
+            "Ed25519 signing is not implemented: it needs constant-time arithmetic to be "
+            + "safe, and a browser client should not hold a signing key. Verification is "
+            + "supported.");
     }
 }
