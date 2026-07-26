@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AnkillousJ AWT — Futura's own code, in a browser</title>
+<style>
+  body { background:#0d0e1c; color:#e8e9f3; font:14px/1.6 system-ui,sans-serif; margin:0; padding:32px; }
+  h1 { font-size:18px; font-weight:600; margin:0 0 4px; color:#e6c878; }
+  p  { color:#a096be; margin:0 0 20px; max-width:64ch; }
+  canvas { border:1px solid #2c3155; border-radius:8px; display:block; cursor:pointer; }
+  .row { display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start; }
+  #log { font-family:ui-monospace,monospace; font-size:12px; color:#8a8fb5; white-space:pre-wrap; }
+  kbd { background:#191d36; border:1px solid #2c3155; border-radius:4px;
+        padding:1px 6px; font:12px ui-monospace,monospace; color:#e6c878; }
+  ul { color:#a096be; margin:0 0 20px; padding-left:18px; }
+  li { margin:2px 0; }
+</style>
+</head>
+<body>
+  <h1>RoomInfoCard &amp; GroupIcon — unmodified game code, running in a browser tab</h1>
+  <p>
+    Java &rarr; javac &rarr; TeaVM &rarr; JavaScript, with <code>Graphics2D</code> backed by
+    Canvas2D. The hit-testing below is the desktop build's own
+    <code>handleMouseMove</code> and <code>handleClick</code>, reached through real DOM events.
+  </p>
+  <ul>
+    <li><b>Hover the gear</b> (top-right of the card) &mdash; it brightens</li>
+    <li><b>Click the gear</b> &mdash; <code>handleClick</code> returns true</li>
+    <li><b>Scroll</b> over the canvas &mdash; resizes the icon</li>
+    <li><b>Click the canvas, then press <kbd>Space</kbd></b> &mdash; toggles the card</li>
+  </ul>
+
+  <div class="row">
+    <canvas id="c" width="560" height="200"></canvas>
+    <div id="log">starting…</div>
+  </div>
+
+<script src="proof.js"></script>
+<script>
+  const canvas = document.getElementById('c');
+
+  // AWT renders at native display resolution; canvas has to be told.
+  // Component.applyScaling() does this from the Java side, so all we do here
+  // is give the element a CSS size for it to read.
+  canvas.style.width  = canvas.width + 'px';
+  canvas.style.height = canvas.height + 'px';
+
+  const lines = [];
+  globalThis.__ankLog = m => { lines.push(m); render(); };
+  function render() {
+    document.getElementById('log').textContent =
+      'devicePixelRatio ' + (window.devicePixelRatio || 1) + '\n' + lines.join('\n');
+  }
+
+  main([]);
+  canvas.focus();
+  render();
+</script>
+</body>
+</html>
