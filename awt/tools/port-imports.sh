@@ -1,55 +1,83 @@
 #!/usr/bin/env bash
-# Same rewrite as port-imports.ps1, for bash.
+#
+# Rewrites JDK imports onto the AnkillousJ shim packages, and back.
+#
 #   ./port-imports.sh <src-root>            preview
 #   ./port-imports.sh <src-root> --apply    write
 #   ./port-imports.sh <src-root> --revert   undo
+#
+# TeaVM reserves the java.* and javax.* namespaces for its own class library
+# and will not load application classes from them, so the shims live in
+# top-level packages and imports are rewritten to match.
+#
+# Both import statements *and* fully-qualified references are rewritten.
+# Rewriting only imports leaves a file saying `import awt.Color` at the top and
+# `java.awt.Color` in the body — two different types, and the memorable error
+# "Color cannot be converted to Color".
+#
+# javax.swing is deliberately NOT mapped. Swing widgets have no canvas
+# equivalent; those files want rebuilding as HTML, and failing loudly beats
+# pretending.
 set -euo pipefail
+
 ROOT="${1:?usage: port-imports.sh <src-root> [--apply|--revert]}"
 MODE="${2:-}"
 
-if [[ "$MODE" == "--revert" ]]; then
-  EXPR=(-e 's/^import awt\.geom\./import java.awt.geom./'
-        -e 's/^import awt\.image\./import java.awt.image./'
-        -e 's/^import awt\.event\./import java.awt.event./'
-        -e 's/^import awt\./import java.awt./'
-        -e 's/\bawt\.geom\./java.awt.geom./g'
-        -e 's/\bawt\.image\./java.awt.image./g')
-else
-  EXPR=(-e 's/^import java\.awt\.geom\./import awt.geom./'
-        -e 's/^import java\.awt\.image\./import awt.image./'
-        -e 's/^import java\.awt\.event\./import awt.event./'
-        -e 's/^import java\.awt\./import awt./'
-        -e 's/\bjava\.awt\.geom\./awt.geom./g'
-        -e 's/\bjava\.awt\.image\./awt.image./g'
-        -e 's/\bjava\.awt\.\(Color\|Font\|Graphics2D\|Shape\|Rectangle\|Composite\|Paint\|Stroke\)\b/awt.\1/g'
-        -e 's/^import javax\.swing\.SwingUtilities;/import swing.SwingUtilities;/'
-        -e 's/^import java\.util\.concurrent\.\(Executors\|ExecutorService\|ScheduledExecutorService\|CompletableFuture\|CompletionStage\|ScheduledFuture\|Future\);/import concurrent.\1;/'
-        -e 's/^import java\.net\.http\.\(HttpClient\|WebSocket\);/import nethttp.\1;/'
-        -e 's/^import java\.net\.Socket;/import net.Socket;/'
-        -e 's/^import java\.time\.\(Duration\|Instant\|Clock\);/import time.\1;/'
-        -e 's/^import javax\.imageio\.ImageIO;/import imageio.ImageIO;/'
-        -e 's/^import javax\.sound\.sampled\.\(Clip\|AudioSystem\|AudioInputStream\|FloatControl\);/import sound.\1;/'
-        -e 's/^import java\.security\.spec\.\(X509EncodedKeySpec\|InvalidKeySpecException\);/import security.\1;/'
-        -e 's/^import java\.security\.\(Signature\|KeyFactory\|PublicKey\|InvalidKeyException\|SignatureException\);/import security.\1;/'
-        -e 's/\bjava\.net\.http\.\(HttpClient\|WebSocket\)\b/nethttp.\1/g'
-        -e 's/\bjava\.time\.\(Duration\|Instant\|Clock\)\b/time.\1/g')
-fi
+# Longest prefix first: java.awt.geom must be rewritten before java.awt.
+MAPPINGS="java.awt.geom awt.geom
+java.awt.image awt.image
+java.awt.event awt.event
+java.awt.font awt.font
+java.awt awt
+javax.imageio imageio
+javax.sound.sampled sound
+java.net.http nethttp
+java.security.spec security
+java.security security
+java.time time"
 
-n=0
+# Individually mapped, because their package is only partly shimmed.
+CLASS_MAPPINGS="javax.swing.SwingUtilities swing.SwingUtilities
+java.util.concurrent.CompletableFuture concurrent.CompletableFuture
+java.util.concurrent.CompletionStage concurrent.CompletionStage
+java.util.concurrent.ScheduledExecutorService concurrent.ScheduledExecutorService
+java.util.concurrent.ExecutorService concurrent.ExecutorService
+java.util.concurrent.ScheduledFuture concurrent.ScheduledFuture
+java.util.concurrent.Executors concurrent.Executors
+java.util.concurrent.Future concurrent.Future
+java.net.Socket net.Socket"
+
+REVERSE=no
+[ "$MODE" = "--revert" ] && REVERSE=yes
+
+SED_ARGS=()
+while read -r jdk shim; do
+  [ -z "$jdk" ] && continue
+  if [ "$REVERSE" = yes ]; then from=$shim; to=$jdk; else from=$jdk; to=$shim; fi
+  SED_ARGS+=(-e "s/\\b${from//./\\.}\\./${to}./g")
+done <<< "$MAPPINGS"
+
+while read -r jdk shim; do
+  [ -z "$jdk" ] && continue
+  if [ "$REVERSE" = yes ]; then from=$shim; to=$jdk; else from=$jdk; to=$shim; fi
+  SED_ARGS+=(-e "s/\\b${from//./\\.}\\b/${to}/g")
+done <<< "$CLASS_MAPPINGS"
+
+changed=0
+lines=0
 while IFS= read -r f; do
-  if [[ "$MODE" == "--apply" || "$MODE" == "--revert" ]]; then
-    before=$(md5sum "$f" | cut -d' ' -f1)
-    sed -i "${EXPR[@]}" "$f"
-    after=$(md5sum "$f" | cut -d' ' -f1)
-    [[ "$before" != "$after" ]] && { echo "  ${f#$ROOT/}"; n=$((n+1)); }
+  tmp=$(mktemp)
+  sed "${SED_ARGS[@]}" "$f" > "$tmp"
+  if ! cmp -s "$f" "$tmp"; then
+    n=$(diff "$f" "$tmp" | grep -c '^<' || true)
+    echo "  ${f#"$ROOT"/}  ${n} line(s)"
+    changed=$((changed + 1)); lines=$((lines + n))
+    if [ "$MODE" = "--apply" ] || [ "$MODE" = "--revert" ]; then mv "$tmp" "$f"; else rm -f "$tmp"; fi
   else
-    if sed "${EXPR[@]}" "$f" | diff -q - "$f" >/dev/null; then :; else
-      echo "  ${f#$ROOT/}  $(sed "${EXPR[@]}" "$f" | diff - "$f" | grep -c '^<') line(s)"
-      n=$((n+1))
-    fi
+    rm -f "$tmp"
   fi
 done < <(find "$ROOT" -name '*.java')
 
 echo
-echo "$n file(s)"
-[[ "$MODE" == "--apply" || "$MODE" == "--revert" ]] || echo "DRY RUN - add --apply to write"
+echo "${changed} file(s), ${lines} line(s)"
+[ "$MODE" = "--apply" ] || [ "$MODE" = "--revert" ] || echo "DRY RUN - add --apply to write"

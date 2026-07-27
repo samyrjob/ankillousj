@@ -43,12 +43,26 @@ public class Clip {
         open(stream.url());
     }
 
+    private final java.util.List<LineListener> listeners = new java.util.ArrayList<>();
+
+    public void addLineListener(LineListener l)    { listeners.add(l); }
+    public void removeLineListener(LineListener l) { listeners.remove(l); }
+
+    private void fire(LineEvent.Type type) {
+        LineEvent e = new LineEvent(this, type);
+        for (LineListener l : listeners) l.update(e);
+    }
+
     public void start() {
-        if (open) Native.play(audio);
+        if (!open) return;
+        Native.play(audio);
+        fire(LineEvent.Type.START);
     }
 
     public void stop() {
-        if (open) Native.pause(audio);
+        if (!open) return;
+        Native.pause(audio);
+        fire(LineEvent.Type.STOP);
     }
 
     public void close() {
@@ -56,6 +70,7 @@ public class Clip {
         Native.pause(audio);
         Native.setLoop(audio, false);
         open = false;
+        fire(LineEvent.Type.CLOSE);
     }
 
     public void loop(int count) {

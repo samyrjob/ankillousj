@@ -1,22 +1,22 @@
 <#
-  Rewrites JDK imports onto the AnkillousJ shim packages. TeaVM reserves the
-  java.* and javax.* namespaces for its own class library and will not load
-  application classes from them.
+  Rewrites JDK imports onto the AnkillousJ shim packages, and back.
 
-    java.awt.*                -> awt.*
-    javax.swing.SwingUtilities-> swing.SwingUtilities
-    java.net.http.*           -> nethttp.*
-    java.time.Duration/Instant/Clock -> time.*
-    java.util.concurrent      -> concurrent.*   (only the classes TeaVM lacks:
-                                 Executors, ExecutorService,
-                                 ScheduledExecutorService, Future,
-                                 ScheduledFuture, CompletableFuture.
-                                 TimeUnit and ConcurrentHashMap are left alone
-                                 because TeaVM already ships them.)
+    .\port-imports.ps1 -Root C:\path\to\src            preview
+    .\port-imports.ps1 -Root C:\path\to\src -Apply     write
+    .\port-imports.ps1 -Root C:\path\to\src -Revert    undo
 
-    .\port-imports.ps1 -Root C:\path\to\src            # preview
-    .\port-imports.ps1 -Root C:\path\to\src -Apply     # write
-    .\port-imports.ps1 -Root C:\path\to\src -Revert    # undo
+  TeaVM reserves the java.* and javax.* namespaces for its own class library
+  and will not load application classes from them, so the shims live in
+  top-level packages and imports are rewritten to match.
+
+  Both import statements *and* fully-qualified references are rewritten.
+  Rewriting only imports leaves a file saying `import awt.Color` at the top and
+  `java.awt.Color` in the body - two different types, and the memorable error
+  "Color cannot be converted to Color".
+
+  javax.swing is deliberately NOT mapped. Swing widgets have no canvas
+  equivalent; those files want rebuilding as HTML, and failing loudly beats
+  pretending.
 #>
 param(
   [Parameter(Mandatory=$true)][string]$Root,
@@ -24,73 +24,63 @@ param(
   [switch]$Revert
 )
 
-$rules = if ($Revert) {
-  @(
-    @{ From='^import awt\.geom\.';  To='import java.awt.geom.'  }
-    @{ From='^import awt\.image\.'; To='import java.awt.image.' }
-    @{ From='^import awt\.event\.'; To='import java.awt.event.' }
-    @{ From='^import awt\.';        To='import java.awt.'       }
-    @{ From='\bawt\.geom\.';        To='java.awt.geom.'         }
-    @{ From='\bawt\.image\.';       To='java.awt.image.'        }
-    @{ From='(?<!java\.)\bawt\.(Color|Font|Graphics2D|Shape|Rectangle|Composite|Paint|Stroke)\b'; To='java.awt.$1' }
-    @{ From='^import swing\.SwingUtilities;'; To='import javax.swing.SwingUtilities;' }
-    @{ From='^import concurrent\.(Executors|ExecutorService|ScheduledExecutorService|CompletableFuture|CompletionStage|ScheduledFuture|Future);'; To='import java.util.concurrent.$1;' }
-    @{ From='^import nethttp\.(HttpClient|WebSocket);'; To='import java.net.http.$1;' }
-    @{ From='^import net\.Socket;'; To='import java.net.Socket;' }
-    @{ From='^import time\.(Duration|Instant|Clock);'; To='import java.time.$1;' }
-    @{ From='^import imageio\.ImageIO;'; To='import javax.imageio.ImageIO;' }
-    @{ From='^import sound\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import javax.sound.sampled.$1;' }
-    @{ From='^import security\.(X509EncodedKeySpec|InvalidKeySpecException);'; To='import java.security.spec.$1;' }
-    @{ From='^import security\.(Signature|KeyFactory|PublicKey|InvalidKeyException|SignatureException);'; To='import java.security.$1;' }
-    @{ From='(?<!java\.)\btime\.(Duration|Instant|Clock)\b'; To='java.time.$1' }
-    @{ From='\bnethttp\.(HttpClient|WebSocket)\b'; To='java.net.http.$1' }
-  )
-} else {
-  @(
-    @{ From='^import java\.awt\.geom\.';  To='import awt.geom.'  }
-    @{ From='^import java\.awt\.image\.'; To='import awt.image.' }
-    @{ From='^import java\.awt\.event\.'; To='import awt.event.' }
-    @{ From='^import java\.awt\.';        To='import awt.'       }
-    @{ From='\bjava\.awt\.geom\.';        To='awt.geom.'         }
-    @{ From='\bjava\.awt\.image\.';       To='awt.image.'        }
-    @{ From='\bjava\.awt\.(Color|Font|Graphics2D|Shape|Rectangle|Composite|Paint|Stroke)\b'; To='awt.$1' }
-    @{ From='^import javax\.swing\.SwingUtilities;'; To='import swing.SwingUtilities;' }
-    @{ From='^import java\.util\.concurrent\.(Executors|ExecutorService|ScheduledExecutorService|CompletableFuture|CompletionStage|ScheduledFuture|Future);'; To='import concurrent.$1;' }
-    @{ From='^import java\.net\.http\.(HttpClient|WebSocket);'; To='import nethttp.$1;' }
-    @{ From='^import java\.net\.Socket;'; To='import net.Socket;' }
-    @{ From='^import java\.time\.(Duration|Instant|Clock);'; To='import time.$1;' }
-    @{ From='^import javax\.imageio\.ImageIO;'; To='import imageio.ImageIO;' }
-    @{ From='^import javax\.sound\.sampled\.(Clip|AudioSystem|AudioInputStream|FloatControl);'; To='import sound.$1;' }
-    @{ From='^import java\.security\.spec\.(X509EncodedKeySpec|InvalidKeySpecException);'; To='import security.$1;' }
-    @{ From='^import java\.security\.(Signature|KeyFactory|PublicKey|InvalidKeyException|SignatureException);'; To='import security.$1;' }
-    @{ From='\bjava\.time\.(Duration|Instant|Clock)\b'; To='time.$1' }
-    @{ From='\bjava\.net\.http\.(HttpClient|WebSocket)\b'; To='nethttp.$1' }
-  )
+# Longest prefix first: java.awt.geom must be rewritten before java.awt.
+$packages = @(
+  @('java.awt.geom',        'awt.geom')
+  @('java.awt.image',       'awt.image')
+  @('java.awt.event',       'awt.event')
+  @('java.awt.font',        'awt.font')
+  @('java.awt',             'awt')
+  @('javax.imageio',        'imageio')
+  @('javax.sound.sampled',  'sound')
+  @('java.net.http',        'nethttp')
+  @('java.security.spec',   'security')
+  @('java.security',        'security')
+  @('java.time',            'time')
+)
+
+# Individually mapped, because their package is only partly shimmed.
+$classes = @(
+  @('javax.swing.SwingUtilities',                    'swing.SwingUtilities')
+  @('java.util.concurrent.CompletableFuture',        'concurrent.CompletableFuture')
+  @('java.util.concurrent.CompletionStage',          'concurrent.CompletionStage')
+  @('java.util.concurrent.ScheduledExecutorService', 'concurrent.ScheduledExecutorService')
+  @('java.util.concurrent.ExecutorService',          'concurrent.ExecutorService')
+  @('java.util.concurrent.ScheduledFuture',          'concurrent.ScheduledFuture')
+  @('java.util.concurrent.Executors',                'concurrent.Executors')
+  @('java.util.concurrent.Future',                   'concurrent.Future')
+  @('java.net.Socket',                               'net.Socket')
+)
+
+$rules = @()
+foreach ($p in $packages) {
+  if ($Revert) { $from = $p[1]; $to = $p[0] } else { $from = $p[0]; $to = $p[1] }
+  $rules += ,@("\b$([regex]::Escape($from))\.", "$to.")
+}
+foreach ($c in $classes) {
+  if ($Revert) { $from = $c[1]; $to = $c[0] } else { $from = $c[0]; $to = $c[1] }
+  $rules += ,@("\b$([regex]::Escape($from))\b", $to)
 }
 
-$files = Get-ChildItem -Path $Root -Recurse -Filter *.java
-$touched = 0; $edits = 0
+$changed = 0
+$lines = 0
 
-foreach ($f in $files) {
+foreach ($f in Get-ChildItem -Path $Root -Recurse -Filter *.java) {
   $orig = Get-Content $f.FullName -Raw
   $text = $orig
-  foreach ($r in $rules) {
-    $text = [regex]::Replace($text, $r.From, $r.To, 'Multiline')
-  }
+  foreach ($r in $rules) { $text = [regex]::Replace($text, $r[0], $r[1]) }
+
   if ($text -ne $orig) {
-    $touched++
-    $n = ($orig -split "`n").Count
-    $changed = 0
     $ol = $orig -split "`n"; $nl = $text -split "`n"
-    for ($i=0; $i -lt $ol.Count; $i++) { if ($ol[$i] -ne $nl[$i]) { $changed++ } }
-    $edits += $changed
+    $n = 0
+    for ($i = 0; $i -lt $ol.Count; $i++) { if ($ol[$i] -ne $nl[$i]) { $n++ } }
     $rel = $f.FullName.Substring($Root.Length).TrimStart('\','/')
-    Write-Host ("  {0,-58} {1} line(s)" -f $rel, $changed)
-    if ($Apply) { Set-Content -Path $f.FullName -Value $text -NoNewline }
+    Write-Host ("  {0,-58} {1} line(s)" -f $rel, $n)
+    $changed++; $lines += $n
+    if ($Apply -or $Revert) { Set-Content -Path $f.FullName -Value $text -NoNewline }
   }
 }
 
 Write-Host ""
-Write-Host ("{0} file(s), {1} line(s)" -f $touched, $edits)
-if (-not $Apply) { Write-Host "DRY RUN - re-run with -Apply to write changes" -ForegroundColor Yellow }
-else { Write-Host "written. -Revert undoes it." -ForegroundColor Green }
+Write-Host ("{0} file(s), {1} line(s)" -f $changed, $lines)
+if (-not ($Apply -or $Revert)) { Write-Host "DRY RUN - re-run with -Apply to write" -ForegroundColor Yellow }

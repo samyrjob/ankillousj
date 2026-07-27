@@ -192,6 +192,8 @@ public class Graphics2D extends Graphics {
 
     public void fillPolygon(int[] xs, int[] ys, int n) { polyPath(xs, ys, n, true);  ctx.fill(); }
     public void drawPolygon(int[] xs, int[] ys, int n) { polyPath(xs, ys, n, true);  ctx.stroke(); }
+    public void fillPolygon(Polygon p) { fill(p); }
+    public void drawPolygon(Polygon p) { draw(p); }
     public void drawPolyline(int[] xs, int[] ys, int n){ polyPath(xs, ys, n, false); ctx.stroke(); }
 
     public void fillArc(int x, int y, int w, int h, int startDeg, int extentDeg) {
@@ -236,6 +238,13 @@ public class Graphics2D extends Graphics {
         while (clipDepth > 0) { ctx.restore(); clipDepth--; }
         currentClip = null;
         if (s != null) clip(s);
+    }
+
+    /** The int overload of setClip, which resets rather than intersects. */
+    public void setClip(int x, int y, int w, int h) {
+        while (clipDepth > 0) { ctx.restore(); clipDepth--; }
+        currentClip = null;
+        clipRect(x, y, w, h);
     }
 
     public void clipRect(int x, int y, int w, int h) {
@@ -347,6 +356,23 @@ public class Graphics2D extends Graphics {
     public boolean drawImage(BufferedImage img, int x, int y, int w, int h, Object observer) {
         if (img == null) return false;
         ctx.drawImage(img.source(), x, y, w, h);
+        return true;
+    }
+
+    /**
+     * The transform overload. AWT applies the transform to this draw only, so
+     * the canvas state is saved and restored around it.
+     */
+    public boolean drawImage(BufferedImage img, awt.geom.AffineTransform xform, Object observer) {
+        if (img == null) return false;
+        double[] m = new double[6];
+        if (xform != null) {
+            xform.getMatrix(m);
+            ctx.save();
+            ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+        }
+        ctx.drawImage(img.source(), 0, 0);
+        if (xform != null) ctx.restore();
         return true;
     }
 

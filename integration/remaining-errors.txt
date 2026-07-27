@@ -1,0 +1,40 @@
+ported/shared/auth/GameJwtValidator.java:10: error: cannot find symbol
+ported/shared/auth/GameJwtValidator.java:11: error: cannot find symbol
+ported/shared/auth/GameJwtPublicKeyLoader.java:9: error: cannot find symbol
+ported/shared/auth/GameJwtValidator.java:166: error: cannot find symbol
+ported/shared/auth/GameJwtValidator.java:166: error: cannot find symbol
+ported/shared/auth/GameJwtValidator.java:172: error: cannot find symbol
+ported/shared/auth/GameJwtValidator.java:172: error: package HttpResponse does not exist
+ported/shared/auth/GameJwtPublicKeyLoader.java:71: error: cannot find symbol
+ported/client/util/AlphaTrim.java:41: error: cannot find symbol
+ported/client/main/InputHandler.java:55: error: incompatible types: InputHandler.GameMouseListener cannot be converted to MouseListener
+ported/client/main/InputHandler.java:56: error: incompatible types: InputHandler.GameMouseMotionListener cannot be converted to MouseMotionListener
+ported/client/main/InputHandler.java:57: error: incompatible types: invalid method reference
+ported/client/main/InputHandler.java:59: error: incompatible types: <anonymous KeyAdapter> cannot be converted to KeyListener
+ported/client/main/InputHandler.java:298: error: incompatible types: awt.Cursor cannot be converted to java.awt.Cursor
+ported/client/main/InputHandler.java:466: error: incompatible types: awt.Cursor cannot be converted to java.awt.Cursor
+ported/client/main/InputHandler.java:762: error: incompatible types: awt.Cursor cannot be converted to java.awt.Cursor
+ported/client/object/FurnitureManager.java:388: error: cannot find symbol
+ported/client/ui/profile/RemoteProfile.java:147: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/ui/profile/RemoteProfile.java:197: error: cannot find symbol
+ported/client/view/inventory/FurnitureInfoCard.java:84: error: cannot find symbol
+ported/client/view/inventory/FurnitureInfoCard.java:86: error: cannot find symbol
+ported/client/view/room/RoomPanel.java:310: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/view/room/RoomInfoCard.java:292: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/view/room/RoomInfoCard.java:382: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/sound/Sound.java:109: error: cannot find symbol
+ported/client/sound/Sound.java:115: error: cannot find symbol
+ported/client/object/Furniture.java:211: error: method supplyAsync in class CompletableFuture<T> cannot be applied to given types;
+ported/client/object/Furniture.java:257: error: method supplyAsync in class CompletableFuture<T> cannot be applied to given types;
+ported/client/object/Furniture.java:338: error: method supplyAsync in class CompletableFuture<T> cannot be applied to given types;
+ported/client/view/chat/ChatWindow.java:179: error: cannot find symbol
+ported/client/view/chat/ChatWindow.java:544: error: incompatible types: java.awt.Graphics cannot be converted to awt.Graphics
+ported/client/service/websocket/RoomWebSocketClient.java:592: error: onClose(WebSocket,int,String) in RoomWebSocketClient cannot implement onClose(WebSocket,int,String) in Listener
+ported/client/service/websocket/RoomWebSocketClient.java:578: error: onText(WebSocket,CharSequence,boolean) in RoomWebSocketClient cannot implement onText(WebSocket,CharSequence,boolean) in Listener
+ported/client/service/websocket/RoomWebSocketClient.java:431: error: incompatible types: concurrent.CompletableFuture<WebSocket> cannot be converted to java.util.concurrent.CompletableFuture<WebSocket>
+ported/client/service/websocket/RoomWebSocketClient.java:577: error: method does not override or implement a method from a supertype
+ported/client/service/websocket/RoomWebSocketClient.java:591: error: method does not override or implement a method from a supertype
+ported/client/service/websocket/RoomWebSocketClient.java:740: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/network/ServerMessageWatcher.java:502: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/network/ServerMessageWatcher.java:576: error: incompatible types: GamePanel cannot be converted to Component
+ported/client/entity/player/PlayerRenderer.java:114: error: cannot find symbol
