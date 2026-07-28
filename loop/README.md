@@ -127,3 +127,38 @@ structure, so `toJson` handles them directly — which covers the
 One reader is registered from the class's own static initialiser rather than
 centrally, because its fields are package-private. That is arguably the better
 pattern: the reader lives beside the thing it reads.
+
+### Proof, from inside the compiled build
+
+`JsonProof.java` runs both directions on a real `Room` and logs the result:
+
+```
+read one   : Rooftop / Dev / PRIVATE / 17 of 42 / 2x2 / freePlacement=true
+read array : 2 rooms, first=r7
+write map  : {"username":"WebPlayer"}
+write tree : {"roomId":"r7","players":17,"owners":["Dev"]}
+round trip : Rooftop maxPlayers=42  identical=true
+```
+
+That is a `Room` built from JSON with its enum, ints and booleans intact; an
+array from a single registration; a `Map` serialised with no registration at
+all; a hand-built tree serialised; and an object surviving a full round trip.
+
+(The `2x2` is the game's own doing — `Room.setTileMap` derives width and height
+from the grid it is given, overwriting whatever the JSON said. The test data
+has a 2×2 tile map.)
+
+### The distinction that matters
+
+"TeaVM cannot handle Gson" is easy to misread. To be exact:
+
+- **JSON is fine.** It is text parsing; nothing about it needs reflection.
+- **The tree model was always fine.** `JsonObject`, `JsonArray`, `JsonParser` —
+  no reflection, ~80 uses in this game, worked from the start.
+- **Gson the library is not fine**, because to bind *any* class it must keep
+  machinery for *every* class. That is what pulled `Unsafe`,
+  `ObjectStreamClass`, `InetAddress` and `java.sql.Date` into a build that
+  mentions none of them.
+
+So the problem was never JSON, and never Gson's API. It was reflection as an
+implementation strategy under a compiler that has to see everything.
