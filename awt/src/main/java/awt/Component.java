@@ -112,6 +112,84 @@ public class Component {
     public int getWidth()  { return width; }
     public int getHeight() { return height; }
 
+    // ── the JPanel surface a game panel actually uses ─────────────────
+    //
+    // A canvas-based panel needs very little of Swing: a size, a background,
+    // focus, and a repaint. These are here so `extends JPanel` can become
+    // `extends Component` without touching anything else in the class.
+
+    private Color background = Color.BLACK;
+    private Dimension preferredSize;
+    private boolean focusable = true;
+    private Cursor cursor = Cursor.getDefaultCursor();
+
+    public void setPreferredSize(Dimension d) { preferredSize = d; }
+
+    public Dimension getPreferredSize() {
+        return preferredSize != null ? preferredSize : new Dimension(width, height);
+    }
+
+    public void setBackground(Color c) { background = c; }
+    public Color getBackground()       { return background; }
+
+    /** The canvas is always focusable in practice; this records the intent. */
+    public void setFocusable(boolean b) { focusable = b; }
+    public boolean isFocusable()        { return focusable; }
+
+    public void requestFocus()             { focusCanvas(); }
+    public boolean requestFocusInWindow()  { focusCanvas(); return true; }
+    public boolean isFocusOwner()          { return true; }
+
+    /** Canvas draws to a backbuffer already, so this is inherently true. */
+    public void setDoubleBuffered(boolean b) { }
+    public boolean isDoubleBuffered()        { return true; }
+
+    public void setCursor(Cursor c) {
+        cursor = c;
+        if (canvas != null) setCssCursor(canvas, c.toCss());
+    }
+
+    public Cursor getCursor() { return cursor; }
+
+    /**
+     * AWT hands out a Graphics for drawing outside paint(). Returning the same
+     * context is right here — there is one canvas and one context, and code
+     * that draws through it lands on the same surface.
+     */
+    public Graphics2D getGraphics() { return graphics; }
+
+    // ── container methods ─────────────────────────────────────────────
+    //
+    // A Swing panel doubles as a container: overlays get added to it and
+    // z-ordered. A canvas has no children — everything is drawn, not nested.
+    // These are accepted and ignored so a panel that does both still compiles;
+    // an overlay added this way simply never appears, which is the same
+    // outcome as the dialog rewrite being outstanding.
+
+    public void add(Object component)                       { }
+    public void add(Object component, Object constraints)   { }
+    public void remove(Object component)                    { }
+    public void removeAll()                                 { }
+    public void setLayout(Object layout)                    { }
+    public void setComponentZOrder(Object component, int z) { }
+    public int getComponentCount()                          { return 0; }
+
+    public void setBounds(int x, int y, int w, int h) {
+        this.width = w;
+        this.height = h;
+    }
+
+    public Rectangle getBounds() { return new Rectangle(0, 0, width, height); }
+
+    public void setSize(int w, int h) { setBounds(0, 0, w, h); }
+
+    public Dimension getSize() { return new Dimension(width, height); }
+
+    public void setVisible(boolean b) { }
+    public boolean isVisible()        { return true; }
+    public void revalidate()          { repaint(); }
+    public void validate()            { }
+
     // ── Listener registration (same names as AWT) ─────────────────────
 
     public void addMouseListener(MouseListener l)             { mouseListeners.add(l); }
@@ -146,7 +224,6 @@ public class Component {
         requestFrame(this::frame);
     }
 
-    protected Graphics2D getGraphics() { return graphics; }
 
     // ── DOM -> AWT ────────────────────────────────────────────────────
 
@@ -336,4 +413,14 @@ public class Component {
             "if (typeof document === 'undefined') return null;" +
             "return globalThis.__ankCanvas || document.querySelector('canvas');")
     private static native HTMLCanvasElement defaultCanvas();
+
+    @JSBody(params = { "c", "css" }, script = "c.style.cursor = css;")
+    private static native void setCssCursor(HTMLCanvasElement c, String css);
+
+    private void focusCanvas() {
+        if (canvas != null) doFocus(canvas);
+    }
+
+    @JSBody(params = "c", script = "if (c.focus) c.focus();")
+    private static native void doFocus(HTMLCanvasElement c);
 }

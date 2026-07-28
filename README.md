@@ -7,7 +7,11 @@ Two projects:
 | | |
 |---|---|
 | [`compiler/`](compiler) | Java bytecode → WebAssembly, written from scratch. 147/147 in-scope opcodes, 97 tests. |
-| [`awt/`](awt) | `java.awt` over Canvas2D, on TeaVM. 100% of Futura's drawing surface, plus event plumbing. |
+| [`awt/`](awt) | `java.awt` over Canvas2D, on TeaVM. 100% of Futura's drawing surface, plus events, concurrency, networking, images, sound and crypto. |
+| [`gateway/`](gateway) | WebSocket-to-TCP bridge, so a browser reaches an unmodified `ServerSocket` game server. |
+| [`integration/`](integration) | The real client, ported and compiled. javac: 0 errors. |
+| [`teavm-color-patch/`](teavm-color-patch) | Upstream patch: `Color.brighter()` / `darker()`. |
+| [`teavm-atomic-array-patch/`](teavm-atomic-array-patch) | Upstream patch: `AtomicIntegerArray` / `AtomicLongArray`. |
 
 ## Which one matters
 

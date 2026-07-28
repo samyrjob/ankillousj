@@ -63,6 +63,46 @@ while read -r jdk shim; do
   SED_ARGS+=(-e "s/\\b${from//./\\.}\\b/${to}/g")
 done <<< "$CLASS_MAPPINGS"
 
+# Wildcard imports defeat class-level mapping: `import java.util.concurrent.*`
+# leaves CompletionStage resolving to the JDK's while the rest of the file uses
+# ours, and javac reports it as the unhelpful
+# "CompletionStage is not compatible with CompletionStage".
+#
+# The package cannot simply be remapped — TeaVM ships most of
+# java.util.concurrent and only a handful of classes are shimmed. So an
+# explicit import is inserted for each shimmed class the file actually uses,
+# which takes precedence over the wildcard.
+# format: <wildcard package>  <shim class>  <simple name>
+WILDCARD_FIX='java.util.concurrent concurrent.CompletableFuture CompletableFuture
+java.util.concurrent concurrent.CompletionStage CompletionStage
+java.util.concurrent concurrent.ExecutorService ExecutorService
+java.util.concurrent concurrent.ScheduledExecutorService ScheduledExecutorService
+java.util.concurrent concurrent.Executors Executors
+java.util.concurrent concurrent.ScheduledFuture ScheduledFuture
+java.util.concurrent concurrent.ThreadFactory ThreadFactory
+java.net net.Socket Socket
+java.awt awt.Color Color
+java.awt awt.Font Font
+java.awt awt.Graphics2D Graphics2D
+java.awt awt.Graphics Graphics
+java.awt awt.Dimension Dimension
+java.awt awt.Cursor Cursor
+java.awt awt.Toolkit Toolkit'
+
+fix_wildcards() {
+  local file="$1"
+  grep -qE '^import (java\.util\.concurrent|java\.net|java\.awt)\.\*;' "$file" || return 0
+  local pkg shim cls
+  while read -r pkg shim cls; do
+    [ -z "$pkg" ] && continue
+    grep -q "^import ${pkg}\.\*;" "$file" || continue
+    grep -q "^import ${shim};" "$file" && continue
+    grep -qE "\b${cls}\b" "$file" || continue
+    local pkg_re="${pkg//./\\.}"
+    sed -i "0,/^import ${pkg_re}\.\*;/s||import ${shim};\nimport ${pkg}.*;|" "$file"
+  done <<< "$WILDCARD_FIX"
+}
+
 changed=0
 lines=0
 while IFS= read -r f; do
@@ -72,9 +112,15 @@ while IFS= read -r f; do
     n=$(diff "$f" "$tmp" | grep -c '^<' || true)
     echo "  ${f#"$ROOT"/}  ${n} line(s)"
     changed=$((changed + 1)); lines=$((lines + n))
-    if [ "$MODE" = "--apply" ] || [ "$MODE" = "--revert" ]; then mv "$tmp" "$f"; else rm -f "$tmp"; fi
+    if [ "$MODE" = "--apply" ] || [ "$MODE" = "--revert" ]; then
+      mv "$tmp" "$f"
+      [ "$MODE" = "--apply" ] && fix_wildcards "$f"
+    else
+      rm -f "$tmp"
+    fi
   else
     rm -f "$tmp"
+    [ "$MODE" = "--apply" ] && fix_wildcards "$f"
   fi
 done < <(find "$ROOT" -name '*.java')
 

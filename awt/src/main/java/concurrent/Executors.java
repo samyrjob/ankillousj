@@ -14,15 +14,15 @@ public final class Executors {
     public static ExecutorService newSingleThreadExecutor()      { return new ExecutorService(); }
 
     /** The ThreadFactory overloads: there is one thread, so the factory is unused. */
-    public static ExecutorService newSingleThreadExecutor(java.util.concurrent.ThreadFactory f) {
+    public static ExecutorService newSingleThreadExecutor(ThreadFactory f) {
         return new ExecutorService();
     }
 
-    public static ExecutorService newFixedThreadPool(int n, java.util.concurrent.ThreadFactory f) {
+    public static ExecutorService newFixedThreadPool(int n, ThreadFactory f) {
         return new ExecutorService();
     }
 
-    public static ExecutorService newCachedThreadPool(java.util.concurrent.ThreadFactory f) {
+    public static ExecutorService newCachedThreadPool(ThreadFactory f) {
         return new ExecutorService();
     }
     public static ExecutorService newFixedThreadPool(int n)      { return new ExecutorService(); }
@@ -34,12 +34,12 @@ public final class Executors {
     }
 
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(
-            java.util.concurrent.ThreadFactory f) {
+            ThreadFactory f) {
         return new ScheduledExecutorService();
     }
 
     public static ScheduledExecutorService newScheduledThreadPool(
-            int n, java.util.concurrent.ThreadFactory f) {
+            int n, ThreadFactory f) {
         return new ScheduledExecutorService();
     }
 

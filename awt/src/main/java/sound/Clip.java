@@ -32,14 +32,15 @@ public class Clip {
     private boolean open;
     private double linearVolume = 1.0;
 
-    public void open(String url) {
+    public void open(String url) throws LineUnavailableException {
         audio = Native.create(url);
         Native.setVolume(audio, linearVolume);
         open = true;
     }
 
     /** Matches the AudioInputStream overload; the stream must carry a URL. */
-    public void open(AudioInputStream stream) {
+    public void open(AudioInputStream stream)
+            throws LineUnavailableException, java.io.IOException {
         open(stream.url());
     }
 

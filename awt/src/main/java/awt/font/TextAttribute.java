@@ -16,7 +16,10 @@ public final class TextAttribute {
 
     public static final Integer UNDERLINE_ON      = 0;
     public static final Boolean STRIKETHROUGH_ON  = Boolean.TRUE;
+    public static final Float   WEIGHT_REGULAR    = 1.0f;
+    public static final Float   WEIGHT_SEMIBOLD   = 1.25f;
     public static final Float   WEIGHT_BOLD       = 2.0f;
+    public static final Float   WEIGHT_EXTRABOLD  = 2.5f;
 
     private final String name;
 

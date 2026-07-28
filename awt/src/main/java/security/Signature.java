@@ -21,9 +21,9 @@ public class Signature {
 
     private Signature(String algorithm) { this.algorithm = algorithm; }
 
-    public static Signature getInstance(String algorithm) {
+    public static Signature getInstance(String algorithm) throws NoSuchAlgorithmException {
         if (!KeyFactory.isEd25519(algorithm)) {
-            throw new UnsupportedOperationException(
+            throw new NoSuchAlgorithmException(
                 "Signature supports Ed25519 only; asked for " + algorithm
                 + ". Other algorithms would need their own implementation, since "
                 + "WebCrypto is asynchronous and cannot back this API.");

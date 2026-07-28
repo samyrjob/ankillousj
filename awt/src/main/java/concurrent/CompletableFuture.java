@@ -45,6 +45,19 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         return f;
     }
 
+    /**
+     * The Executor overload. There is one thread, so the executor only decides
+     * *when* the work runs, not where — and deferring is what every executor
+     * here does anyway.
+     */
+    public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier, Object executor) {
+        return supplyAsync(supplier);
+    }
+
+    public static CompletableFuture<Void> runAsync(Runnable task, Object executor) {
+        return runAsync(task);
+    }
+
     public static CompletableFuture<Void> runAsync(Runnable task) {
         CompletableFuture<Void> f = new CompletableFuture<>();
         EventLoop.defer(() -> {

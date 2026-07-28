@@ -18,9 +18,9 @@ public class KeyFactory {
 
     private KeyFactory(String algorithm) { this.algorithm = algorithm; }
 
-    public static KeyFactory getInstance(String algorithm) {
+    public static KeyFactory getInstance(String algorithm) throws NoSuchAlgorithmException {
         if (!isEd25519(algorithm)) {
-            throw new UnsupportedOperationException(
+            throw new NoSuchAlgorithmException(
                 "KeyFactory supports Ed25519 only; asked for " + algorithm);
         }
         return new KeyFactory(algorithm);
