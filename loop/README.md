@@ -63,54 +63,67 @@ end. `BrowserMain` redirects it with one line, and the game never learns:
 Socket.setUrlMapper((host, port) -> "ws://" + host + ":" + GATEWAY_PORT);
 ```
 
-## Where it stops, and why
+## The join goes through
 
-After connecting, the game declines to send `join`:
+With the REST endpoints answered as well, the client completes its startup and
+joins:
 
 ```
-[GAME] Cannot join TCP server: no spawn room.
-       RoomController must have initialized before this point.
+[ROOM CACHE] Loaded 1 rooms
+Connected to server successfully
+Sent join message: join  MALE 1 0 0 DIAGONALE_DOWN lobby
+Connected to multiplayer server (spawn=lobby)
 ```
 
-That is the game's own guard, working correctly. `preloadEverything` needs a
-spawn room, which comes from the REST backend on port 9090 — not running here,
-so every call 404s and `RoomController` has nothing to enter.
+and the server sees it, answers, and gets a movement back:
 
-Standing up the REST service would get past it, except for one thing.
+```
+recv: join  MALE 1 0 0 DIAGONALE_DOWN lobby
+send: playerJoined  5 5 down 1 MALE
+send: playerJoined Guest 8 6 left 1 FEMALE
+send: adminMessage Welcome to the AnkillousJ protocol stub
+recv: move 0 0 DIAGONALE_DOWN false
+send: playerMoved Guest 0 0 DIAGONALE_DOWN false
+```
 
-## The last real blocker: reflective JSON
+`server-transcript.txt` is that exchange as captured. `frame.png` is what the
+client was drawing while it happened — 2,260 distinct colours.
 
-`RoomApiClient` loads rooms like this:
+## Reflective JSON, solved without reflection
+
+The last blocker was Gson's reflective binding:
 
 ```java
 return http.getList("/public", Room[].class);
 ```
 
-That is Gson's *reflective* binding — build me an array of `Room` by
-introspecting the class. It is the one part of Gson the replacement
-deliberately does not do, because reflection is what made Gson unusable under
-a whole-program compiler in the first place.
+Sixteen call sites asked a library to build objects by introspecting classes.
+That is precisely what makes Gson unusable under a whole-program compiler.
 
-There are **16 such call sites**, over a small number of DTOs:
+The fix is a reader registry — `json.JsonReaders`. A reader is a lambda from
+`JsonObject` to the type, registered once:
 
+```java
+JsonReaders.register(Room.class, e -> {
+    JsonObject o = e.getAsJsonObject();
+    Room r = new Room(str(o, "roomId", ""), str(o, "roomName", "Room"), ...);
+    r.setMaxPlayers(num(o, "maxPlayers", 50));
+    return r;
+});
 ```
-Room[]          room lists
-ApiResponse     x2
-FriendRequest   friend requests
-MyDto           inventory
-```
 
-`JsonObject.class` and `JsonArray.class` appear in the same position but need
-no reflection — those already work.
+`Gson.fromJson` consults it, and the array form maps the element reader across
+the array — so `Room[].class` works with one registration. **No service code
+changed.** `GameJsonReaders.java` here is the whole set for this game.
 
-Two ways forward:
+Writing readers is more typing than an annotation. In exchange: the compiler
+sees exactly what is reachable, a renamed field is a compile error rather than
+a silent null at runtime, and nothing ships a reflection engine.
 
-1. **Hand-write the readers.** A `Room` is a dozen fields; reading them from a
-   `JsonObject` is a few lines each, and it is faster, smaller, and does not
-   break silently when a field is renamed. Roughly an afternoon for all of
-   them.
-2. **Register the DTOs for TeaVM reflection.** 0.15 added a fluent API for
-   exactly this — `selectClasses(withAnnotation(...)).reflectablePublicMembers()`.
-   Less code, but it reintroduces reflection into the build.
+Serialisation needed less. `Map`, `Iterable` and arrays describe their own
+structure, so `toJson` handles them directly — which covers the
+`Map.of("username", name)` request-body idiom outright, with no registration.
 
-(1) is the one that keeps the win.
+One reader is registered from the class's own static initialiser rather than
+centrally, because its fields are package-private. That is arguably the better
+pattern: the reader lives beside the thing it reads.

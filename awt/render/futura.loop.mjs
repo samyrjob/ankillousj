@@ -23,19 +23,64 @@ globalThis.__ankLog = (m) => logs.push(m)
 globalThis.XMLHttpRequest = class {
   constructor() { this.readyState = 0; this.status = 0; this.responseText = '' }
   open(m, url, async) { this.url = url.replace(/^\//, ''); this.async = async !== false }
+  // TeaVM's HttpURLConnection asks for an ArrayBuffer, so both forms are set
+  set responseType(t) { this._rt = t }
+  get responseType() { return this._rt || '' }
   setRequestHeader() {} overrideMimeType() {} abort() {}
   getAllResponseHeaders() { return '' }
   getResponseHeader() { return null }
   send() {
-    const p = ROOT + this.url
-    if (this.url.startsWith('http') || !existsSync(p)) { this.status = 404; this.responseText = '' }
-    else { this.responseText = Buffer.from(readFileSync(p)).toString('latin1'); this.status = 200 }
+    let bytes = null
+    const rest = restStub(this.url)
+    if (rest !== null) { bytes = Buffer.from(rest, 'utf8'); this.status = 200 }
+    else {
+      const p = ROOT + this.url
+      if (this.url.startsWith('http') || !existsSync(p)) { this.status = 404 }
+      else { bytes = readFileSync(p); this.status = 200 }
+    }
+    if (bytes) {
+      this.responseText = bytes.toString('latin1')
+      this.response = this._rt === 'arraybuffer'
+        ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+        : this.responseText
+    } else {
+      this.responseText = ''
+      this.response = this._rt === 'arraybuffer' ? new ArrayBuffer(0) : ''
+    }
     this.readyState = 4
     const fire = () => { this.onreadystatechange?.(); this.onload?.(); this.onloadend?.() }
     this.async ? setTimeout(fire, 0) : fire()
   }
 }
 globalThis.fetch = () => Promise.reject(new Error('offline'))
+
+/**
+ * Stands in for the REST backend on :9090. The room endpoints are the ones
+ * that matter — without a spawn room the client refuses to join, by its own
+ * design.
+ */
+const LOBBY = {
+  roomId: 'lobby', roomName: 'Futura Lobby', ownerUsername: 'system',
+  roomType: 'PUBLIC', description: 'The starting room', maxPlayers: 50,
+  currentPlayerCount: 1, width: 12, height: 12,
+  freePlacement: false, hideWalls: false, hideFloor: false,
+  tileMap: Array.from({ length: 12 }, () => Array(12).fill(0)),
+  owners: ['system'],
+}
+function restStub(url) {
+  if (!url.includes('9090')) return null
+  // Order matters: /api/rooms/lobby/enter must not be mistaken for a room fetch
+  if (url.includes('/enter'))             return JSON.stringify({ success: true, message: 'ok' })
+  if (url.includes('/leave'))             return JSON.stringify({ success: true, message: 'ok' })
+  if (url.includes('/api/system/default-lobby')) return JSON.stringify({ roomId: 'lobby' })
+  if (url.includes('/api/rooms/public'))  return JSON.stringify([LOBBY])
+  if (url.includes('/api/rooms/my'))      return JSON.stringify([])
+  if (url.includes('/furniture'))         return JSON.stringify([])
+  if (url.includes('/inventory'))         return JSON.stringify([])
+  if (url.includes('/api/friends'))       return JSON.stringify([])
+  if (url.includes('/api/rooms/lobby'))   return JSON.stringify(LOBBY)
+  return JSON.stringify({ success: true, message: 'stub' })
+}
 
 const blobs = new Map(); let seq = 0
 globalThis.URL = { createObjectURL: (b) => { const id = 'blob:' + (++seq); blobs.set(id, b); return id } }

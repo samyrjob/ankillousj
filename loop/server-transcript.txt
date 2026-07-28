@@ -1,0 +1,8 @@
+protocol stub listening on 5555
+client connected from /127.0.0.1:36412
+  recv: join  MALE 1 0 0 DIAGONALE_DOWN lobby
+  send: playerJoined  5 5 down 1 MALE
+  send: playerJoined Guest 8 6 left 1 FEMALE
+  send: adminMessage Welcome to the AnkillousJ protocol stub
+  recv: move 0 0 DIAGONALE_DOWN false
+  send: playerMoved Guest 0 0 DIAGONALE_DOWN false

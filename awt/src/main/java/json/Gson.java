@@ -34,10 +34,65 @@ public class Gson {
     public String toJson(Object src) {
         if (src == null) return "null";
         if (src instanceof JsonElement) return src.toString();
+        if (src instanceof CharSequence) {
+            StringBuilder sb = new StringBuilder();
+            Json.escape(src.toString(), sb);
+            return sb.toString();
+        }
+        if (src instanceof Number || src instanceof Boolean) return String.valueOf(src);
+
+        // Maps, lists and arrays describe their own structure, so no
+        // reflection is needed to write them. This covers the common
+        // `Map.of("username", name)` request-body idiom outright.
+        JsonElement tree = toTree(src);
+        if (tree != null) return tree.toString();
+
         throw new UnsupportedOperationException(
-            "Gson.toJson(Object) needs reflection, which a whole-program compiler cannot "
-            + "follow without pulling in Unsafe and serialization. Build a JsonObject with "
-            + "addProperty and call toJson(JsonElement).");
+            "cannot serialise " + src.getClass().getSimpleName() + " without reflection, "
+            + "which is what drags Unsafe and serialization into a whole-program build. "
+            + "Build a JsonObject with addProperty, or pass a Map.");
+    }
+
+    /** @return the value as a tree, or null if its shape is not self-describing */
+    private static JsonElement toTree(Object src) {
+        if (src == null) return JsonNull.INSTANCE;
+        if (src instanceof JsonElement) return (JsonElement) src;
+        if (src instanceof CharSequence) return new JsonPrimitive(src.toString());
+        if (src instanceof Number) return new JsonPrimitive((Number) src);
+        if (src instanceof Boolean) return new JsonPrimitive((Boolean) src);
+
+        if (src instanceof java.util.Map) {
+            JsonObject o = new JsonObject();
+            for (java.util.Map.Entry<?, ?> e : ((java.util.Map<?, ?>) src).entrySet()) {
+                JsonElement v = toTree(e.getValue());
+                if (v == null) return null;
+                o.add(String.valueOf(e.getKey()), v);
+            }
+            return o;
+        }
+
+        if (src instanceof Iterable) {
+            JsonArray a = new JsonArray();
+            for (Object item : (Iterable<?>) src) {
+                JsonElement v = toTree(item);
+                if (v == null) return null;
+                a.add(v);
+            }
+            return a;
+        }
+
+        if (src.getClass().isArray()) {
+            JsonArray a = new JsonArray();
+            int n = java.lang.reflect.Array.getLength(src);
+            for (int i = 0; i < n; i++) {
+                JsonElement v = toTree(java.lang.reflect.Array.get(src, i));
+                if (v == null) return null;
+                a.add(v);
+            }
+            return a;
+        }
+
+        return null;
     }
 
     /** Generic like Gson's, so {@code JsonObject o = gson.fromJson(s, JsonObject.class)} compiles. */
@@ -49,10 +104,19 @@ public class Gson {
         if (type == JsonArray.class)     return (T) parsed.getAsJsonArray();
         if (type == JsonPrimitive.class) return (T) parsed.getAsJsonPrimitive();
         if (type == String.class)        return (T) parsed.getAsString();
+
+        // An explicitly registered reader, which is the alternative to
+        // reflection. See JsonReaders.
+        if (JsonReaders.has(type)) return JsonReaders.read(type, parsed);
+        if (type.isArray() && JsonReaders.has(type.getComponentType())) {
+            return (T) JsonReaders.readArray(type.getComponentType(), parsed);
+        }
+
         throw new UnsupportedOperationException(
-            "Gson.fromJson(String, " + type.getSimpleName() + ") needs reflection. Parse to a "
-            + "JsonObject and read the fields explicitly — there are only a handful of these, "
-            + "and the result is smaller and does not break silently on a rename.");
+            "no JSON reader for " + type.getSimpleName() + ". Reflection is deliberately not "
+            + "used here — it is what drags Unsafe, serialization and half the collections API "
+            + "into a whole-program build. Register a reader instead:\n"
+            + "    JsonReaders.register(" + type.getSimpleName() + ".class, o -> ...);");
     }
 
     /** The TypeToken overload, present so those call sites still compile. */
