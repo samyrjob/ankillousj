@@ -44,14 +44,13 @@ export function installDom({ width = 560, height = 200, traceCanvas = false } = 
     createElement: () => el,
   }
   globalThis.window = { devicePixelRatio: 1, addEventListener: () => {} }
-  globalThis.requestAnimationFrame = (cb) => { rafQueue.push(cb); return 1 }
+  globalThis.requestAnimationFrame = (cb) => { globalThis.__rafCount = (globalThis.__rafCount||0)+1; rafQueue.push(cb); return 1 }
 
   // --- stub browser WebSocket ---
   const sockets = []
   globalThis.WebSocket = class {
-    constructor(url, protocols) {
-      this.url = url; this.protocols = protocols || []
-      this.readyState = 0; this.sent = []; this.closed = null
+    constructor(url) {
+      this.url = url; this.readyState = 0; this.sent = []; this.closed = null
       sockets.push(this)
     }
     send(text) {
@@ -85,31 +84,12 @@ export function installDom({ width = 560, height = 200, traceCanvas = false } = 
     }
   }
 
-  // --- stub HTMLAudioElement ---
-  const audios = []
-  globalThis.Audio = class {
-    constructor(url) {
-      this.src = url; this.paused = true; this.ended = false
-      this.volume = 1; this.currentTime = 0; this.duration = 120
-      this._loop = false
-      this.loopHistory = []      // close() clears loop, so record every change
-      audios.push(this)
-    }
-    get loop() { return this._loop }
-    set loop(v) { this._loop = v; this.loopHistory.push(v) }
-    play() { this.paused = false; return Promise.resolve() }
-    pause() { this.paused = true }
-  }
-
-  globalThis.URL = { createObjectURL: () => 'blob:stub' }
-  globalThis.Blob = class { constructor(parts, opts) { this.parts = parts; this.type = opts && opts.type } }
-
   const results = []
   globalThis.__ankTest = (m) => results.push(m)
   globalThis.__ankLog = () => {}
 
   return {
-    canvas, ctx, el, listeners, sockets, images, audios, results, counts,
+    canvas, ctx, el, listeners, sockets, images, results, counts,
     pump(n = 3) {
       for (let i = 0; i < n; i++) { const q = rafQueue; rafQueue = []; q.forEach((f) => f()) }
     },
@@ -130,7 +110,6 @@ export function reportAndExit(title, results, filter = null) {
   let pass = 0, fail = 0
   for (const r of results) {
     if (filter && !filter.test(r)) continue
-    if (r.startsWith('INFO')) { console.log(`  \u00b7 ${r.slice(5)}`); continue }
     const ok = r.startsWith('PASS')
     console.log(`  ${ok ? '\u2713' : '\u2717'} ${r.slice(5)}`)
     ok ? pass++ : fail++

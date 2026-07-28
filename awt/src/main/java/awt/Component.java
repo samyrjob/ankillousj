@@ -69,10 +69,18 @@ public class Component {
             if (el != null) {
                 rootClaimed = true;
                 attach(el);
-                start();
+                // Deferred, not immediate. A subclass constructor has not run
+                // yet at this point — `super()` completes before its own field
+                // initialisers — so painting now would see half-built state.
+                // A zero-delay timeout lets the whole constructor chain finish
+                // first, which is also when Swing would first paint.
+                deferStart(this::start);
             }
         }
     }
+
+    @JSBody(params = "cb", script = "setTimeout(function() { cb(); }, 0);")
+    private static native void deferStart(Callback cb);
 
     /** Binds this component to a canvas element. */
     public void attach(HTMLCanvasElement canvas) {
@@ -219,10 +227,29 @@ public class Component {
     private void frame() {
         if (dirty && graphics != null) {
             dirty = false;
-            paint(graphics);
+            try {
+                paint(graphics);
+            } catch (RuntimeException | Error e) {
+                // An exception thrown inside requestAnimationFrame kills the
+                // loop silently — the page simply stops updating with no clue
+                // why. Reporting it and continuing turns that into something
+                // debuggable. The first failure is logged; the rest would be
+                // the same one sixty times a second.
+                if (!paintFailed) {
+                    paintFailed = true;
+                    reportPaintFailure(String.valueOf(e));
+                }
+            }
         }
         requestFrame(this::frame);
     }
+
+    private boolean paintFailed;
+
+    @JSBody(params = "m", script =
+            "if (globalThis.__ankLog) globalThis.__ankLog('paint failed: ' + m);"
+          + "else if (typeof console !== 'undefined') console.error('paint failed:', m);")
+    private static native void reportPaintFailure(String message);
 
 
     // ── DOM -> AWT ────────────────────────────────────────────────────

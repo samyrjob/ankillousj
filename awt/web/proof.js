@@ -923,11 +923,11 @@ otj_JSObject = $rt_classWithoutFields(0),
 c_EventLoop$Task = $rt_classWithoutFields(0);
 function c_ScheduledExecutorService$repeating$lambda$_5_1() {
     jl_Object.call(this);
-    this.$_036 = null;
+    this.$_037 = null;
 }
 let c_ScheduledExecutorService$repeating$lambda$_5_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_036 = var$1;
+    var$0.$_037 = var$1;
 },
 c_ScheduledExecutorService$repeating$lambda$_5_1__init_0 = var_0 => {
     let var_1 = new c_ScheduledExecutorService$repeating$lambda$_5_1();
@@ -935,7 +935,7 @@ c_ScheduledExecutorService$repeating$lambda$_5_1__init_0 = var_0 => {
     return var_1;
 },
 c_ScheduledExecutorService$repeating$lambda$_5_1_run = var$0 => {
-    var$0.$_036.$run();
+    var$0.$_037.$run();
 },
 c_ScheduledExecutorService$repeating$lambda$_5_1_run$exported$0 = var$1 => {
     var$1.$run();
@@ -1185,6 +1185,26 @@ s_SignatureException__init_0 = var_0 => {
     let var_1 = new s_SignatureException();
     s_SignatureException__init_(var_1, var_0);
     return var_1;
+},
+a_Component$Callback = $rt_classWithoutFields(0);
+function a_Component$start$lambda$_45_0() {
+    jl_Object.call(this);
+    this.$_07 = null;
+}
+let a_Component$start$lambda$_45_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_07 = var$1;
+},
+a_Component$start$lambda$_45_0__init_0 = var_0 => {
+    let var_1 = new a_Component$start$lambda$_45_0();
+    a_Component$start$lambda$_45_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$start$lambda$_45_0_call = var$0 => {
+    a_Component_frame(var$0.$_07);
+},
+a_Component$start$lambda$_45_0_call$exported$0 = var$1 => {
+    var$1.$call();
 },
 ag_PathSink = $rt_classWithoutFields(0);
 function a_Graphics2D$1() {
@@ -1529,12 +1549,12 @@ jl_AbstractStringBuilder$Constants__clinit_ = () => {
 n_WebSocket$StringHandler = $rt_classWithoutFields(0);
 function n_BrowserWebSocket$_init_$lambda$_0_1() {
     let a = this; jl_Object.call(a);
-    a.$_03 = null;
+    a.$_02 = null;
     a.$_10 = null;
 }
 let n_BrowserWebSocket$_init_$lambda$_0_1__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_03 = var$1;
+    var$0.$_02 = var$1;
     var$0.$_10 = var$2;
 },
 n_BrowserWebSocket$_init_$lambda$_0_1__init_0 = (var_0, var_1) => {
@@ -1543,7 +1563,7 @@ n_BrowserWebSocket$_init_$lambda$_0_1__init_0 = (var_0, var_1) => {
     return var_2;
 },
 n_BrowserWebSocket$_init_$lambda$_0_1_handle = (var$0, var$1) => {
-    n_BrowserWebSocket_lambda$new$1(var$0.$_03, var$0.$_10, var$1);
+    n_BrowserWebSocket_lambda$new$1(var$0.$_02, var$0.$_10, var$1);
 },
 n_BrowserWebSocket$_init_$lambda$_0_1_handle$exported$0 = (var$1, var$2) => {
     var$2 = $rt_str(var$2);
@@ -1552,12 +1572,12 @@ n_BrowserWebSocket$_init_$lambda$_0_1_handle$exported$0 = (var$1, var$2) => {
 n_WebSocket$CloseHandler = $rt_classWithoutFields(0);
 function n_BrowserWebSocket$_init_$lambda$_0_2() {
     let a = this; jl_Object.call(a);
-    a.$_015 = null;
+    a.$_018 = null;
     a.$_14 = null;
 }
 let n_BrowserWebSocket$_init_$lambda$_0_2__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_015 = var$1;
+    var$0.$_018 = var$1;
     var$0.$_14 = var$2;
 },
 n_BrowserWebSocket$_init_$lambda$_0_2__init_0 = (var_0, var_1) => {
@@ -1566,7 +1586,7 @@ n_BrowserWebSocket$_init_$lambda$_0_2__init_0 = (var_0, var_1) => {
     return var_2;
 },
 n_BrowserWebSocket$_init_$lambda$_0_2_handle = (var$0, var$1, var$2) => {
-    n_BrowserWebSocket_lambda$new$2(var$0.$_015, var$0.$_14, var$1, var$2);
+    n_BrowserWebSocket_lambda$new$2(var$0.$_018, var$0.$_14, var$1, var$2);
 },
 n_BrowserWebSocket$_init_$lambda$_0_2_handle$exported$0 = (var$1, var$2, var$3) => {
     let var$4;
@@ -1998,13 +2018,13 @@ jnci_UTF16Encoder_arrayEncodeBE = ($this, $inArray, $inPos, $inSize, $outArray, 
 n_WebSocket$VoidHandler = $rt_classWithoutFields(0);
 function n_BrowserWebSocket$_init_$lambda$_0_0() {
     let a = this; jl_Object.call(a);
-    a.$_041 = null;
+    a.$_045 = null;
     a.$_112 = null;
     a.$_21 = null;
 }
 let n_BrowserWebSocket$_init_$lambda$_0_0__init_ = (var$0, var$1, var$2, var$3) => {
     jl_Object__init_(var$0);
-    var$0.$_041 = var$1;
+    var$0.$_045 = var$1;
     var$0.$_112 = var$2;
     var$0.$_21 = var$3;
 },
@@ -2014,7 +2034,7 @@ n_BrowserWebSocket$_init_$lambda$_0_0__init_0 = (var_0, var_1, var_2) => {
     return var_3;
 },
 n_BrowserWebSocket$_init_$lambda$_0_0_handle = var$0 => {
-    n_BrowserWebSocket_lambda$new$0(var$0.$_041, var$0.$_112, var$0.$_21);
+    n_BrowserWebSocket_lambda$new$0(var$0.$_045, var$0.$_112, var$0.$_21);
 },
 n_BrowserWebSocket$_init_$lambda$_0_0_handle$exported$0 = var$1 => {
     var$1.$handle1();
@@ -2131,13 +2151,13 @@ jl_Long__clinit_ = () => {
 };
 function n_BrowserWebSocket$_init_$lambda$_0_3() {
     let a = this; jl_Object.call(a);
-    a.$_034 = null;
+    a.$_036 = null;
     a.$_110 = null;
     a.$_20 = null;
 }
 let n_BrowserWebSocket$_init_$lambda$_0_3__init_ = (var$0, var$1, var$2, var$3) => {
     jl_Object__init_(var$0);
-    var$0.$_034 = var$1;
+    var$0.$_036 = var$1;
     var$0.$_110 = var$2;
     var$0.$_20 = var$3;
 },
@@ -2147,7 +2167,7 @@ n_BrowserWebSocket$_init_$lambda$_0_3__init_0 = (var_0, var_1, var_2) => {
     return var_3;
 },
 n_BrowserWebSocket$_init_$lambda$_0_3_handle = var$0 => {
-    n_BrowserWebSocket_lambda$new$3(var$0.$_034, var$0.$_110, var$0.$_20);
+    n_BrowserWebSocket_lambda$new$3(var$0.$_036, var$0.$_110, var$0.$_20);
 },
 n_BrowserWebSocket$_init_$lambda$_0_3_handle$exported$0 = var$1 => {
     var$1.$handle1();
@@ -3574,12 +3594,12 @@ s_X509EncodedKeySpec_getEncoded = $this => {
 };
 function c_ScheduledExecutorService$repeating$lambda$_5_0() {
     let a = this; jl_Object.call(a);
-    a.$_018 = null;
+    a.$_020 = null;
     a.$_15 = Long_ZERO;
 }
 let c_ScheduledExecutorService$repeating$lambda$_5_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_018 = var$1;
+    var$0.$_020 = var$1;
     var$0.$_15 = var$2;
 },
 c_ScheduledExecutorService$repeating$lambda$_5_0__init_0 = (var_0, var_1) => {
@@ -3588,7 +3608,7 @@ c_ScheduledExecutorService$repeating$lambda$_5_0__init_0 = (var_0, var_1) => {
     return var_2;
 },
 c_ScheduledExecutorService$repeating$lambda$_5_0_run = var$0 => {
-    c_ScheduledExecutorService_lambda$repeating$2(var$0.$_018, var$0.$_15);
+    c_ScheduledExecutorService_lambda$repeating$2(var$0.$_020, var$0.$_15);
 },
 c_ScheduledExecutorService$repeating$lambda$_5_0_run$exported$0 = var$1 => {
     var$1.$run();
@@ -3682,6 +3702,26 @@ s_Clip_getControl = ($this, $type) => {
     $rt_throw(var$2);
 },
 jl_CharSequence = $rt_classWithoutFields(0),
+otjde_EventListener = $rt_classWithoutFields(0);
+function a_Component$bindKeyboard$lambda$_53_2() {
+    jl_Object.call(this);
+    this.$_017 = null;
+}
+let a_Component$bindKeyboard$lambda$_53_2__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_017 = var$1;
+},
+a_Component$bindKeyboard$lambda$_53_2__init_0 = var_0 => {
+    let var_1 = new a_Component$bindKeyboard$lambda$_53_2();
+    a_Component$bindKeyboard$lambda$_53_2__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindKeyboard$lambda$_53_2_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindKeyboard$10(var$0.$_017, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_2_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+},
 jl_StringIndexOutOfBoundsException = $rt_classWithoutFields(jl_IndexOutOfBoundsException),
 jl_StringIndexOutOfBoundsException__init_0 = $this => {
     jl_IndexOutOfBoundsException__init_0($this);
@@ -3690,6 +3730,25 @@ jl_StringIndexOutOfBoundsException__init_ = () => {
     let var_0 = new jl_StringIndexOutOfBoundsException();
     jl_StringIndexOutOfBoundsException__init_0(var_0);
     return var_0;
+};
+function a_Component$bindKeyboard$lambda$_53_3() {
+    jl_Object.call(this);
+    this.$_034 = null;
+}
+let a_Component$bindKeyboard$lambda$_53_3__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_034 = var$1;
+},
+a_Component$bindKeyboard$lambda$_53_3__init_0 = var_0 => {
+    let var_1 = new a_Component$bindKeyboard$lambda$_53_3();
+    a_Component$bindKeyboard$lambda$_53_3__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindKeyboard$lambda$_53_3_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindKeyboard$11(var$0.$_034, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_3_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 };
 function jnc_CharsetDecoder() {
     let a = this; jl_Object.call(a);
@@ -3914,11 +3973,11 @@ n_Socket$SocketOutputStream_flush = $this => {
 juf_Function = $rt_classWithoutFields(0);
 function c_CompletableFuture$thenRun$lambda$_13_0() {
     jl_Object.call(this);
-    this.$_024 = null;
+    this.$_025 = null;
 }
 let c_CompletableFuture$thenRun$lambda$_13_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_024 = var$1;
+    var$0.$_025 = var$1;
 },
 c_CompletableFuture$thenRun$lambda$_13_0__init_0 = var_0 => {
     let var_1 = new c_CompletableFuture$thenRun$lambda$_13_0();
@@ -3929,7 +3988,51 @@ c_CompletableFuture$thenRun$lambda$_13_0_apply0 = (var$0, var$1) => {
     return c_CompletableFuture$thenRun$lambda$_13_0_apply(var$0, var$1);
 },
 c_CompletableFuture$thenRun$lambda$_13_0_apply = (var$0, var$1) => {
-    return c_CompletableFuture_lambda$thenRun$5(var$0.$_024, var$1);
+    return c_CompletableFuture_lambda$thenRun$5(var$0.$_025, var$1);
+};
+function a_Component$bindKeyboard$lambda$_53_0() {
+    jl_Object.call(this);
+    this.$_032 = null;
+}
+let a_Component$bindKeyboard$lambda$_53_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_032 = var$1;
+},
+a_Component$bindKeyboard$lambda$_53_0__init_0 = var_0 => {
+    let var_1 = new a_Component$bindKeyboard$lambda$_53_0();
+    a_Component$bindKeyboard$lambda$_53_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindKeyboard$lambda$_53_0_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindKeyboard$lambda$_53_0_handleEvent(var$0, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_0_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindKeyboard$8(var$0.$_032, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_0_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+};
+function a_Component$bindKeyboard$lambda$_53_1() {
+    jl_Object.call(this);
+    this.$_04 = null;
+}
+let a_Component$bindKeyboard$lambda$_53_1__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_04 = var$1;
+},
+a_Component$bindKeyboard$lambda$_53_1__init_0 = var_0 => {
+    let var_1 = new a_Component$bindKeyboard$lambda$_53_1();
+    a_Component$bindKeyboard$lambda$_53_1__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindKeyboard$lambda$_53_1_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindKeyboard$lambda$_53_1_handleEvent(var$0, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_1_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindKeyboard$9(var$0.$_04, var$1);
+},
+a_Component$bindKeyboard$lambda$_53_1_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 };
 function jn_ByteOrder() {
     jl_Object.call(this);
@@ -5093,11 +5196,11 @@ vr_RoomInfoCard__clinit_ = () => {
 };
 function c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0() {
     jl_Object.call(this);
-    this.$_019 = null;
+    this.$_021 = null;
 }
 let c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_019 = var$1;
+    var$0.$_021 = var$1;
 },
 c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0__init_0 = var_0 => {
     let var_1 = new c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0();
@@ -5105,7 +5208,7 @@ c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0__init_0 = var_0 => {
     return var_1;
 },
 c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0_run = var$0 => {
-    var$0.$_019.$run();
+    var$0.$_021.$run();
 },
 c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0_run$exported$0 = var$1 => {
     var$1.$run();
@@ -5149,8 +5252,32 @@ i_ImageIO_read0 = ($bytes, $mimeType) => {
     return $bi;
 },
 i_ImageIO_read2 = $stream => {
+    let $buffer, $chunk, var$4, var$5, $$je;
     i_ImageIO_$callClinit();
-    $rt_throw(jl_UnsupportedOperationException__init_0($rt_s(52)));
+    if ($stream === null)
+        return null;
+    a: {
+        try {
+            $buffer = ji_ByteArrayOutputStream__init_0();
+            $chunk = $rt_createByteArray(8192);
+            while (true) {
+                var$4 = $stream.$read0($chunk);
+                if (var$4 <= 0)
+                    break;
+                $buffer.$write($chunk, 0, var$4);
+            }
+            var$5 = !$buffer.$size() ? null : i_ImageIO_read0($buffer.$toByteArray(), $rt_s(51));
+        } catch ($$e) {
+            $$je = $rt_wrapException($$e);
+            if ($$je instanceof ji_IOException) {
+                break a;
+            } else {
+                throw $$e;
+            }
+        }
+        return var$5;
+    }
+    return null;
 },
 i_ImageIO_preload = $urls => {
     let var$2, $done, var$4, $remaining, var$6, $url, $bi;
@@ -5186,8 +5313,8 @@ i_ImageIO_resolve = $url => {
     i_ImageIO_$callClinit();
     if (jl_String_isEmpty(i_ImageIO_base))
         return $url;
-    if (!jl_String_startsWith($url, $rt_s(53)) && !jl_String_startsWith($url, $rt_s(54)) && !jl_String_startsWith($url, $rt_s(55))) {
-        if (!jl_String_startsWith($url, $rt_s(56)))
+    if (!jl_String_startsWith($url, $rt_s(52)) && !jl_String_startsWith($url, $rt_s(53)) && !jl_String_startsWith($url, $rt_s(54))) {
+        if (!jl_String_startsWith($url, $rt_s(55)))
             return $url;
         var$2 = i_ImageIO_base;
         var$3 = jl_StringBuilder__init_();
@@ -5229,11 +5356,11 @@ i_ImageIO_onSettled$js_body$_15 = (var$1, var$2) => {
 };
 function d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1() {
     jl_Object.call(this);
-    this.$_038 = null;
+    this.$_039 = null;
 }
 let d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_038 = var$1;
+    var$0.$_039 = var$1;
 },
 d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1();
@@ -5241,19 +5368,19 @@ d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1__init_0 = var_0 => {
     return var_1;
 },
 d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1_run = var$0 => {
-    d_ConcurrencyTest_lambda$invokeLaterOrdering$24(var$0.$_038);
+    d_ConcurrencyTest_lambda$invokeLaterOrdering$24(var$0.$_039);
 };
 function ji_ByteArrayOutputStream() {
     let a = this; ji_OutputStream.call(a);
     a.$buf = null;
     a.$count1 = 0;
 }
-let ji_ByteArrayOutputStream__init_0 = $this => {
+let ji_ByteArrayOutputStream__init_1 = $this => {
     ji_ByteArrayOutputStream__init_($this, 32);
 },
-ji_ByteArrayOutputStream__init_1 = () => {
+ji_ByteArrayOutputStream__init_0 = () => {
     let var_0 = new ji_ByteArrayOutputStream();
-    ji_ByteArrayOutputStream__init_0(var_0);
+    ji_ByteArrayOutputStream__init_1(var_0);
     return var_0;
 },
 ji_ByteArrayOutputStream__init_ = ($this, $size) => {
@@ -5292,6 +5419,9 @@ ji_ByteArrayOutputStream_toByteArray = $this => {
 },
 ji_ByteArrayOutputStream_reset = $this => {
     $this.$count1 = 0;
+},
+ji_ByteArrayOutputStream_size = $this => {
+    return $this.$count1;
 };
 function ju_Base64$Decoder() {
     jl_Object.call(this);
@@ -5417,7 +5547,7 @@ juf_Supplier = $rt_classWithoutFields(0),
 d_ImageTest = $rt_classWithoutFields(),
 d_ImageTest_check = ($name, $ok) => {
     let var$3, var$4;
-    var$3 = !$ok ? $rt_s(57) : $rt_s(58);
+    var$3 = !$ok ? $rt_s(56) : $rt_s(57);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $name);
     d_ImageTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
@@ -5425,15 +5555,15 @@ d_ImageTest_check = ($name, $ok) => {
 d_ImageTest_run = () => {
     let $a, $again, $abs, $threw, $e, $fromBytes, var$7, var$8, $$je;
     i_ImageIO_clearCache();
-    i_ImageIO_setResourceBase($rt_s(59));
-    $a = i_ImageIO_read($rt_s(60));
-    d_ImageTest_check($rt_s(61), $a === null ? 0 : 1);
-    d_ImageTest_check($rt_s(62), !$a.$getWidth() && !$a.$getHeight() ? 1 : 0);
-    d_ImageTest_check($rt_s(63), i_ImageIO_isLoaded($a) ? 0 : 1);
-    $again = i_ImageIO_read($rt_s(60));
-    d_ImageTest_check($rt_s(64), $a !== $again ? 0 : 1);
-    $abs = i_ImageIO_read($rt_s(65));
-    d_ImageTest_check($rt_s(66), $abs === $a ? 0 : 1);
+    i_ImageIO_setResourceBase($rt_s(58));
+    $a = i_ImageIO_read($rt_s(59));
+    d_ImageTest_check($rt_s(60), $a === null ? 0 : 1);
+    d_ImageTest_check($rt_s(61), !$a.$getWidth() && !$a.$getHeight() ? 1 : 0);
+    d_ImageTest_check($rt_s(62), i_ImageIO_isLoaded($a) ? 0 : 1);
+    $again = i_ImageIO_read($rt_s(59));
+    d_ImageTest_check($rt_s(63), $a !== $again ? 0 : 1);
+    $abs = i_ImageIO_read($rt_s(64));
+    d_ImageTest_check($rt_s(65), $abs === $a ? 0 : 1);
     $threw = 0;
     a: {
         try {
@@ -5443,26 +5573,26 @@ d_ImageTest_run = () => {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jl_UnsupportedOperationException) {
                 $e = $$je;
-                $threw = jl_String_contains($e.$getMessage(), $rt_s(67));
+                $threw = jl_String_contains($e.$getMessage(), $rt_s(66));
                 break a;
             } else {
                 throw $$e;
             }
         }
     }
-    d_ImageTest_check($rt_s(68), $threw);
+    d_ImageTest_check($rt_s(67), $threw);
     $fromBytes = i_ImageIO_read1($rt_createByteArrayFromData([(-119), 80, 78, 71]));
-    d_ImageTest_check($rt_s(69), $fromBytes === null ? 0 : 1);
-    var$7 = i_ImageIO_preload($rt_wrapArray(jl_String, [$rt_s(60), $rt_s(70), $rt_s(71)]));
+    d_ImageTest_check($rt_s(68), $fromBytes === null ? 0 : 1);
+    var$7 = i_ImageIO_preload($rt_wrapArray(jl_String, [$rt_s(59), $rt_s(69), $rt_s(70)]));
     var$8 = d_ImageTest$run$lambda$_3_0__init_0($a);
     var$7.$thenRun(var$8);
 },
 d_ImageTest_lambda$run$0 = $a => {
     let var$2;
-    d_ImageTest_check($rt_s(72), 1);
+    d_ImageTest_check($rt_s(71), 1);
     var$2 = $a.$getWidth() == 64 && $a.$getHeight() == 32 ? 1 : 0;
-    d_ImageTest_check($rt_s(73), var$2);
-    d_ImageTest_check($rt_s(74), i_ImageIO_isLoaded($a));
+    d_ImageTest_check($rt_s(72), var$2);
+    d_ImageTest_check($rt_s(73), i_ImageIO_isLoaded($a));
 },
 d_ImageTest_report$js_body$_0 = var$1 => {
     if (globalThis.__ankTest) globalThis.__ankTest(var$1);
@@ -5527,7 +5657,7 @@ jn_Buffer_position0 = ($this, $newPosition) => {
     var$2 = new jl_IllegalArgumentException;
     var$3 = $this.$limit0;
     var$4 = jl_StringBuilder__init_();
-    jl_StringBuilder_append1(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(75)), $newPosition), $rt_s(76)), var$3), 93);
+    jl_StringBuilder_append1(jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(74)), $newPosition), $rt_s(75)), var$3), 93);
     jl_IllegalArgumentException__init_1(var$2, jl_StringBuilder_toString(var$4));
     $rt_throw(var$2);
 },
@@ -5701,6 +5831,25 @@ a_Cursor__init_0 = var_0 => {
 },
 a_Cursor_getDefaultCursor = () => {
     return a_Cursor__init_0(0);
+};
+function a_Component$bindResize$lambda$_54_0() {
+    jl_Object.call(this);
+    this.$_05 = null;
+}
+let a_Component$bindResize$lambda$_54_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_05 = var$1;
+},
+a_Component$bindResize$lambda$_54_0__init_0 = var_0 => {
+    let var_1 = new a_Component$bindResize$lambda$_54_0();
+    a_Component$bindResize$lambda$_54_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindResize$lambda$_54_0_call = var$0 => {
+    a_Component_lambda$bindResize$12(var$0.$_05);
+},
+a_Component$bindResize$lambda$_54_0_call$exported$0 = var$1 => {
+    var$1.$call();
 },
 jl_Readable = $rt_classWithoutFields(0);
 function ji_Reader() {
@@ -5962,7 +6111,7 @@ ji_InputStreamReader_fillReadBuffer = $this => {
         var$4 = jn_Buffer_remaining($this.$inBuffer);
         $ptr = 1;
     case 1:
-        $tmp = var$1.$read3(var$2, var$3, var$4);
+        $tmp = var$1.$read4(var$2, var$3, var$4);
         if ($rt_suspending()) {
             break main;
         }
@@ -6069,7 +6218,7 @@ jn_CharBuffer_allocate = $capacity => {
     }
     var$3 = new jl_IllegalArgumentException;
     var$4 = jl_StringBuilder__init_();
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(77)), $capacity);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$4, $rt_s(76)), $capacity);
     jl_IllegalArgumentException__init_1(var$3, jl_StringBuilder_toString(var$4));
     $rt_throw(var$3);
 },
@@ -6212,7 +6361,7 @@ jn_CharBufferOverTypedArray_isArrayPresent = $this => {
 jn_CharBufferOverTypedArray_getArray = $this => {
     if ($this.$array4 !== null)
         return $this.$array4;
-    $rt_throw(jl_UnsupportedOperationException__init_1());
+    $rt_throw(jl_UnsupportedOperationException__init_0());
 },
 jn_CharBufferOverTypedArray_capacityImpl = $this => {
     return $this.$data.length;
@@ -6286,7 +6435,7 @@ d_SocketTest_$callClinit = () => {
 d_SocketTest_check = ($name, $ok) => {
     let var$3, var$4;
     d_SocketTest_$callClinit();
-    var$3 = !$ok ? $rt_s(57) : $rt_s(58);
+    var$3 = !$ok ? $rt_s(56) : $rt_s(57);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $name);
     d_SocketTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
@@ -6303,7 +6452,7 @@ d_SocketTest_run = () => {
         d_SocketTest_$callClinit();
         try {
             $socket = new n_Socket;
-            var$2 = $rt_s(78);
+            var$2 = $rt_s(77);
             var$3 = 5556;
             $ptr = 1;
             continue main;
@@ -6317,7 +6466,7 @@ d_SocketTest_run = () => {
         }
         var$2 = jl_String_valueOf($e);
         var$5 = jl_StringBuilder__init_();
-        jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(79)), var$2);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(78)), var$2);
         d_SocketTest_check(jl_StringBuilder_toString(var$5), 0);
         return;
     case 1:
@@ -6329,15 +6478,15 @@ d_SocketTest_run = () => {
                 }
                 $in = ji_BufferedReader__init_1(ji_InputStreamReader__init_2($socket.$getInputStream()));
                 $out = ji_PrintWriter__init_1($socket.$getOutputStream(), 1);
-                d_SocketTest_check($rt_s(80), $socket.$isConnected());
-                d_SocketTest_check($rt_s(81), $in !== null && $out !== null ? 1 : 0);
-                $watcher = jl_Thread__init_0(d_SocketTest$run$lambda$_3_0__init_0($in), $rt_s(82));
+                d_SocketTest_check($rt_s(79), $socket.$isConnected());
+                d_SocketTest_check($rt_s(80), $in !== null && $out !== null ? 1 : 0);
+                $watcher = jl_Thread__init_0(d_SocketTest$run$lambda$_3_0__init_0($in), $rt_s(81));
                 $watcher.$start();
+                $out.$println1($rt_s(82));
                 $out.$println1($rt_s(83));
                 $out.$println1($rt_s(84));
-                $out.$println1($rt_s(85));
-                d_SocketTest_check($rt_s(86), 1);
-                var$2 = jl_Thread__init_0(d_SocketTest$run$lambda$_3_1__init_0(), $rt_s(87));
+                d_SocketTest_check($rt_s(85), 1);
+                var$2 = jl_Thread__init_0(d_SocketTest$run$lambda$_3_1__init_0(), $rt_s(86));
                 var$2.$start();
                 break a;
             } catch ($$e) {
@@ -6346,7 +6495,7 @@ d_SocketTest_run = () => {
                     $e = $$je;
                     var$2 = jl_String_valueOf($e);
                     var$5 = jl_StringBuilder__init_();
-                    jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(79)), var$2);
+                    jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(78)), var$2);
                     d_SocketTest_check(jl_StringBuilder_toString(var$5), 0);
                     break a;
                 } else {
@@ -6362,12 +6511,12 @@ d_SocketTest_run = () => {
 d_SocketTest_verify = () => {
     let var$1, var$2;
     d_SocketTest_$callClinit();
-    d_SocketTest_check($rt_s(88), d_SocketTest_received.$contains1($rt_s(89)));
-    d_SocketTest_check($rt_s(90), d_SocketTest_received.$contains1($rt_s(91)));
+    d_SocketTest_check($rt_s(87), d_SocketTest_received.$contains1($rt_s(88)));
+    d_SocketTest_check($rt_s(89), d_SocketTest_received.$contains1($rt_s(90)));
     var$1 = d_SocketTest_received;
-    var$2 = var$1.$indexOf($rt_s(89)) >= d_SocketTest_received.$indexOf($rt_s(91)) ? 0 : 1;
-    d_SocketTest_check($rt_s(92), var$2);
-    d_SocketTest_check($rt_s(93), d_SocketTest_received.$contains1($rt_s(94)));
+    var$2 = var$1.$indexOf($rt_s(88)) >= d_SocketTest_received.$indexOf($rt_s(90)) ? 0 : 1;
+    d_SocketTest_check($rt_s(91), var$2);
+    d_SocketTest_check($rt_s(92), d_SocketTest_received.$contains1($rt_s(93)));
 },
 d_SocketTest_lambda$run$1 = () => {
     let var$1, $$je, $ptr, $tmp;
@@ -6440,7 +6589,7 @@ d_SocketTest_lambda$run$0 = $in => {
         }
         var$3 = jl_String_valueOf($e);
         var$4 = jl_StringBuilder__init_();
-        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(95)), var$3);
+        jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(94)), var$3);
         d_SocketTest_check(jl_StringBuilder_toString(var$4), 0);
         return;
     case 1:
@@ -6453,12 +6602,12 @@ d_SocketTest_lambda$run$0 = $in => {
                 var$3 = $tmp;
                 if (var$3 === null) {
                     d_SocketTest_report$js_body$_0("INFO  stream ended cleanly");
-                    d_SocketTest_check($rt_s(96), 1);
+                    d_SocketTest_check($rt_s(95), 1);
                     break a;
                 }
                 d_SocketTest_received.$add(var$3);
                 var$4 = jl_StringBuilder__init_();
-                jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(97)), var$3);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(96)), var$3);
                 d_SocketTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
                 continue main;
             } catch ($$e) {
@@ -6467,7 +6616,7 @@ d_SocketTest_lambda$run$0 = $in => {
                     $e = $$je;
                     var$3 = jl_String_valueOf($e);
                     var$4 = jl_StringBuilder__init_();
-                    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(95)), var$3);
+                    jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(94)), var$3);
                     d_SocketTest_check(jl_StringBuilder_toString(var$4), 0);
                     break a;
                 } else {
@@ -6490,17 +6639,17 @@ jl_UnsupportedOperationException = $rt_classWithoutFields(jl_RuntimeException),
 jl_UnsupportedOperationException__init_ = $this => {
     jl_RuntimeException__init_($this);
 },
-jl_UnsupportedOperationException__init_1 = () => {
+jl_UnsupportedOperationException__init_0 = () => {
     let var_0 = new jl_UnsupportedOperationException();
     jl_UnsupportedOperationException__init_(var_0);
     return var_0;
 },
-jl_UnsupportedOperationException__init_2 = ($this, $message) => {
+jl_UnsupportedOperationException__init_1 = ($this, $message) => {
     jl_RuntimeException__init_0($this, $message);
 },
-jl_UnsupportedOperationException__init_0 = var_0 => {
+jl_UnsupportedOperationException__init_2 = var_0 => {
     let var_1 = new jl_UnsupportedOperationException();
-    jl_UnsupportedOperationException__init_2(var_1, var_0);
+    jl_UnsupportedOperationException__init_1(var_1, var_0);
     return var_1;
 },
 jn_ReadOnlyBufferException = $rt_classWithoutFields(jl_UnsupportedOperationException),
@@ -6590,11 +6739,11 @@ jlr_Array_newInstance = ($componentType, $length) => {
 n_WebSocket$Listener = $rt_classWithoutFields(0);
 function d_InteractivePanel$_init_$lambda$_0_0() {
     jl_Object.call(this);
-    this.$_012 = null;
+    this.$_014 = null;
 }
 let d_InteractivePanel$_init_$lambda$_0_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_012 = var$1;
+    var$0.$_014 = var$1;
 },
 d_InteractivePanel$_init_$lambda$_0_0__init_0 = var_0 => {
     let var_1 = new d_InteractivePanel$_init_$lambda$_0_0();
@@ -6602,15 +6751,15 @@ d_InteractivePanel$_init_$lambda$_0_0__init_0 = var_0 => {
     return var_1;
 },
 d_InteractivePanel$_init_$lambda$_0_0_mouseWheelMoved = (var$0, var$1) => {
-    d_InteractivePanel_lambda$new$0(var$0.$_012, var$1);
+    d_InteractivePanel_lambda$new$0(var$0.$_014, var$1);
 };
 function d_ImageTest$run$lambda$_3_0() {
     jl_Object.call(this);
-    this.$_011 = null;
+    this.$_013 = null;
 }
 let d_ImageTest$run$lambda$_3_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_011 = var$1;
+    var$0.$_013 = var$1;
 },
 d_ImageTest$run$lambda$_3_0__init_0 = var_0 => {
     let var_1 = new d_ImageTest$run$lambda$_3_0();
@@ -6618,7 +6767,7 @@ d_ImageTest$run$lambda$_3_0__init_0 = var_0 => {
     return var_1;
 },
 d_ImageTest$run$lambda$_3_0_run = var$0 => {
-    d_ImageTest_lambda$run$0(var$0.$_011);
+    d_ImageTest_lambda$run$0(var$0.$_013);
 },
 jn_URIEncoderDecoder = $rt_classWithoutFields(),
 jn_URIEncoderDecoder_validate = ($s, $legal) => {
@@ -6853,7 +7002,7 @@ jn_URI$Helper_parseURI = ($this, $uri, $forceServer) => {
             var$5 = jl_String_substring(var$5, 0, var$10);
             jn_URI$Helper_validateQuery($this, $uri, $this.$this$0.$query, ($index2 + 1 | 0) + var$10 | 0);
         }
-        if (!jl_String_startsWith(var$5, $rt_s(98)))
+        if (!jl_String_startsWith(var$5, $rt_s(97)))
             $this.$this$0.$path = var$5;
         else {
             var$10 = jl_String_indexOf0(var$5, 47, 2);
@@ -6887,7 +7036,7 @@ jn_URI$Helper_validateScheme = ($this, $uri, $scheme, $index) => {
         $rt_throw(jn_URISyntaxException__init_($uri, $rt_s(1), 0));
     a: {
         try {
-            jn_URIEncoderDecoder_validateSimple($scheme, $rt_s(99));
+            jn_URIEncoderDecoder_validateSimple($scheme, $rt_s(98));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -6905,7 +7054,7 @@ jn_URI$Helper_validateSsp = ($this, $uri, $ssp, $index) => {
     let $e, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validate($ssp, $rt_s(100));
+            jn_URIEncoderDecoder_validate($ssp, $rt_s(99));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -6923,7 +7072,7 @@ jn_URI$Helper_validateAuthority = ($this, $uri, $authority, $index) => {
     let $e, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validate($authority, $rt_s(101));
+            jn_URIEncoderDecoder_validate($authority, $rt_s(100));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -6941,7 +7090,7 @@ jn_URI$Helper_validatePath = ($this, $uri, $path, $index) => {
     let $e, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validate($path, $rt_s(102));
+            jn_URIEncoderDecoder_validate($path, $rt_s(101));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -6959,7 +7108,7 @@ jn_URI$Helper_validateQuery = ($this, $uri, $query, $index) => {
     let $e, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validate($query, $rt_s(103));
+            jn_URIEncoderDecoder_validate($query, $rt_s(102));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -6977,7 +7126,7 @@ jn_URI$Helper_validateFragment = ($this, $uri, $fragment, $index) => {
     let $e, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validate($fragment, $rt_s(100));
+            jn_URIEncoderDecoder_validate($fragment, $rt_s(99));
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jn_URISyntaxException) {
@@ -7123,7 +7272,7 @@ jn_URI$Helper_isValidDomainName = ($this, $host) => {
     let $index, $next, $label, $ch, $$je;
     a: {
         try {
-            jn_URIEncoderDecoder_validateSimple($host, $rt_s(104));
+            jn_URIEncoderDecoder_validateSimple($host, $rt_s(103));
             break a;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -7567,6 +7716,9 @@ d_ConcurrencyTest$fixedRateRepeatsAndCancels$lambda$_8_0_run = var$0 => {
 ji_InputStream = $rt_classWithoutFields(),
 ji_InputStream__init_ = $this => {
     jl_Object__init_($this);
+},
+ji_InputStream_read = ($this, $b) => {
+    return $this.$read4($b, 0, $b.data.length);
 };
 function ji_ByteArrayInputStream() {
     let a = this; ji_InputStream.call(a);
@@ -7594,6 +7746,24 @@ ji_ByteArrayInputStream__init_1 = var_0 => {
     let var_1 = new ji_ByteArrayInputStream();
     ji_ByteArrayInputStream__init_(var_1, var_0);
     return var_1;
+},
+ji_ByteArrayInputStream_read = ($this, $b, $off, $len) => {
+    let $bytesToRead, $i, var$6, var$7, var$8, var$9;
+    $bytesToRead = jl_Math_min($len, $this.$count2 - $this.$pos | 0);
+    $i = 0;
+    while ($i < $bytesToRead) {
+        var$6 = $b.data;
+        var$7 = $off + 1 | 0;
+        var$8 = $this.$buf0.data;
+        var$9 = $this.$pos;
+        $this.$pos = var$9 + 1 | 0;
+        var$6[$off] = var$8[var$9];
+        $i = $i + 1 | 0;
+        $off = var$7;
+    }
+    if ($bytesToRead <= 0)
+        $bytesToRead = (-1);
+    return $bytesToRead;
 };
 function jnci_BufferedDecoder$Controller() {
     let a = this; jl_Object.call(a);
@@ -7631,7 +7801,7 @@ otci_IntegerUtil = $rt_classWithoutFields(),
 otci_IntegerUtil_toUnsignedLogRadixString = ($value, $radixLog2) => {
     let $radix, $mask, $sz, $chars, $pos, $target, var$9, $target_0;
     if (!$value)
-        return $rt_s(105);
+        return $rt_s(104);
     $radix = 1 << $radixLog2;
     $mask = $radix - 1 | 0;
     $sz = (((32 - jl_Integer_numberOfLeadingZeros($value) | 0) + $radixLog2 | 0) - 1 | 0) / $radixLog2 | 0;
@@ -7686,13 +7856,13 @@ s_KeyFactory_getInstance = $algorithm => {
         return s_KeyFactory__init_0($algorithm);
     var$2 = new s_NoSuchAlgorithmException;
     var$3 = jl_StringBuilder__init_();
-    jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(106)), $algorithm);
+    jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(105)), $algorithm);
     s_NoSuchAlgorithmException__init_(var$2, jl_StringBuilder_toString(var$3));
     $rt_throw(var$2);
 },
 s_KeyFactory_isEd25519 = $algorithm => {
     s_KeyFactory_$callClinit();
-    return !jl_String_equalsIgnoreCase($rt_s(107), $algorithm) && !jl_String_equalsIgnoreCase($rt_s(108), $algorithm) && !jl_String_equals($rt_s(109), $algorithm) ? 0 : 1;
+    return !jl_String_equalsIgnoreCase($rt_s(106), $algorithm) && !jl_String_equalsIgnoreCase($rt_s(107), $algorithm) && !jl_String_equals($rt_s(108), $algorithm) ? 0 : 1;
 },
 s_KeyFactory_generatePublic = ($this, $spec) => {
     let $enc, var$3, var$4, var$5, var$6, $i, $raw;
@@ -7705,7 +7875,7 @@ s_KeyFactory_generatePublic = ($this, $spec) => {
     if (var$4 != (s_KeyFactory_ED25519_SPKI_PREFIX.data.length + 32 | 0)) {
         var$5 = new s_InvalidKeySpecException;
         var$6 = jl_StringBuilder__init_();
-        jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(110)), var$4);
+        jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(109)), var$4);
         s_InvalidKeySpecException__init_(var$5, jl_StringBuilder_toString(var$6));
         $rt_throw(var$5);
     }
@@ -7722,7 +7892,7 @@ s_KeyFactory_generatePublic = ($this, $spec) => {
     }
     var$5 = new s_InvalidKeySpecException;
     var$6 = jl_StringBuilder__init_();
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(111)), $i);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$6, $rt_s(110)), $i);
     s_InvalidKeySpecException__init_(var$5, jl_StringBuilder_toString(var$6));
     $rt_throw(var$5);
 },
@@ -7783,6 +7953,25 @@ otji_JS_function = (var$1, var$2) => {
         var$1[name] = result;
     }
     return result();
+};
+function a_Component$_init_$lambda$_0_0() {
+    jl_Object.call(this);
+    this.$_03 = null;
+}
+let a_Component$_init_$lambda$_0_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_03 = var$1;
+},
+a_Component$_init_$lambda$_0_0__init_0 = var_0 => {
+    let var_1 = new a_Component$_init_$lambda$_0_0();
+    a_Component$_init_$lambda$_0_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$_init_$lambda$_0_0_call = var$0 => {
+    var$0.$_03.$start();
+},
+a_Component$_init_$lambda$_0_0_call$exported$0 = var$1 => {
+    var$1.$call();
 },
 s_Ed25519 = $rt_classWithoutFields(),
 s_Ed25519_P = null,
@@ -7800,11 +7989,11 @@ s_Ed25519_$callClinit = () => {
     s_Ed25519_$callClinit = $rt_eraseClinit(s_Ed25519);
     s_Ed25519__clinit_();
 },
-s_Ed25519_verify = (var$1, var$2, $signature) => {
+s_Ed25519_verify = ($publicKey, $message, $signature) => {
     let $sBytes, $s, $rBytes, $a, $r, var$9, $buf, $k, $left, $right;
     s_Ed25519_$callClinit();
-    if (var$1 !== null && var$2 !== null && $signature !== null) {
-        if (var$1.data.length == 32 && $signature.data.length == 64) {
+    if ($publicKey !== null && $message !== null && $signature !== null) {
+        if ($publicKey.data.length == 32 && $signature.data.length == 64) {
             $sBytes = $rt_createByteArray(32);
             jl_System_fastArraycopy($signature, 32, $sBytes, 0, 32);
             $s = s_Ed25519_littleEndian($sBytes);
@@ -7812,17 +8001,17 @@ s_Ed25519_verify = (var$1, var$2, $signature) => {
                 return 0;
             $rBytes = $rt_createByteArray(32);
             jl_System_fastArraycopy($signature, 0, $rBytes, 0, 32);
-            $a = s_Ed25519_decode(var$1);
+            $a = s_Ed25519_decode($publicKey);
             if ($a === null)
                 return 0;
             $r = s_Ed25519_decode($rBytes);
             if ($r === null)
                 return 0;
-            var$9 = var$2.data.length;
+            var$9 = $message.data.length;
             $buf = $rt_createByteArray(64 + var$9 | 0);
             jl_System_fastArraycopy($rBytes, 0, $buf, 0, 32);
-            jl_System_fastArraycopy(var$1, 0, $buf, 32, 32);
-            jl_System_fastArraycopy(var$2, 0, $buf, 64, var$9);
+            jl_System_fastArraycopy($publicKey, 0, $buf, 32, 32);
+            jl_System_fastArraycopy($message, 0, $buf, 64, var$9);
             $k = (s_Ed25519_littleEndian(s_Sha512_digest($buf))).$mod(s_Ed25519_L);
             $left = s_Ed25519_scalarMul(s_Ed25519_B, $s);
             $right = s_Ed25519_add($r, s_Ed25519_scalarMul($a, $k));
@@ -7919,7 +8108,7 @@ s_Ed25519__clinit_ = () => {
     var$1 = jm_BigInteger_TWO;
     s_Ed25519_P = (var$1.$pow0(255)).$subtract0(jm_BigInteger_valueOf(Long_fromInt(19)));
     var$1 = jm_BigInteger_TWO;
-    s_Ed25519_L = (var$1.$pow0(252)).$add1(jm_BigInteger__init_10($rt_s(112)));
+    s_Ed25519_L = (var$1.$pow0(252)).$add1(jm_BigInteger__init_10($rt_s(111)));
     var$1 = jm_BigInteger_valueOf(Long_fromInt(-121665));
     s_Ed25519_D = (var$1.$multiply0((jm_BigInteger_valueOf(Long_fromInt(121666))).$modInverse(s_Ed25519_P))).$mod(s_Ed25519_P);
     var$1 = s_Ed25519_P;
@@ -8004,7 +8193,7 @@ jnc_Charset_isValidCharsetStart = $c => {
 jnc_Charset_forName = $charsetName => {
     let $charset;
     if ($charsetName === null)
-        $rt_throw(jl_IllegalArgumentException__init_0($rt_s(113)));
+        $rt_throw(jl_IllegalArgumentException__init_0($rt_s(112)));
     jnc_Charset_checkCanonicalName($charsetName);
     jnc_Charset$Charsets_$callClinit();
     $charset = jnc_Charset$Charsets_value.$get1(jl_String_toUpperCase($charsetName));
@@ -8037,7 +8226,7 @@ jnc_Charset_decode = ($this, $bb) => {
         }
         return var$3;
     }
-    $rt_throw(jl_AssertionError__init_0($rt_s(114), $e));
+    $rt_throw(jl_AssertionError__init_0($rt_s(113), $e));
 },
 jnc_Charset_encode = ($this, $cb) => {
     let var$2, var$3, $e, $$je;
@@ -8061,7 +8250,7 @@ jnc_Charset_encode = ($this, $cb) => {
         }
         return var$3;
     }
-    $rt_throw(jl_AssertionError__init_0($rt_s(114), $e));
+    $rt_throw(jl_AssertionError__init_0($rt_s(113), $e));
 };
 function jnci_UTF16Charset() {
     let a = this; jnc_Charset.call(a);
@@ -8250,31 +8439,31 @@ a_Font_toCss = $this => {
     let $sb;
     $sb = jl_StringBuilder__init_();
     if ($this.$style & 2)
-        $sb.$append14($rt_s(115));
+        $sb.$append14($rt_s(114));
     if ($this.$style & 1)
-        $sb.$append14($rt_s(116));
-    (($sb.$append1($this.$size1)).$append14($rt_s(117))).$append14(a_Font_mapFamily($this.$name2));
+        $sb.$append14($rt_s(115));
+    (($sb.$append1($this.$size1)).$append14($rt_s(116))).$append14(a_Font_mapFamily($this.$name2));
     return $sb.$toString();
 },
 a_Font_mapFamily = $awtName => {
     if (jl_String_equals($rt_s(47), $awtName))
-        return $rt_s(118);
-    if (jl_String_equals($rt_s(119), $awtName))
-        return $rt_s(120);
-    if (jl_String_equals($rt_s(121), $awtName))
-        return $rt_s(122);
-    if (!jl_String_equals($rt_s(123), $awtName))
+        return $rt_s(117);
+    if (jl_String_equals($rt_s(118), $awtName))
+        return $rt_s(119);
+    if (jl_String_equals($rt_s(120), $awtName))
+        return $rt_s(121);
+    if (!jl_String_equals($rt_s(122), $awtName))
         return $awtName;
-    return $rt_s(118);
+    return $rt_s(117);
 };
 function c_CompletableFuture$supplyAsync$lambda$_2_0() {
     let a = this; jl_Object.call(a);
-    a.$_052 = null;
+    a.$_053 = null;
     a.$_115 = null;
 }
 let c_CompletableFuture$supplyAsync$lambda$_2_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_052 = var$1;
+    var$0.$_053 = var$1;
     var$0.$_115 = var$2;
 },
 c_CompletableFuture$supplyAsync$lambda$_2_0__init_0 = (var_0, var_1) => {
@@ -8283,21 +8472,21 @@ c_CompletableFuture$supplyAsync$lambda$_2_0__init_0 = (var_0, var_1) => {
     return var_2;
 },
 c_CompletableFuture$supplyAsync$lambda$_2_0_run = var$0 => {
-    c_CompletableFuture_lambda$supplyAsync$0(var$0.$_052, var$0.$_115);
+    c_CompletableFuture_lambda$supplyAsync$0(var$0.$_053, var$0.$_115);
 },
 c_CompletableFuture$supplyAsync$lambda$_2_0_run$exported$0 = var$1 => {
     var$1.$run();
 };
 function jl_Object$monitorEnterWait$lambda$_6_0() {
     let a = this; jl_Object.call(a);
-    a.$_025 = null;
+    a.$_026 = null;
     a.$_17 = null;
     a.$_2 = 0;
     a.$_3 = null;
 }
 let jl_Object$monitorEnterWait$lambda$_6_0__init_ = (var$0, var$1, var$2, var$3, var$4) => {
     jl_Object__init_(var$0);
-    var$0.$_025 = var$1;
+    var$0.$_026 = var$1;
     var$0.$_17 = var$2;
     var$0.$_2 = var$3;
     var$0.$_3 = var$4;
@@ -8308,7 +8497,7 @@ jl_Object$monitorEnterWait$lambda$_6_0__init_0 = (var_0, var_1, var_2, var_3) =>
     return var_4;
 },
 jl_Object$monitorEnterWait$lambda$_6_0_run = var$0 => {
-    jl_Object_lambda$monitorEnterWait$0(var$0.$_025, var$0.$_17, var$0.$_2, var$0.$_3);
+    jl_Object_lambda$monitorEnterWait$0(var$0.$_026, var$0.$_17, var$0.$_2, var$0.$_3);
 },
 jnci_Iso8859Decoder = $rt_classWithoutFields(jnci_BufferedDecoder),
 jnci_Iso8859Decoder__init_ = ($this, $cs) => {
@@ -8456,12 +8645,12 @@ t_Duration__clinit_ = () => {
 };
 function c_ScheduledExecutorService$schedule$lambda$_2_0() {
     let a = this; jl_Object.call(a);
-    a.$_013 = null;
+    a.$_015 = null;
     a.$_13 = null;
 }
 let c_ScheduledExecutorService$schedule$lambda$_2_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_013 = var$1;
+    var$0.$_015 = var$1;
     var$0.$_13 = var$2;
 },
 c_ScheduledExecutorService$schedule$lambda$_2_0__init_0 = (var_0, var_1) => {
@@ -8470,7 +8659,7 @@ c_ScheduledExecutorService$schedule$lambda$_2_0__init_0 = (var_0, var_1) => {
     return var_2;
 },
 c_ScheduledExecutorService$schedule$lambda$_2_0_run = var$0 => {
-    c_ScheduledExecutorService_lambda$schedule$1(var$0.$_013, var$0.$_13);
+    c_ScheduledExecutorService_lambda$schedule$1(var$0.$_015, var$0.$_13);
 },
 c_ScheduledExecutorService$schedule$lambda$_2_0_run$exported$0 = var$1 => {
     var$1.$run();
@@ -8492,7 +8681,7 @@ s_LineEvent__init_0 = (var_0, var_1) => {
 },
 jnci_AsciiCharset = $rt_classWithoutFields(jnc_Charset),
 jnci_AsciiCharset__init_ = $this => {
-    jnc_Charset__init_($this, $rt_s(124), $rt_createArray(jl_String, 0));
+    jnc_Charset__init_($this, $rt_s(123), $rt_createArray(jl_String, 0));
 },
 jnci_AsciiCharset__init_0 = () => {
     let var_0 = new jnci_AsciiCharset();
@@ -8703,7 +8892,7 @@ n_BrowserWebSocket_setHeaderMode = $mode => {
 },
 n_BrowserWebSocket_lambda$new$3 = ($this, $ready, $listener) => {
     let $e;
-    $e = jl_RuntimeException__init_2($rt_s(125));
+    $e = jl_RuntimeException__init_2($rt_s(124));
     if (!$ready.$isDone())
         $ready.$completeExceptionally($e);
     $listener.$onError($this, $e);
@@ -8731,8 +8920,7 @@ n_BrowserWebSocket_lambda$new$0 = ($this, $ready, $listener) => {
 n_BrowserWebSocket__clinit_ = () => {
     n_BrowserWebSocket$HeaderMode_$callClinit();
     n_BrowserWebSocket_headerMode = n_BrowserWebSocket$HeaderMode_QUERY;
-},
-a_Component$Callback = $rt_classWithoutFields(0);
+};
 function otji_JSWrapper() {
     jl_Object.call(this);
     this.$js = null;
@@ -8745,12 +8933,12 @@ let otji_JSWrapper_unwrap = $o => {
 juf_BiConsumer = $rt_classWithoutFields(0);
 function c_CompletableFuture$thenApply$lambda$_11_0() {
     let a = this; jl_Object.call(a);
-    a.$_027 = null;
+    a.$_028 = null;
     a.$_18 = null;
 }
 let c_CompletableFuture$thenApply$lambda$_11_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_027 = var$1;
+    var$0.$_028 = var$1;
     var$0.$_18 = var$2;
 },
 c_CompletableFuture$thenApply$lambda$_11_0__init_0 = (var_0, var_1) => {
@@ -8762,7 +8950,7 @@ c_CompletableFuture$thenApply$lambda$_11_0_accept0 = (var$0, var$1, var$2) => {
     c_CompletableFuture$thenApply$lambda$_11_0_accept(var$0, var$1, var$2);
 },
 c_CompletableFuture$thenApply$lambda$_11_0_accept = (var$0, var$1, var$2) => {
-    c_CompletableFuture_lambda$thenApply$3(var$0.$_027, var$0.$_18, var$1, var$2);
+    c_CompletableFuture_lambda$thenApply$3(var$0.$_028, var$0.$_18, var$1, var$2);
 };
 function s_PublicKey() {
     let a = this; jl_Object.call(a);
@@ -8820,10 +9008,10 @@ otcic_JsConsolePrintStream__init_ = $this => {
 },
 otcic_JsConsolePrintStream_println1 = ($this, $s) => {
     $this.$print($s);
-    $this.$print($rt_s(126));
+    $this.$print($rt_s(125));
 },
 otcic_JsConsolePrintStream_println0 = $this => {
-    $this.$print($rt_s(126));
+    $this.$print($rt_s(125));
 },
 otcic_JsConsolePrintStream_println = ($this, $s) => {
     $this.$println1(ju_Objects_toString($s));
@@ -8896,9 +9084,9 @@ jnc_CodingErrorAction__init_ = var_0 => {
     return var_1;
 },
 jnc_CodingErrorAction__clinit_ = () => {
-    jnc_CodingErrorAction_IGNORE = jnc_CodingErrorAction__init_($rt_s(127));
-    jnc_CodingErrorAction_REPLACE = jnc_CodingErrorAction__init_($rt_s(128));
-    jnc_CodingErrorAction_REPORT = jnc_CodingErrorAction__init_($rt_s(129));
+    jnc_CodingErrorAction_IGNORE = jnc_CodingErrorAction__init_($rt_s(126));
+    jnc_CodingErrorAction_REPLACE = jnc_CodingErrorAction__init_($rt_s(127));
+    jnc_CodingErrorAction_REPORT = jnc_CodingErrorAction__init_($rt_s(128));
 },
 jnc_BufferUnderflowException = $rt_classWithoutFields(jl_RuntimeException),
 jnc_BufferUnderflowException__init_ = $this => {
@@ -9019,7 +9207,7 @@ ji_OutputStreamWriter_flush = $this => {
 ji_OutputStreamWriter_checkStatus = $this => {
     if (!$this.$closed1)
         return;
-    $rt_throw(ji_IOException__init_2($rt_s(130)));
+    $rt_throw(ji_IOException__init_2($rt_s(129)));
 },
 ji_OutputStreamWriter_write = ($this, $buf, $offset, $count) => {
     let var$4, $input, var$6, $$je;
@@ -9120,7 +9308,7 @@ d_WebSocketTest_$callClinit = () => {
 d_WebSocketTest_check = ($name, $ok) => {
     let var$3, var$4;
     d_WebSocketTest_$callClinit();
-    var$3 = !$ok ? $rt_s(57) : $rt_s(58);
+    var$3 = !$ok ? $rt_s(56) : $rt_s(57);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $name);
     d_WebSocketTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
@@ -9150,21 +9338,21 @@ d_WebSocketTest_connect = () => {
     $client = n_HttpClient_newHttpClient();
     $listener = d_WebSocketTest$Listener__init_0();
     var$3 = $client.$newWebSocketBuilder();
-    var$4 = var$3.$header($rt_s(131), $rt_s(132));
+    var$4 = var$3.$header($rt_s(130), $rt_s(131));
     var$4 = var$4.$connectTimeout(t_Duration_ofSeconds(Long_fromInt(10)));
-    $f = var$4.$buildAsync(jn_URI_create($rt_s(133)), $listener);
-    d_WebSocketTest_check($rt_s(134), $f === null ? 0 : 1);
-    d_WebSocketTest_check($rt_s(135), $f.$isDone() ? 0 : 1);
+    $f = var$4.$buildAsync(jn_URI_create($rt_s(132)), $listener);
+    d_WebSocketTest_check($rt_s(133), $f === null ? 0 : 1);
+    d_WebSocketTest_check($rt_s(134), $f.$isDone() ? 0 : 1);
     $f.$thenAccept(d_WebSocketTest$connect$lambda$_4_0__init_0());
 },
 d_WebSocketTest_lambda$connect$0 = $ws => {
     d_WebSocketTest_$callClinit();
-    d_WebSocketTest_check($rt_s(136), 1);
-    $ws.$sendText($rt_s(137), 1);
-    d_WebSocketTest_check($rt_s(138), $ws.$isInputClosed() ? 0 : 1);
+    d_WebSocketTest_check($rt_s(135), 1);
+    $ws.$sendText($rt_s(136), 1);
+    d_WebSocketTest_check($rt_s(137), $ws.$isInputClosed() ? 0 : 1);
     $ws.$request(Long_fromInt(1));
-    $ws.$sendClose(1000, $rt_s(139));
-    d_WebSocketTest_check($rt_s(140), $ws.$isOutputClosed());
+    $ws.$sendClose(1000, $rt_s(138));
+    d_WebSocketTest_check($rt_s(139), $ws.$isOutputClosed());
 },
 d_WebSocketTest__clinit_ = () => {
     d_WebSocketTest_events = ju_ArrayList__init_();
@@ -9314,25 +9502,6 @@ otcic_JSStderrPrintStream_print = ($this, $s) => {
     if ($s === null)
         $s = $rt_s(42);
     $rt_putStderr($rt_ustr($s));
-};
-function a_Component$bindResize$lambda$_52_0() {
-    jl_Object.call(this);
-    this.$_00 = null;
-}
-let a_Component$bindResize$lambda$_52_0__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_00 = var$1;
-},
-a_Component$bindResize$lambda$_52_0__init_0 = var_0 => {
-    let var_1 = new a_Component$bindResize$lambda$_52_0();
-    a_Component$bindResize$lambda$_52_0__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindResize$lambda$_52_0_call = var$0 => {
-    a_Component_lambda$bindResize$12(var$0.$_00);
-},
-a_Component$bindResize$lambda$_52_0_call$exported$0 = var$1 => {
-    var$1.$call1();
 },
 s_Jwt = $rt_classWithoutFields(),
 s_Jwt_decodePayload = $compactJwt => {
@@ -9430,7 +9599,7 @@ s_Jwt_numericClaim = ($compactJwt, $claim) => {
 },
 s_Jwt_isExpired = ($compactJwt, $nowEpochSeconds) => {
     let $exp;
-    $exp = s_Jwt_numericClaim($compactJwt, $rt_s(141));
+    $exp = s_Jwt_numericClaim($compactJwt, $rt_s(140));
     return Long_ge($exp, Long_ZERO) && Long_lt($exp, $nowEpochSeconds) ? 1 : 0;
 },
 vs_Theme = $rt_classWithoutFields(),
@@ -9501,7 +9670,7 @@ n_Socket__init_ = ($this, $host, $port) => {
         }
         var$3 = new ji_IOException;
         var$4 = jl_StringBuilder__init_();
-        jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(142)), $host), 58), $port), $rt_s(143));
+        jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$4, $rt_s(141)), $host), 58), $port), $rt_s(142));
         ji_IOException__init_0(var$3, jl_StringBuilder_toString(var$4));
         $rt_throw(var$3);
     default: $rt_invalidPointer();
@@ -9529,7 +9698,7 @@ n_Socket_url = ($host, $port) => {
     let var$3, var$4;
     if (n_Socket_mapper !== null)
         return n_Socket_mapper.$toUrl($host, $port);
-    var$3 = !n_Socket_secure ? $rt_s(144) : $rt_s(145);
+    var$3 = !n_Socket_secure ? $rt_s(143) : $rt_s(144);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append0(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $host), 58), $port);
     return jl_StringBuilder_toString(var$4);
@@ -9682,11 +9851,11 @@ n_Socket_nextMessage$_asyncCall_$ = var$1 => {
 oti_AsyncCallback = $rt_classWithoutFields(0);
 function d_ConcurrencyTest$completableChain$lambda$_9_2() {
     jl_Object.call(this);
-    this.$_028 = null;
+    this.$_029 = null;
 }
 let d_ConcurrencyTest$completableChain$lambda$_9_2__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_028 = var$1;
+    var$0.$_029 = var$1;
 },
 d_ConcurrencyTest$completableChain$lambda$_9_2__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$completableChain$lambda$_9_2();
@@ -9697,15 +9866,15 @@ d_ConcurrencyTest$completableChain$lambda$_9_2_accept0 = (var$0, var$1, var$2) =
     d_ConcurrencyTest$completableChain$lambda$_9_2_accept(var$0, var$1, var$2);
 },
 d_ConcurrencyTest$completableChain$lambda$_9_2_accept = (var$0, var$1, var$2) => {
-    d_ConcurrencyTest_lambda$completableChain$19(var$0.$_028, var$1, var$2);
+    d_ConcurrencyTest_lambda$completableChain$19(var$0.$_029, var$1, var$2);
 };
 function d_ConcurrencyTest$completableChain$lambda$_9_1() {
     jl_Object.call(this);
-    this.$_039 = null;
+    this.$_042 = null;
 }
 let d_ConcurrencyTest$completableChain$lambda$_9_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_039 = var$1;
+    var$0.$_042 = var$1;
 },
 d_ConcurrencyTest$completableChain$lambda$_9_1__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$completableChain$lambda$_9_1();
@@ -9716,7 +9885,7 @@ d_ConcurrencyTest$completableChain$lambda$_9_1_accept0 = (var$0, var$1) => {
     d_ConcurrencyTest$completableChain$lambda$_9_1_accept(var$0, var$1);
 },
 d_ConcurrencyTest$completableChain$lambda$_9_1_accept = (var$0, var$1) => {
-    d_ConcurrencyTest_lambda$completableChain$18(var$0.$_039, var$1);
+    d_ConcurrencyTest_lambda$completableChain$18(var$0.$_042, var$1);
 },
 otcit_FloatAnalyzer = $rt_classWithoutFields(),
 otcit_FloatAnalyzer_MAX_MANTISSA = 0,
@@ -9856,12 +10025,12 @@ ju_AbstractMap__init_ = $this => {
 };
 function c_ScheduledExecutorService$schedule$lambda$_1_0() {
     let a = this; jl_Object.call(a);
-    a.$_09 = null;
+    a.$_011 = null;
     a.$_12 = null;
 }
 let c_ScheduledExecutorService$schedule$lambda$_1_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_09 = var$1;
+    var$0.$_011 = var$1;
     var$0.$_12 = var$2;
 },
 c_ScheduledExecutorService$schedule$lambda$_1_0__init_0 = (var_0, var_1) => {
@@ -9870,7 +10039,7 @@ c_ScheduledExecutorService$schedule$lambda$_1_0__init_0 = (var_0, var_1) => {
     return var_2;
 },
 c_ScheduledExecutorService$schedule$lambda$_1_0_run = var$0 => {
-    c_ScheduledExecutorService_lambda$schedule$0(var$0.$_09, var$0.$_12);
+    c_ScheduledExecutorService_lambda$schedule$0(var$0.$_011, var$0.$_12);
 },
 c_ScheduledExecutorService$schedule$lambda$_1_0_run$exported$0 = var$1 => {
     var$1.$run();
@@ -9922,7 +10091,7 @@ jl_Class_getName = $this => {
                         $result = jl_StringBuilder_toString(var$5);
                     } else {
                         var$5 = jl_StringBuilder__init_();
-                        jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(146)), $itemName), 59);
+                        jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$5, $rt_s(145)), $itemName), 59);
                         $result = jl_StringBuilder_toString(var$5);
                     }
                 }
@@ -10212,7 +10381,7 @@ jl_System_arraycopy = ($src, $srcPos, $dest, $destPos, $length) => {
         }
         $rt_throw(jl_IndexOutOfBoundsException__init_());
     }
-    $rt_throw(jl_NullPointerException__init_1($rt_s(147)));
+    $rt_throw(jl_NullPointerException__init_1($rt_s(146)));
 },
 jl_System_fastArraycopy = ($src, $srcPos, $dest, $destPos, $length) => {
     let var$6;
@@ -10642,11 +10811,11 @@ otrr_ReflectionInfo = $rt_classWithoutFields(),
 s_LineListener = $rt_classWithoutFields(0);
 function jl_Object$monitorExit$lambda$_8_1() {
     jl_Object.call(this);
-    this.$_01 = null;
+    this.$_0 = null;
 }
 let jl_Object$monitorExit$lambda$_8_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_01 = var$1;
+    var$0.$_0 = var$1;
 },
 jl_Object$monitorExit$lambda$_8_1__init_0 = var_0 => {
     let var_1 = new jl_Object$monitorExit$lambda$_8_1();
@@ -10654,7 +10823,7 @@ jl_Object$monitorExit$lambda$_8_1__init_0 = var_0 => {
     return var_1;
 },
 jl_Object$monitorExit$lambda$_8_1_run = var$0 => {
-    jl_Object_lambda$monitorExit$2(var$0.$_01);
+    jl_Object_lambda$monitorExit$2(var$0.$_0);
 };
 function ji_PrintWriter() {
     let a = this; ji_Writer.call(a);
@@ -10706,7 +10875,7 @@ ji_PrintWriter_print = ($this, $str) => {
     $this.$write0($str);
 },
 ji_PrintWriter_println0 = $this => {
-    $this.$print($rt_s(126));
+    $this.$print($rt_s(125));
     if ($this.$autoflush)
         $this.$flush1();
 },
@@ -10820,11 +10989,11 @@ jnci_Iso8859Encoder_arrayEncode = ($this, $inArray, $inPos, $inSize, $outArray, 
 };
 function d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12() {
     jl_Object.call(this);
-    this.$_04 = null;
+    this.$_06 = null;
 }
 let d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_04 = var$1;
+    var$0.$_06 = var$1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12();
@@ -10832,15 +11001,15 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12__init_0 = var_0 => {
     return var_1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12_run = var$0 => {
-    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$12(var$0.$_04);
+    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$12(var$0.$_06);
 };
 function d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11() {
     jl_Object.call(this);
-    this.$_022 = null;
+    this.$_023 = null;
 }
 let d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_022 = var$1;
+    var$0.$_023 = var$1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11();
@@ -10848,7 +11017,7 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11__init_0 = var_0 => {
     return var_1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11_run = var$0 => {
-    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$11(var$0.$_022);
+    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$11(var$0.$_023);
 };
 function jl_Enum() {
     let a = this; jl_Object.call(a);
@@ -10887,17 +11056,17 @@ mr_Room$RoomType_$values = () => {
     return var$1;
 },
 mr_Room$RoomType__clinit_ = () => {
-    mr_Room$RoomType_PUBLIC = mr_Room$RoomType__init_($rt_s(148), 0);
-    mr_Room$RoomType_PRIVATE = mr_Room$RoomType__init_($rt_s(149), 1);
+    mr_Room$RoomType_PUBLIC = mr_Room$RoomType__init_($rt_s(147), 0);
+    mr_Room$RoomType_PRIVATE = mr_Room$RoomType__init_($rt_s(148), 1);
     mr_Room$RoomType_$VALUES = mr_Room$RoomType_$values();
 };
 function d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10() {
     jl_Object.call(this);
-    this.$_037 = null;
+    this.$_038 = null;
 }
 let d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_037 = var$1;
+    var$0.$_038 = var$1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10();
@@ -10905,7 +11074,7 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10__init_0 = var_0 => {
     return var_1;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10_run = var$0 => {
-    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$10(var$0.$_037);
+    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$10(var$0.$_038);
 },
 jnc_StandardCharsets = $rt_classWithoutFields(),
 jnc_StandardCharsets_UTF_8 = null,
@@ -10923,17 +11092,17 @@ jnc_StandardCharsets__clinit_ = () => {
     jnc_StandardCharsets_UTF_8 = jnci_UTF8Charset_INSTANCE;
     jnc_StandardCharsets_US_ASCII = jnci_AsciiCharset__init_0();
     jnc_StandardCharsets_ISO_8859_1 = jnci_Iso8859Charset__init_0();
-    jnc_StandardCharsets_UTF_16 = jnci_UTF16Charset__init_($rt_s(150), 1, 0);
-    jnc_StandardCharsets_UTF_16BE = jnci_UTF16Charset__init_($rt_s(151), 0, 0);
-    jnc_StandardCharsets_UTF_16LE = jnci_UTF16Charset__init_($rt_s(152), 0, 1);
+    jnc_StandardCharsets_UTF_16 = jnci_UTF16Charset__init_($rt_s(149), 1, 0);
+    jnc_StandardCharsets_UTF_16BE = jnci_UTF16Charset__init_($rt_s(150), 0, 0);
+    jnc_StandardCharsets_UTF_16LE = jnci_UTF16Charset__init_($rt_s(151), 0, 1);
 };
 function jl_Thread$SleepHandler$interrupted$lambda$_1_1() {
     jl_Object.call(this);
-    this.$_05 = null;
+    this.$_08 = null;
 }
 let jl_Thread$SleepHandler$interrupted$lambda$_1_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_05 = var$1;
+    var$0.$_08 = var$1;
 },
 jl_Thread$SleepHandler$interrupted$lambda$_1_1__init_0 = var_0 => {
     let var_1 = new jl_Thread$SleepHandler$interrupted$lambda$_1_1();
@@ -10941,7 +11110,7 @@ jl_Thread$SleepHandler$interrupted$lambda$_1_1__init_0 = var_0 => {
     return var_1;
 },
 jl_Thread$SleepHandler$interrupted$lambda$_1_1_run = var$0 => {
-    jl_Thread$SleepHandler_lambda$interrupted$1(var$0.$_05);
+    jl_Thread$SleepHandler_lambda$interrupted$1(var$0.$_08);
 };
 function ae_ComponentEvent() {
     jl_Object.call(this);
@@ -11370,7 +11539,7 @@ s_Sha512__clinit_ = () => {
 },
 jnci_Iso8859Charset = $rt_classWithoutFields(jnc_Charset),
 jnci_Iso8859Charset__init_ = $this => {
-    jnc_Charset__init_($this, $rt_s(153), $rt_createArray(jl_String, 0));
+    jnc_Charset__init_($this, $rt_s(152), $rt_createArray(jl_String, 0));
 },
 jnci_Iso8859Charset__init_0 = () => {
     let var_0 = new jnci_Iso8859Charset();
@@ -11904,7 +12073,7 @@ jm_Division_multiplyAndSubtract = ($a, $start, $b, $bLen, $c) => {
 jm_Division_modInverseMontgomery = ($a, $p) => {
     let $m, $u, $v, $max, $r, var$8, $s, $k, $lsbu, $lsbv, var$13, $toShift, var$15, $n1;
     if (!$a.$sign0)
-        $rt_throw(jl_ArithmeticException__init_($rt_s(154)));
+        $rt_throw(jl_ArithmeticException__init_($rt_s(153)));
     if (!$p.$testBit(0))
         return jm_Division_modInverseHars($a, $p);
     $m = $p.$numberLength * 32 | 0;
@@ -12876,10 +13045,10 @@ a_BasicStroke_getLineWidth = $this => {
     return $this.$width1;
 },
 a_BasicStroke_capCss = $this => {
-    return $this.$cap == 1 ? $rt_s(155) : $this.$cap != 2 ? $rt_s(156) : $rt_s(157);
+    return $this.$cap == 1 ? $rt_s(154) : $this.$cap != 2 ? $rt_s(155) : $rt_s(156);
 },
 a_BasicStroke_joinCss = $this => {
-    return $this.$join0 == 1 ? $rt_s(155) : $this.$join0 != 2 ? $rt_s(158) : $rt_s(159);
+    return $this.$join0 == 1 ? $rt_s(154) : $this.$join0 != 2 ? $rt_s(157) : $rt_s(158);
 },
 otjt_Uint16Array = $rt_classWithoutFields(otjt_TypedArray),
 jnc_Charset$Charsets = $rt_classWithoutFields(),
@@ -13060,6 +13229,28 @@ jnci_UTF8Encoder_arrayEncode = ($this, $inArray, $inPos, $inSize, $outArray, $ou
     $controller.$setInPosition(var$9);
     $controller.$setOutPosition($outPos);
     return $result;
+};
+function a_Component$bindMouse$lambda$_52_4() {
+    jl_Object.call(this);
+    this.$_012 = null;
+}
+let a_Component$bindMouse$lambda$_52_4__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_012 = var$1;
+},
+a_Component$bindMouse$lambda$_52_4__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_4();
+    a_Component$bindMouse$lambda$_52_4__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_4_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_4_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_4_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$4(var$0.$_012, var$1);
+},
+a_Component$bindMouse$lambda$_52_4_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 },
 a_RenderingHints = $rt_classWithoutFields(),
 a_RenderingHints_KEY_ANTIALIASING = null,
@@ -13090,29 +13281,51 @@ a_RenderingHints_$callClinit = () => {
     a_RenderingHints__clinit_();
 },
 a_RenderingHints__clinit_ = () => {
-    a_RenderingHints_KEY_ANTIALIASING = $rt_s(160);
-    a_RenderingHints_VALUE_ANTIALIAS_ON = $rt_s(161);
-    a_RenderingHints_VALUE_ANTIALIAS_OFF = $rt_s(162);
-    a_RenderingHints_KEY_STROKE_CONTROL = $rt_s(163);
-    a_RenderingHints_VALUE_STROKE_PURE = $rt_s(164);
-    a_RenderingHints_KEY_RENDERING = $rt_s(165);
-    a_RenderingHints_VALUE_RENDER_QUALITY = $rt_s(166);
-    a_RenderingHints_KEY_TEXT_ANTIALIASING = $rt_s(167);
-    a_RenderingHints_VALUE_TEXT_ANTIALIAS_ON = $rt_s(161);
-    a_RenderingHints_VALUE_TEXT_ANTIALIAS_OFF = $rt_s(162);
-    a_RenderingHints_VALUE_TEXT_ANTIALIAS_LCD_HRGB = $rt_s(168);
-    a_RenderingHints_VALUE_TEXT_ANTIALIAS_LCD_VRGB = $rt_s(169);
-    a_RenderingHints_VALUE_TEXT_ANTIALIAS_GASP = $rt_s(170);
-    a_RenderingHints_KEY_ALPHA_INTERPOLATION = $rt_s(171);
-    a_RenderingHints_VALUE_ALPHA_INTERPOLATION_QUALITY = $rt_s(166);
-    a_RenderingHints_KEY_COLOR_RENDERING = $rt_s(172);
-    a_RenderingHints_VALUE_COLOR_RENDER_QUALITY = $rt_s(166);
-    a_RenderingHints_VALUE_INTERPOLATION_NEAREST_NEIGHBOR = $rt_s(173);
-    a_RenderingHints_VALUE_INTERPOLATION_BICUBIC = $rt_s(174);
-    a_RenderingHints_KEY_FRACTIONALMETRICS = $rt_s(175);
-    a_RenderingHints_VALUE_FRACTIONALMETRICS_ON = $rt_s(161);
-    a_RenderingHints_KEY_INTERPOLATION = $rt_s(176);
-    a_RenderingHints_VALUE_INTERPOLATION_BILINEAR = $rt_s(177);
+    a_RenderingHints_KEY_ANTIALIASING = $rt_s(159);
+    a_RenderingHints_VALUE_ANTIALIAS_ON = $rt_s(160);
+    a_RenderingHints_VALUE_ANTIALIAS_OFF = $rt_s(161);
+    a_RenderingHints_KEY_STROKE_CONTROL = $rt_s(162);
+    a_RenderingHints_VALUE_STROKE_PURE = $rt_s(163);
+    a_RenderingHints_KEY_RENDERING = $rt_s(164);
+    a_RenderingHints_VALUE_RENDER_QUALITY = $rt_s(165);
+    a_RenderingHints_KEY_TEXT_ANTIALIASING = $rt_s(166);
+    a_RenderingHints_VALUE_TEXT_ANTIALIAS_ON = $rt_s(160);
+    a_RenderingHints_VALUE_TEXT_ANTIALIAS_OFF = $rt_s(161);
+    a_RenderingHints_VALUE_TEXT_ANTIALIAS_LCD_HRGB = $rt_s(167);
+    a_RenderingHints_VALUE_TEXT_ANTIALIAS_LCD_VRGB = $rt_s(168);
+    a_RenderingHints_VALUE_TEXT_ANTIALIAS_GASP = $rt_s(169);
+    a_RenderingHints_KEY_ALPHA_INTERPOLATION = $rt_s(170);
+    a_RenderingHints_VALUE_ALPHA_INTERPOLATION_QUALITY = $rt_s(165);
+    a_RenderingHints_KEY_COLOR_RENDERING = $rt_s(171);
+    a_RenderingHints_VALUE_COLOR_RENDER_QUALITY = $rt_s(165);
+    a_RenderingHints_VALUE_INTERPOLATION_NEAREST_NEIGHBOR = $rt_s(172);
+    a_RenderingHints_VALUE_INTERPOLATION_BICUBIC = $rt_s(173);
+    a_RenderingHints_KEY_FRACTIONALMETRICS = $rt_s(174);
+    a_RenderingHints_VALUE_FRACTIONALMETRICS_ON = $rt_s(160);
+    a_RenderingHints_KEY_INTERPOLATION = $rt_s(175);
+    a_RenderingHints_VALUE_INTERPOLATION_BILINEAR = $rt_s(176);
+};
+function a_Component$bindMouse$lambda$_52_3() {
+    jl_Object.call(this);
+    this.$_00 = null;
+}
+let a_Component$bindMouse$lambda$_52_3__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_00 = var$1;
+},
+a_Component$bindMouse$lambda$_52_3__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_3();
+    a_Component$bindMouse$lambda$_52_3__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_3_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_3_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_3_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$3(var$0.$_00, var$1);
+},
+a_Component$bindMouse$lambda$_52_3_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 },
 d_SoundCryptoTest = $rt_classWithoutFields(),
 d_SoundCryptoTest_now = () => {
@@ -13120,7 +13333,7 @@ d_SoundCryptoTest_now = () => {
 },
 d_SoundCryptoTest_check = ($name, $ok) => {
     let var$3, var$4;
-    var$3 = !$ok ? $rt_s(57) : $rt_s(58);
+    var$3 = !$ok ? $rt_s(56) : $rt_s(57);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $name);
     d_SoundCryptoTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
@@ -13137,7 +13350,7 @@ d_SoundCryptoTest_run = () => {
                 $e = $$je;
                 var$1 = jl_String_valueOf($e);
                 var$3 = jl_StringBuilder__init_();
-                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(178)), var$1);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(177)), var$1);
                 d_SoundCryptoTest_check(jl_StringBuilder_toString(var$3), 0);
                 break a;
             } else {
@@ -13155,7 +13368,7 @@ d_SoundCryptoTest_run = () => {
                 $e = $$je;
                 var$1 = jl_String_valueOf($e);
                 var$3 = jl_StringBuilder__init_();
-                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(179)), var$1);
+                jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(178)), var$1);
                 d_SoundCryptoTest_check(jl_StringBuilder_toString(var$3), 0);
                 break b;
             } else {
@@ -13167,23 +13380,23 @@ d_SoundCryptoTest_run = () => {
 d_SoundCryptoTest_audio = () => {
     let $clip, $gain, $threw, var$4, var$5, $e, $$je;
     $clip = s_AudioSystem_getClip();
-    d_SoundCryptoTest_check($rt_s(180), $clip.$isOpen() ? 0 : 1);
-    $clip.$open0(s_AudioSystem_getAudioInputStream0($rt_s(181)));
-    d_SoundCryptoTest_check($rt_s(182), $clip.$isOpen());
+    d_SoundCryptoTest_check($rt_s(179), $clip.$isOpen() ? 0 : 1);
+    $clip.$open0(s_AudioSystem_getAudioInputStream0($rt_s(180)));
+    d_SoundCryptoTest_check($rt_s(181), $clip.$isOpen());
     s_FloatControl$Type_$callClinit();
-    d_SoundCryptoTest_check($rt_s(183), $clip.$isControlSupported(s_FloatControl$Type_MASTER_GAIN));
+    d_SoundCryptoTest_check($rt_s(182), $clip.$isControlSupported(s_FloatControl$Type_MASTER_GAIN));
     $clip.$start();
     $clip.$loop((-1));
     $clip.$setFramePosition(0);
-    d_SoundCryptoTest_check($rt_s(184), $clip.$getFramePosition() ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(183), $clip.$getFramePosition() ? 0 : 1);
     $gain = $clip.$getControl(s_FloatControl$Type_MASTER_GAIN);
-    d_SoundCryptoTest_check($rt_s(185), $gain.$getMinimum() < 0.0 && $gain.$getMaximum() > 0.0 ? 1 : 0);
-    d_SoundCryptoTest_check($rt_s(186), !(jl_Math_abs(s_FloatControl_dbToLinear(0.0) - 1.0) < 1.0E-9) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(187), !(jl_Math_abs(s_FloatControl_dbToLinear((-6.0)) - 0.501) < 0.01) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(188), s_FloatControl_dbToLinear((-80.0)) !== 0.0 ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(184), $gain.$getMinimum() < 0.0 && $gain.$getMaximum() > 0.0 ? 1 : 0);
+    d_SoundCryptoTest_check($rt_s(185), !(jl_Math_abs(s_FloatControl_dbToLinear(0.0) - 1.0) < 1.0E-9) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(186), !(jl_Math_abs(s_FloatControl_dbToLinear((-6.0)) - 0.501) < 0.01) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(187), s_FloatControl_dbToLinear((-80.0)) !== 0.0 ? 0 : 1);
     $clip.$stop();
     $clip.$close();
-    d_SoundCryptoTest_check($rt_s(189), $clip.$isOpen() ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(188), $clip.$isOpen() ? 0 : 1);
     $threw = 0;
     a: {
         try {
@@ -13197,14 +13410,14 @@ d_SoundCryptoTest_audio = () => {
             $$je = $rt_wrapException($$e);
             if ($$je instanceof jl_UnsupportedOperationException) {
                 $e = $$je;
-                $threw = jl_String_contains($e.$getMessage(), $rt_s(190));
+                $threw = jl_String_contains($e.$getMessage(), $rt_s(189));
                 break a;
             } else {
                 throw $$e;
             }
         }
     }
-    d_SoundCryptoTest_check($rt_s(191), $threw);
+    d_SoundCryptoTest_check($rt_s(190), $threw);
 },
 d_SoundCryptoTest_hex = $s => {
     let $out, $i, var$4, var$5;
@@ -13222,58 +13435,58 @@ d_SoundCryptoTest_hex = $s => {
 },
 d_SoundCryptoTest_crypto = () => {
     let $kf, $pk, $sig, $bad, var$5, $bigS, $i, $spki, $prefix, $fromSpki, $s2, $t0, $t, $per, var$15, $signThrew, $jwt, $payload, $header, $$je;
-    $kf = s_KeyFactory_getInstance($rt_s(107));
-    $pk = $kf.$generatePublic(s_X509EncodedKeySpec__init_0(d_SoundCryptoTest_hex($rt_s(192))));
-    d_SoundCryptoTest_check($rt_s(193), $pk === null ? 0 : 1);
-    $sig = s_Signature_getInstance($rt_s(107));
+    $kf = s_KeyFactory_getInstance($rt_s(106));
+    $pk = $kf.$generatePublic(s_X509EncodedKeySpec__init_0(d_SoundCryptoTest_hex($rt_s(191))));
+    d_SoundCryptoTest_check($rt_s(192), $pk === null ? 0 : 1);
+    $sig = s_Signature_getInstance($rt_s(106));
     $sig.$initVerify($pk);
-    $sig.$update0(d_SoundCryptoTest_hex($rt_s(194)));
-    d_SoundCryptoTest_check($rt_s(195), $sig.$verify0(d_SoundCryptoTest_hex($rt_s(196))));
-    $bad = d_SoundCryptoTest_hex($rt_s(196));
+    $sig.$update0(d_SoundCryptoTest_hex($rt_s(193)));
+    d_SoundCryptoTest_check($rt_s(194), $sig.$verify0(d_SoundCryptoTest_hex($rt_s(195))));
+    $bad = d_SoundCryptoTest_hex($rt_s(195));
     var$5 = $bad.data;
     var$5[10] = (var$5[10] ^ 1) << 24 >> 24;
     $sig.$initVerify($pk);
-    $sig.$update0(d_SoundCryptoTest_hex($rt_s(194)));
-    d_SoundCryptoTest_check($rt_s(197), $sig.$verify0($bad) ? 0 : 1);
+    $sig.$update0(d_SoundCryptoTest_hex($rt_s(193)));
+    d_SoundCryptoTest_check($rt_s(196), $sig.$verify0($bad) ? 0 : 1);
     $sig.$initVerify($pk);
-    $sig.$update0(d_SoundCryptoTest_hex($rt_s(198)));
-    d_SoundCryptoTest_check($rt_s(199), $sig.$verify0(d_SoundCryptoTest_hex($rt_s(196))) ? 0 : 1);
-    $bigS = d_SoundCryptoTest_hex($rt_s(196));
+    $sig.$update0(d_SoundCryptoTest_hex($rt_s(197)));
+    d_SoundCryptoTest_check($rt_s(198), $sig.$verify0(d_SoundCryptoTest_hex($rt_s(195))) ? 0 : 1);
+    $bigS = d_SoundCryptoTest_hex($rt_s(195));
     $i = 32;
     while ($i < 64) {
         $bigS.data[$i] = (-1);
         $i = $i + 1 | 0;
     }
     $sig.$initVerify($pk);
-    $sig.$update0(d_SoundCryptoTest_hex($rt_s(194)));
-    d_SoundCryptoTest_check($rt_s(200), $sig.$verify0($bigS) ? 0 : 1);
+    $sig.$update0(d_SoundCryptoTest_hex($rt_s(193)));
+    d_SoundCryptoTest_check($rt_s(199), $sig.$verify0($bigS) ? 0 : 1);
     $spki = $rt_createByteArray(44);
-    $prefix = d_SoundCryptoTest_hex(jl_String_replace($rt_s(201), $rt_s(202), $rt_s(1)));
+    $prefix = d_SoundCryptoTest_hex(jl_String_replace($rt_s(200), $rt_s(201), $rt_s(1)));
     jl_System_fastArraycopy($prefix, 0, $spki, 0, 12);
-    jl_System_fastArraycopy(d_SoundCryptoTest_hex($rt_s(192)), 0, $spki, 12, 32);
+    jl_System_fastArraycopy(d_SoundCryptoTest_hex($rt_s(191)), 0, $spki, 12, 32);
     $fromSpki = $kf.$generatePublic(s_X509EncodedKeySpec__init_0($spki));
-    $s2 = s_Signature_getInstance($rt_s(107));
+    $s2 = s_Signature_getInstance($rt_s(106));
     $s2.$initVerify($fromSpki);
-    $s2.$update0(d_SoundCryptoTest_hex($rt_s(194)));
-    d_SoundCryptoTest_check($rt_s(203), $s2.$verify0(d_SoundCryptoTest_hex($rt_s(196))));
+    $s2.$update0(d_SoundCryptoTest_hex($rt_s(193)));
+    d_SoundCryptoTest_check($rt_s(202), $s2.$verify0(d_SoundCryptoTest_hex($rt_s(195))));
     $t0 = d_SoundCryptoTest_now();
     $i = 0;
     while ($i < 5) {
-        $t = s_Signature_getInstance($rt_s(107));
+        $t = s_Signature_getInstance($rt_s(106));
         $t.$initVerify($pk);
-        $t.$update0(d_SoundCryptoTest_hex($rt_s(194)));
-        $t.$verify0(d_SoundCryptoTest_hex($rt_s(196)));
+        $t.$update0(d_SoundCryptoTest_hex($rt_s(193)));
+        $t.$verify0(d_SoundCryptoTest_hex($rt_s(195)));
         $i = $i + 1 | 0;
     }
     $per = Long_div(Long_sub(d_SoundCryptoTest_now(), $t0), Long_fromInt(5));
     var$15 = jl_StringBuilder__init_();
-    jl_StringBuilder_append(jl_StringBuilder_append5(jl_StringBuilder_append(var$15, $rt_s(204)), $per), $rt_s(205));
+    jl_StringBuilder_append(jl_StringBuilder_append5(jl_StringBuilder_append(var$15, $rt_s(203)), $per), $rt_s(204));
     d_SoundCryptoTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$15)));
-    d_SoundCryptoTest_check($rt_s(206), Long_ge($per, Long_fromInt(400)) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(205), Long_ge($per, Long_fromInt(400)) ? 0 : 1);
     $signThrew = 0;
     a: {
         try {
-            (s_Signature_getInstance($rt_s(107))).$initSign(jl_Object__init_0());
+            (s_Signature_getInstance($rt_s(106))).$initSign(jl_Object__init_0());
             break a;
         } catch ($$e) {
             $$je = $rt_wrapException($$e);
@@ -13285,41 +13498,88 @@ d_SoundCryptoTest_crypto = () => {
             }
         }
     }
-    d_SoundCryptoTest_check($rt_s(207), $signThrew);
-    $jwt = $rt_s(208);
+    d_SoundCryptoTest_check($rt_s(206), $signThrew);
+    $jwt = $rt_s(207);
     $payload = s_Jwt_decodePayload($jwt);
-    d_SoundCryptoTest_check($rt_s(209), $payload !== null && jl_String_contains($payload, $rt_s(210)) ? 1 : 0);
+    d_SoundCryptoTest_check($rt_s(208), $payload !== null && jl_String_contains($payload, $rt_s(209)) ? 1 : 0);
     $header = s_Jwt_decodeHeader($jwt);
-    d_SoundCryptoTest_check($rt_s(211), $header !== null && jl_String_contains($header, $rt_s(108)) ? 1 : 0);
-    d_SoundCryptoTest_check($rt_s(212), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(141)), Long_fromInt(2000000000)) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(213), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(214)), Long_fromInt(1700000000)) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(215), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(216)), Long_fromInt(-1)) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(217), s_Jwt_isExpired($jwt, Long_fromInt(1800000000)) ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(218), s_Jwt_isExpired($jwt, Long_fromInt(2100000000)));
-    d_SoundCryptoTest_check($rt_s(219), s_Jwt_decodePayload($rt_s(220)) !== null ? 0 : 1);
-    d_SoundCryptoTest_check($rt_s(221), s_Jwt_decodePayload(null) !== null ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(210), $header !== null && jl_String_contains($header, $rt_s(107)) ? 1 : 0);
+    d_SoundCryptoTest_check($rt_s(211), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(140)), Long_fromInt(2000000000)) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(212), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(213)), Long_fromInt(1700000000)) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(214), Long_ne(s_Jwt_numericClaim($jwt, $rt_s(215)), Long_fromInt(-1)) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(216), s_Jwt_isExpired($jwt, Long_fromInt(1800000000)) ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(217), s_Jwt_isExpired($jwt, Long_fromInt(2100000000)));
+    d_SoundCryptoTest_check($rt_s(218), s_Jwt_decodePayload($rt_s(219)) !== null ? 0 : 1);
+    d_SoundCryptoTest_check($rt_s(220), s_Jwt_decodePayload(null) !== null ? 0 : 1);
 },
 d_SoundCryptoTest_report$js_body$_0 = var$1 => {
     if (globalThis.__ankTest) globalThis.__ankTest(var$1);
 };
-function a_Component$frame$lambda$_45_0() {
+function a_Component$bindMouse$lambda$_52_2() {
     jl_Object.call(this);
-    this.$_021 = null;
+    this.$_044 = null;
 }
-let a_Component$frame$lambda$_45_0__init_ = (var$0, var$1) => {
+let a_Component$bindMouse$lambda$_52_2__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_021 = var$1;
+    var$0.$_044 = var$1;
 },
-a_Component$frame$lambda$_45_0__init_0 = var_0 => {
-    let var_1 = new a_Component$frame$lambda$_45_0();
-    a_Component$frame$lambda$_45_0__init_(var_1, var_0);
+a_Component$bindMouse$lambda$_52_2__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_2();
+    a_Component$bindMouse$lambda$_52_2__init_(var_1, var_0);
     return var_1;
 },
-a_Component$frame$lambda$_45_0_call = var$0 => {
-    a_Component_frame(var$0.$_021);
+a_Component$bindMouse$lambda$_52_2_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_2_handleEvent(var$0, var$1);
 },
-a_Component$frame$lambda$_45_0_call$exported$0 = var$1 => {
-    var$1.$call1();
+a_Component$bindMouse$lambda$_52_2_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$2(var$0.$_044, var$1);
+},
+a_Component$bindMouse$lambda$_52_2_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+};
+function a_Component$bindMouse$lambda$_52_1() {
+    jl_Object.call(this);
+    this.$_030 = null;
+}
+let a_Component$bindMouse$lambda$_52_1__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_030 = var$1;
+},
+a_Component$bindMouse$lambda$_52_1__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_1();
+    a_Component$bindMouse$lambda$_52_1__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_1_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_1_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_1_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$1(var$0.$_030, var$1);
+},
+a_Component$bindMouse$lambda$_52_1_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+};
+function a_Component$bindMouse$lambda$_52_0() {
+    jl_Object.call(this);
+    this.$_016 = null;
+}
+let a_Component$bindMouse$lambda$_52_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_016 = var$1;
+},
+a_Component$bindMouse$lambda$_52_0__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_0();
+    a_Component$bindMouse$lambda$_52_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_0_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_0_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_0_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$0(var$0.$_016, var$1);
+},
+a_Component$bindMouse$lambda$_52_0_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 };
 function a_GradientPaint() {
     let a = this; jl_Object.call(a);
@@ -13377,7 +13637,66 @@ s_AudioSystem_getAudioInputStream0 = $url => {
     return s_AudioInputStream__init_0($url);
 },
 s_AudioSystem_getAudioInputStream = $stream => {
-    $rt_throw(jl_UnsupportedOperationException__init_0($rt_s(222)));
+    $rt_throw(jl_UnsupportedOperationException__init_2($rt_s(221)));
+},
+a_Component$bindMouse$lambda$_52_7 = $rt_classWithoutFields(),
+a_Component$bindMouse$lambda$_52_7__init_ = var$0 => {
+    jl_Object__init_(var$0);
+},
+a_Component$bindMouse$lambda$_52_7__init_0 = () => {
+    let var_0 = new a_Component$bindMouse$lambda$_52_7();
+    a_Component$bindMouse$lambda$_52_7__init_(var_0);
+    return var_0;
+},
+a_Component$bindMouse$lambda$_52_7_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$7(var$1);
+},
+a_Component$bindMouse$lambda$_52_7_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+};
+function a_Component$bindMouse$lambda$_52_6() {
+    jl_Object.call(this);
+    this.$_052 = null;
+}
+let a_Component$bindMouse$lambda$_52_6__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_052 = var$1;
+},
+a_Component$bindMouse$lambda$_52_6__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_6();
+    a_Component$bindMouse$lambda$_52_6__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_6_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_6_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_6_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$6(var$0.$_052, var$1);
+},
+a_Component$bindMouse$lambda$_52_6_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
+};
+function a_Component$bindMouse$lambda$_52_5() {
+    jl_Object.call(this);
+    this.$_040 = null;
+}
+let a_Component$bindMouse$lambda$_52_5__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_040 = var$1;
+},
+a_Component$bindMouse$lambda$_52_5__init_0 = var_0 => {
+    let var_1 = new a_Component$bindMouse$lambda$_52_5();
+    a_Component$bindMouse$lambda$_52_5__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$bindMouse$lambda$_52_5_handleEvent0 = (var$0, var$1) => {
+    a_Component$bindMouse$lambda$_52_5_handleEvent(var$0, var$1);
+},
+a_Component$bindMouse$lambda$_52_5_handleEvent = (var$0, var$1) => {
+    a_Component_lambda$bindMouse$5(var$0.$_040, var$1);
+},
+a_Component$bindMouse$lambda$_52_5_handleEvent$exported$0 = (var$1, var$2) => {
+    var$1.$handleEvent(var$2);
 },
 jnci_UTF8Charset = $rt_classWithoutFields(jnc_Charset),
 jnci_UTF8Charset_INSTANCE = null,
@@ -13550,7 +13869,7 @@ ji_BufferedReader_fillBuffer = ($this, $offset, $readLimit) => {
         $ptr = 1;
     case 1:
         a: {
-            $tmp = var$5.$read5(var$6, $offset, var$7);
+            $tmp = var$5.$read6(var$6, $offset, var$7);
             if ($rt_suspending()) {
                 break main;
             }
@@ -13940,7 +14259,7 @@ i_ImageIO$preload$lambda$_7_0_call = var$0 => {
     i_ImageIO_lambda$preload$0(var$0.$_046, var$0.$_113);
 },
 i_ImageIO$preload$lambda$_7_0_call$exported$0 = var$1 => {
-    var$1.$call1();
+    var$1.$call();
 },
 jl_NullPointerException = $rt_classWithoutFields(jl_RuntimeException),
 jl_NullPointerException__init_2 = ($this, $message) => {
@@ -13973,7 +14292,7 @@ jn_ByteBuffer_allocate = $capacity => {
     if ($capacity < 0) {
         var$2 = new jl_IllegalArgumentException;
         var$3 = jl_StringBuilder__init_();
-        jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(77)), $capacity);
+        jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(76)), $capacity);
         jl_IllegalArgumentException__init_1(var$2, jl_StringBuilder_toString(var$3));
         $rt_throw(var$2);
     }
@@ -14157,11 +14476,11 @@ ag_PathSink$Recording_emit = ($out, $s) => {
 };
 function d_SocketTest$run$lambda$_3_0() {
     jl_Object.call(this);
-    this.$_08 = null;
+    this.$_010 = null;
 }
 let d_SocketTest$run$lambda$_3_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_08 = var$1;
+    var$0.$_010 = var$1;
 },
 d_SocketTest$run$lambda$_3_0__init_0 = var_0 => {
     let var_1 = new d_SocketTest$run$lambda$_3_0();
@@ -14177,7 +14496,7 @@ d_SocketTest$run$lambda$_3_0_run = var$0 => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$1 = var$0.$_08;
+        var$1 = var$0.$_010;
         $ptr = 1;
     case 1:
         d_SocketTest_lambda$run$0(var$1);
@@ -14197,7 +14516,7 @@ function s_Signature() {
 }
 let s_Signature__init_ = ($this, $algorithm) => {
     jl_Object__init_($this);
-    $this.$buffer2 = ji_ByteArrayOutputStream__init_1();
+    $this.$buffer2 = ji_ByteArrayOutputStream__init_0();
     $this.$algorithm1 = $algorithm;
 },
 s_Signature__init_0 = var_0 => {
@@ -14211,7 +14530,7 @@ s_Signature_getInstance = $algorithm => {
         return s_Signature__init_0($algorithm);
     var$2 = new s_NoSuchAlgorithmException;
     var$3 = jl_StringBuilder__init_();
-    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(223)), $algorithm), $rt_s(224));
+    jl_StringBuilder_append(jl_StringBuilder_append(jl_StringBuilder_append(var$3, $rt_s(222)), $algorithm), $rt_s(223));
     s_NoSuchAlgorithmException__init_(var$2, jl_StringBuilder_toString(var$3));
     $rt_throw(var$2);
 },
@@ -14227,13 +14546,13 @@ s_Signature_update = ($this, $data) => {
 s_Signature_verify = ($this, $signature) => {
     let $ok;
     if ($this.$key1 === null)
-        $rt_throw(s_SignatureException__init_0($rt_s(225)));
+        $rt_throw(s_SignatureException__init_0($rt_s(224)));
     $ok = s_Ed25519_verify($this.$key1.$raw(), $this.$buffer2.$toByteArray(), $signature);
     $this.$buffer2.$reset1();
     return $ok;
 },
 s_Signature_initSign = ($this, $privateKey) => {
-    $rt_throw(jl_UnsupportedOperationException__init_0($rt_s(226)));
+    $rt_throw(jl_UnsupportedOperationException__init_2($rt_s(225)));
 };
 function c_CompletableFuture$exceptionally$lambda$_15_0() {
     let a = this; jl_Object.call(a);
@@ -14412,10 +14731,10 @@ n_BrowserWebSocket$HeaderMode_$values = () => {
     return var$1;
 },
 n_BrowserWebSocket$HeaderMode__clinit_ = () => {
-    n_BrowserWebSocket$HeaderMode_QUERY = n_BrowserWebSocket$HeaderMode__init_($rt_s(227), 0);
-    n_BrowserWebSocket$HeaderMode_SUBPROTOCOL = n_BrowserWebSocket$HeaderMode__init_($rt_s(228), 1);
-    n_BrowserWebSocket$HeaderMode_FIRST_MESSAGE = n_BrowserWebSocket$HeaderMode__init_($rt_s(229), 2);
-    n_BrowserWebSocket$HeaderMode_QUERY_AND_FIRST_MESSAGE = n_BrowserWebSocket$HeaderMode__init_($rt_s(230), 3);
+    n_BrowserWebSocket$HeaderMode_QUERY = n_BrowserWebSocket$HeaderMode__init_($rt_s(226), 0);
+    n_BrowserWebSocket$HeaderMode_SUBPROTOCOL = n_BrowserWebSocket$HeaderMode__init_($rt_s(227), 1);
+    n_BrowserWebSocket$HeaderMode_FIRST_MESSAGE = n_BrowserWebSocket$HeaderMode__init_($rt_s(228), 2);
+    n_BrowserWebSocket$HeaderMode_QUERY_AND_FIRST_MESSAGE = n_BrowserWebSocket$HeaderMode__init_($rt_s(229), 3);
     n_BrowserWebSocket$HeaderMode_$VALUES = n_BrowserWebSocket$HeaderMode_$values();
 },
 a_Graphics = $rt_classWithoutFields(),
@@ -14455,7 +14774,7 @@ c_ExecutorService__init_0 = () => {
 c_ExecutorService_submit = ($this, $task) => {
     let var$2, $e, $$je;
     if ($this.$shutdown0)
-        $rt_throw(jl_IllegalStateException__init_($rt_s(231)));
+        $rt_throw(jl_IllegalStateException__init_($rt_s(230)));
     a: {
         try {
             var$2 = c_CompletedFuture__init_1($task.$call2());
@@ -14475,7 +14794,7 @@ c_ExecutorService_submit = ($this, $task) => {
 c_ExecutorService_execute = ($this, $task) => {
     let $id;
     if ($this.$shutdown0)
-        $rt_throw(jl_IllegalStateException__init_($rt_s(231)));
+        $rt_throw(jl_IllegalStateException__init_($rt_s(230)));
     ju_Objects_requireNonNull($task);
     $id = c_EventLoop_defer$js_body$_1(otji_JS_function(otji_JSWrapper_unwrap(c_ExecutorService$execute$lambda$_3_0__init_0($task)), "run"));
     $this.$pending0.$add(jl_Integer_valueOf($id));
@@ -14682,7 +15001,7 @@ jn_URI_toString = $this => {
             $result.$append14($this.$schemespecificpart);
         else {
             if ($this.$authority !== null) {
-                $result.$append14($rt_s(98));
+                $result.$append14($rt_s(97));
                 $result.$append14($this.$authority);
             }
             if ($this.$path !== null)
@@ -14718,6 +15037,7 @@ function a_Component() {
     a.$background = null;
     a.$focusable = 0;
     a.$cursor = null;
+    a.$paintFailed = 0;
 }
 let a_Component_rootClaimed = 0,
 a_Component_$callClinit = () => {
@@ -14741,11 +15061,11 @@ a_Component__init_ = $this => {
     $this.$focusable = 1;
     $this.$cursor = a_Cursor_getDefaultCursor();
     if (!a_Component_rootClaimed) {
-        $el = a_Component_defaultCanvas$js_body$_67();
+        $el = a_Component_defaultCanvas$js_body$_69();
         if ($el !== null) {
             a_Component_rootClaimed = 1;
             $this.$attach0($el);
-            $this.$start();
+            a_Component_deferStart$js_body$_1(otji_JS_function(otji_JSWrapper_unwrap(a_Component$_init_$lambda$_0_0__init_0($this)), "call"));
         }
     }
 },
@@ -14767,8 +15087,8 @@ a_Component_attach = ($this, $canvas) => {
 a_Component_applyScaling = $this => {
     let $dpr, $cssW, $cssH, var$4, var$5;
     $dpr = window.devicePixelRatio || 1;
-    $cssW = a_Component_cssWidth$js_body$_59($this.$canvas);
-    $cssH = a_Component_cssHeight$js_body$_60($this.$canvas);
+    $cssW = a_Component_cssWidth$js_body$_61($this.$canvas);
+    $cssH = a_Component_cssHeight$js_body$_62($this.$canvas);
     if ($cssW <= 0.0)
         $cssW = $this.$canvas.width;
     if ($cssH <= 0.0)
@@ -14781,7 +15101,7 @@ a_Component_applyScaling = $this => {
     var$4 = $this.$canvas;
     var$5 = Long_lo((jl_Math_round($cssH * $dpr)));
     var$4.height = var$5;
-    a_Component_setCssSize$js_body$_61($this.$canvas, $cssW, $cssH);
+    a_Component_setCssSize$js_body$_63($this.$canvas, $cssW, $cssH);
     $this.$ctx0.setTransform($dpr, 0.0, 0.0, $dpr, 0.0, 0.0);
 },
 a_Component_getWidth = $this => {
@@ -14806,14 +15126,37 @@ a_Component_repaint = $this => {
     $this.$dirty = 1;
 },
 a_Component_start = $this => {
-    a_Component_requestFrame$js_body$_65(otji_JS_function(otji_JSWrapper_unwrap(a_Component$start$lambda$_44_0__init_0($this)), "call"));
+    a_Component_requestFrame$js_body$_67(otji_JS_function(otji_JSWrapper_unwrap(a_Component$start$lambda$_45_0__init_0($this)), "call"));
 },
 a_Component_frame = $this => {
-    if ($this.$dirty && $this.$graphics !== null) {
-        $this.$dirty = 0;
-        $this.$paint1($this.$graphics);
+    let $e, $$je;
+    a: {
+        if ($this.$dirty && $this.$graphics !== null) {
+            $this.$dirty = 0;
+            b: {
+                try {
+                    $this.$paint1($this.$graphics);
+                    break a;
+                } catch ($$e) {
+                    $$je = $rt_wrapException($$e);
+                    if ($$je instanceof jl_RuntimeException) {
+                        $e = $$je;
+                        break b;
+                    } else if ($$je instanceof jl_Error) {
+                        $e = $$je;
+                        break b;
+                    } else {
+                        throw $$e;
+                    }
+                }
+            }
+            if (!$this.$paintFailed) {
+                $this.$paintFailed = 1;
+                a_Component_reportPaintFailure$js_body$_47($rt_ustr(jl_String_valueOf($e)));
+            }
+        }
     }
-    a_Component_requestFrame$js_body$_65(otji_JS_function(otji_JSWrapper_unwrap(a_Component$frame$lambda$_45_0__init_0($this)), "call"));
+    a_Component_requestFrame$js_body$_67(otji_JS_function(otji_JSWrapper_unwrap(a_Component$frame$lambda$_46_0__init_0($this)), "call"));
 },
 a_Component_localX = ($this, $e) => {
     let $left, $w;
@@ -14857,48 +15200,48 @@ a_Component_toAwt = ($this, $e, $clickCount) => {
 a_Component_bindMouse = $this => {
     let var$1, var$2, var$3;
     var$1 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_0__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_0__init_0($this);
     var$1.addEventListener("mousedown", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_1__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_1__init_0($this);
     var$3.addEventListener("mouseup", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_2__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_2__init_0($this);
     var$3.addEventListener("click", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_3__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_3__init_0($this);
     var$3.addEventListener("mouseenter", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_4__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_4__init_0($this);
     var$3.addEventListener("mouseleave", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_5__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_5__init_0($this);
     var$3.addEventListener("mousemove", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_6__init_0($this);
+    var$2 = a_Component$bindMouse$lambda$_52_6__init_0($this);
     var$3.addEventListener("wheel", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindMouse$lambda$_50_7__init_0();
+    var$2 = a_Component$bindMouse$lambda$_52_7__init_0();
     var$3.addEventListener("contextmenu", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
 },
 a_Component_bindKeyboard = $this => {
     let var$1, var$2, var$3;
-    a_Component_makeFocusable$js_body$_62($this.$canvas);
+    a_Component_makeFocusable$js_body$_64($this.$canvas);
     var$1 = $this.$canvas;
-    var$2 = a_Component$bindKeyboard$lambda$_51_0__init_0($this);
+    var$2 = a_Component$bindKeyboard$lambda$_53_0__init_0($this);
     var$1.addEventListener("keydown", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindKeyboard$lambda$_51_1__init_0($this);
+    var$2 = a_Component$bindKeyboard$lambda$_53_1__init_0($this);
     var$3.addEventListener("keyup", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindKeyboard$lambda$_51_2__init_0($this);
+    var$2 = a_Component$bindKeyboard$lambda$_53_2__init_0($this);
     var$3.addEventListener("focus", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
     var$3 = $this.$canvas;
-    var$2 = a_Component$bindKeyboard$lambda$_51_3__init_0($this);
+    var$2 = a_Component$bindKeyboard$lambda$_53_3__init_0($this);
     var$3.addEventListener("blur", otji_JS_function(otji_JSWrapper_unwrap(var$2), "handleEvent"));
 },
 a_Component_bindResize = $this => {
-    a_Component_addWindowResize$js_body$_66(otji_JS_function(otji_JSWrapper_unwrap(a_Component$bindResize$lambda$_52_0__init_0($this)), "call"));
+    a_Component_addWindowResize$js_body$_68(otji_JS_function(otji_JSWrapper_unwrap(a_Component$bindResize$lambda$_54_0__init_0($this)), "call"));
 },
 a_Component_keyCharOf = $e => {
     let $k;
@@ -14906,11 +15249,11 @@ a_Component_keyCharOf = $e => {
     $k = $rt_str($e.key);
     if ($k !== null && jl_String_length($k) == 1)
         return jl_String_charAt($k, 0);
-    if (jl_String_equals($rt_s(232), $k))
+    if (jl_String_equals($rt_s(231), $k))
         return 10;
-    if (jl_String_equals($rt_s(233), $k))
+    if (jl_String_equals($rt_s(232), $k))
         return 9;
-    if (!jl_String_equals($rt_s(234), $k))
+    if (!jl_String_equals($rt_s(233), $k))
         return 65535;
     return 8;
 },
@@ -14946,7 +15289,7 @@ a_Component_lambda$bindKeyboard$10 = ($this, $e) => {
 a_Component_lambda$bindKeyboard$9 = ($this, $e) => {
     let $ke, var$3, var$4, var$5, $l;
     $ke = new ae_KeyEvent;
-    var$3 = a_Component_domKeyCode$js_body$_63($e);
+    var$3 = a_Component_domKeyCode$js_body$_65($e);
     var$4 = a_Component_keyCharOf($e);
     ae_KeyEvent__init_($ke, $this, var$3, var$4, $e.shiftKey ? 1 : 0, $e.ctrlKey ? 1 : 0, $e.altKey ? 1 : 0, $e.metaKey ? 1 : 0);
     var$5 = $this.$keyListeners.$iterator();
@@ -14958,7 +15301,7 @@ a_Component_lambda$bindKeyboard$9 = ($this, $e) => {
 a_Component_lambda$bindKeyboard$8 = ($this, $e) => {
     let $ke, var$3, var$4, var$5, $l, $c;
     $ke = new ae_KeyEvent;
-    var$3 = a_Component_domKeyCode$js_body$_63($e);
+    var$3 = a_Component_domKeyCode$js_body$_65($e);
     var$4 = a_Component_keyCharOf($e);
     ae_KeyEvent__init_($ke, $this, var$3, var$4, $e.shiftKey ? 1 : 0, $e.ctrlKey ? 1 : 0, $e.altKey ? 1 : 0, $e.metaKey ? 1 : 0);
     var$5 = $this.$keyListeners.$iterator();
@@ -15073,39 +15416,47 @@ a_Component_lambda$bindMouse$0 = ($this, $e) => {
 a_Component__clinit_ = () => {
     a_Component_rootClaimed = 0;
 },
-a_Component_cssWidth$js_body$_59 = var$1 => {
+a_Component_deferStart$js_body$_1 = var$1 => {
+    setTimeout(function() {
+        var$1();
+    }, 0);
+},
+a_Component_reportPaintFailure$js_body$_47 = var$1 => {
+    if (globalThis.__ankLog) globalThis.__ankLog('paint failed: ' + var$1); else if (typeof console !== 'undefined') console.error('paint failed:', var$1);
+},
+a_Component_cssWidth$js_body$_61 = var$1 => {
     var r = var$1.getBoundingClientRect();
     return r.width || var$1.clientWidth;
 },
-a_Component_cssHeight$js_body$_60 = var$1 => {
+a_Component_cssHeight$js_body$_62 = var$1 => {
     var r = var$1.getBoundingClientRect();
     return r.height || var$1.clientHeight;
 },
-a_Component_setCssSize$js_body$_61 = (var$1, var$2, var$3) => {
+a_Component_setCssSize$js_body$_63 = (var$1, var$2, var$3) => {
     var$1.style.width = var$2 + 'px';
     var$1.style.height = var$3 + 'px';
 },
-a_Component_makeFocusable$js_body$_62 = var$1 => {
+a_Component_makeFocusable$js_body$_64 = var$1 => {
     if (!var$1.hasAttribute('tabindex')) var$1.setAttribute('tabindex', '0');
     var$1.style.outline = 'none';
     var$1.addEventListener('mousedown', function() {
         var$1.focus();
     });
 },
-a_Component_domKeyCode$js_body$_63 = var$1 => {
+a_Component_domKeyCode$js_body$_65 = var$1 => {
     return var$1.keyCode || var$1.which || 0;
 },
-a_Component_requestFrame$js_body$_65 = var$1 => {
+a_Component_requestFrame$js_body$_67 = var$1 => {
     requestAnimationFrame(function() {
         var$1();
     });
 },
-a_Component_addWindowResize$js_body$_66 = var$1 => {
+a_Component_addWindowResize$js_body$_68 = var$1 => {
     window.addEventListener('resize', function() {
         var$1();
     });
 },
-a_Component_defaultCanvas$js_body$_67 = () => {
+a_Component_defaultCanvas$js_body$_69 = () => {
     if (typeof document === 'undefined') return null;
     return globalThis.__ankCanvas || document.querySelector('canvas');
 };
@@ -15123,7 +15474,7 @@ let d_InteractivePanel__init_ = $this => {
     a_Component__init_($this);
     $this.$mouseX = (-1);
     $this.$mouseY = (-1);
-    $this.$status0 = $rt_s(235);
+    $this.$status0 = $rt_s(234);
     $this.$clicks = 0;
     $this.$iconSize = 96;
     $this.$addMouseMotionListener(d_InteractivePanel$1__init_0($this));
@@ -15142,7 +15493,7 @@ d_InteractivePanel_ensureCard = ($this, $h) => {
         return;
     var$2 = new mr_Room;
     mr_Room$RoomType_$callClinit();
-    mr_Room__init_(var$2, $rt_s(236), $rt_s(237), $rt_s(238), 17, 50, mr_Room$RoomType_PUBLIC);
+    mr_Room__init_(var$2, $rt_s(235), $rt_s(236), $rt_s(237), 17, 50, mr_Room$RoomType_PUBLIC);
     $this.$room = var$2;
     $this.$card = vr_RoomInfoCard__init_0(m_GamePanel__init_0($h), cr_RoomController__init_0($this.$room, 1));
 },
@@ -15171,7 +15522,7 @@ d_InteractivePanel_paint = ($this, $g) => {
         var$8 = $this.$mouseX;
         var$9 = $this.$mouseY;
         var$6 = jl_StringBuilder__init_();
-        jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(var$6, var$8), $rt_s(239)), var$9);
+        jl_StringBuilder_append0(jl_StringBuilder_append(jl_StringBuilder_append0(var$6, var$8), $rt_s(238)), var$9);
         $g2d.$drawString(jl_StringBuilder_toString(var$6), $w - 70 | 0, var$7);
     }
 },
@@ -15180,7 +15531,7 @@ d_InteractivePanel_lambda$new$0 = ($this, $e) => {
     $this.$iconSize = jl_Math_max(48, jl_Math_min(160, $this.$iconSize - ($e.$getWheelRotation() * 8 | 0) | 0));
     var$2 = $this.$iconSize;
     var$3 = jl_StringBuilder__init_();
-    jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(240)), var$2), $rt_s(241));
+    jl_StringBuilder_append(jl_StringBuilder_append0(jl_StringBuilder_append(var$3, $rt_s(239)), var$2), $rt_s(240));
     $this.$status0 = jl_StringBuilder_toString(var$3);
     $this.$repaint();
 };
@@ -15228,7 +15579,7 @@ ag_RoundRectangle2D$Double_arcH = $this => {
 d_ConcurrencyTest = $rt_classWithoutFields(),
 d_ConcurrencyTest_check = ($name, $ok) => {
     let var$3, var$4;
-    var$3 = !$ok ? $rt_s(57) : $rt_s(58);
+    var$3 = !$ok ? $rt_s(56) : $rt_s(57);
     var$4 = jl_StringBuilder__init_();
     jl_StringBuilder_append(jl_StringBuilder_append(var$4, var$3), $name);
     d_ConcurrencyTest_report$js_body$_0($rt_ustr(jl_StringBuilder_toString(var$4)));
@@ -15277,17 +15628,17 @@ d_ConcurrencyTest_submitRunsAndCompletes = () => {
     let $ex, $f;
     $ex = c_Executors_newSingleThreadExecutor();
     $f = $ex.$submit(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0__init_0());
-    d_ConcurrencyTest_check($rt_s(242), $f.$isDone() && ($f.$get0()).$intValue() == 42 ? 1 : 0);
+    d_ConcurrencyTest_check($rt_s(241), $f.$isDone() && ($f.$get0()).$intValue() == 42 ? 1 : 0);
     $ex.$shutdown();
-    d_ConcurrencyTest_check($rt_s(243), $ex.$isShutdown());
+    d_ConcurrencyTest_check($rt_s(242), $ex.$isShutdown());
 },
 d_ConcurrencyTest_executeIsDeferred = () => {
     let $ex, $order;
     $ex = c_Executors_newSingleThreadExecutor();
     $order = ju_ArrayList__init_();
     $ex.$execute(d_ConcurrencyTest$executeIsDeferred$lambda$_6_0__init_0($order));
-    $order.$add($rt_s(244));
-    d_ConcurrencyTest_check($rt_s(245), $order.$size() == 1 && jl_String_equals($order.$get3(0), $rt_s(244)) ? 1 : 0);
+    $order.$add($rt_s(243));
+    d_ConcurrencyTest_check($rt_s(244), $order.$size() == 1 && jl_String_equals($order.$get3(0), $rt_s(243)) ? 1 : 0);
 },
 d_ConcurrencyTest_scheduleRespectsDelay = () => {
     let $ex, $ran, var$3, var$4, $f;
@@ -15298,10 +15649,10 @@ d_ConcurrencyTest_scheduleRespectsDelay = () => {
     var$4 = d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0__init_0($ran);
     juc_TimeUnit_$callClinit();
     $f = $ex.$schedule1(var$4, Long_fromInt(20), juc_TimeUnit_MILLISECONDS);
-    d_ConcurrencyTest_check($rt_s(246), var$3[0] ? 0 : 1);
-    d_ConcurrencyTest_check($rt_s(247), !$f.$isDone() && !$f.$isCancelled() ? 1 : 0);
+    d_ConcurrencyTest_check($rt_s(245), var$3[0] ? 0 : 1);
+    d_ConcurrencyTest_check($rt_s(246), !$f.$isDone() && !$f.$isCancelled() ? 1 : 0);
     $f.$cancel(0);
-    d_ConcurrencyTest_check($rt_s(248), $f.$isCancelled());
+    d_ConcurrencyTest_check($rt_s(247), $f.$isCancelled());
 },
 d_ConcurrencyTest_fixedRateRepeatsAndCancels = () => {
     let $ex, var$2, $f, $cancelled;
@@ -15310,7 +15661,7 @@ d_ConcurrencyTest_fixedRateRepeatsAndCancels = () => {
     juc_TimeUnit_$callClinit();
     $f = $ex.$scheduleAtFixedRate(var$2, Long_ZERO, Long_fromInt(10), juc_TimeUnit_MILLISECONDS);
     $cancelled = $f.$cancel(0);
-    d_ConcurrencyTest_check($rt_s(249), $cancelled && $f.$isCancelled() ? 1 : 0);
+    d_ConcurrencyTest_check($rt_s(248), $cancelled && $f.$isCancelled() ? 1 : 0);
 },
 d_ConcurrencyTest_completableChain = () => {
     let $f, $seen, var$3, var$4, var$5, $outcome;
@@ -15321,28 +15672,28 @@ d_ConcurrencyTest_completableChain = () => {
     var$4 = $f.$thenApply(d_ConcurrencyTest$completableChain$lambda$_9_0__init_0());
     var$5 = d_ConcurrencyTest$completableChain$lambda$_9_1__init_0($seen);
     var$4.$thenAccept(var$5);
-    d_ConcurrencyTest_check($rt_s(250), var$3[0] != 30 ? 0 : 1);
+    d_ConcurrencyTest_check($rt_s(249), var$3[0] != 30 ? 0 : 1);
     $outcome = $rt_createArray(jl_String, 1);
     var$3 = $outcome.data;
     var$3[0] = null;
-    (c_CompletableFuture_completedFuture($rt_s(251))).$whenComplete(d_ConcurrencyTest$completableChain$lambda$_9_2__init_0($outcome));
-    d_ConcurrencyTest_check($rt_s(252), jl_String_equals($rt_s(253), var$3[0]));
+    (c_CompletableFuture_completedFuture($rt_s(250))).$whenComplete(d_ConcurrencyTest$completableChain$lambda$_9_2__init_0($outcome));
+    d_ConcurrencyTest_check($rt_s(251), jl_String_equals($rt_s(252), var$3[0]));
 },
 d_ConcurrencyTest_completableFailure = () => {
     let $f, $recovered, var$3, $sawError;
     $f = c_CompletableFuture__init_();
-    $f.$completeExceptionally(jl_IllegalStateException__init_($rt_s(254)));
-    d_ConcurrencyTest_check($rt_s(255), $f.$isCompletedExceptionally());
+    $f.$completeExceptionally(jl_IllegalStateException__init_($rt_s(253)));
+    d_ConcurrencyTest_check($rt_s(254), $f.$isCompletedExceptionally());
     $recovered = $rt_createArray(jl_String, 1);
     var$3 = $recovered.data;
     var$3[0] = null;
     ($f.$exceptionally(d_ConcurrencyTest$completableFailure$lambda$_10_0__init_0())).$thenAccept(d_ConcurrencyTest$completableFailure$lambda$_10_1__init_0($recovered));
-    d_ConcurrencyTest_check($rt_s(256), jl_String_equals($rt_s(257), var$3[0]));
+    d_ConcurrencyTest_check($rt_s(255), jl_String_equals($rt_s(256), var$3[0]));
     $sawError = $rt_createBooleanArray(1);
     var$3 = $sawError.data;
     var$3[0] = 0;
     $f.$whenComplete(d_ConcurrencyTest$completableFailure$lambda$_10_2__init_0($sawError));
-    d_ConcurrencyTest_check($rt_s(258), var$3[0]);
+    d_ConcurrencyTest_check($rt_s(257), var$3[0]);
 },
 d_ConcurrencyTest_joinOnIncompleteIsLoud = () => {
     let $f, $threw, $$je;
@@ -15362,23 +15713,23 @@ d_ConcurrencyTest_joinOnIncompleteIsLoud = () => {
             }
         }
     }
-    d_ConcurrencyTest_check($rt_s(259), $threw);
+    d_ConcurrencyTest_check($rt_s(258), $threw);
 },
 d_ConcurrencyTest_invokeLaterOrdering = () => {
     let $order;
     $order = ju_ArrayList__init_();
     s_SwingUtilities_invokeLater(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0__init_0($order));
-    $order.$add($rt_s(260));
-    d_ConcurrencyTest_check($rt_s(261), $order.$size() != 1 ? 0 : 1);
-    d_ConcurrencyTest_check($rt_s(262), s_SwingUtilities_isEventDispatchThread());
+    $order.$add($rt_s(259));
+    d_ConcurrencyTest_check($rt_s(260), $order.$size() != 1 ? 0 : 1);
+    d_ConcurrencyTest_check($rt_s(261), s_SwingUtilities_isEventDispatchThread());
     s_SwingUtilities_invokeAndWait(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1__init_0($order));
-    d_ConcurrencyTest_check($rt_s(263), $order.$contains1($rt_s(264)));
+    d_ConcurrencyTest_check($rt_s(262), $order.$contains1($rt_s(263)));
 },
 d_ConcurrencyTest_lambda$invokeLaterOrdering$24 = $order => {
-    $order.$add($rt_s(264));
+    $order.$add($rt_s(263));
 },
 d_ConcurrencyTest_lambda$invokeLaterOrdering$23 = $order => {
-    $order.$add($rt_s(265));
+    $order.$add($rt_s(264));
 },
 d_ConcurrencyTest_lambda$completableFailure$22 = ($sawError, $v, $t) => {
     let var$4;
@@ -15389,7 +15740,7 @@ d_ConcurrencyTest_lambda$completableFailure$21 = ($recovered, $v) => {
     $recovered.data[0] = $v;
 },
 d_ConcurrencyTest_lambda$completableFailure$20 = $t => {
-    return $rt_s(257);
+    return $rt_s(256);
 },
 d_ConcurrencyTest_lambda$completableChain$19 = ($outcome, $v, $t) => {
     let var$4, var$5, var$6;
@@ -15413,7 +15764,7 @@ d_ConcurrencyTest_lambda$scheduleRespectsDelay$15 = $ran => {
     return jl_Boolean_valueOf(1);
 },
 d_ConcurrencyTest_lambda$executeIsDeferred$14 = $order => {
-    $order.$add($rt_s(266));
+    $order.$add($rt_s(265));
 },
 d_ConcurrencyTest_lambda$submitRunsAndCompletes$13 = () => {
     return jl_Integer_valueOf(42);
@@ -15422,7 +15773,7 @@ d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$12 = $seq => {
     let var$2;
     $seq.$add(jl_Integer_valueOf(3));
     var$2 = $seq.$size() == 3 && ($seq.$get3(0)).$intValue() == 1 && ($seq.$get3(1)).$intValue() == 2 && ($seq.$get3(2)).$intValue() == 3 ? 1 : 0;
-    d_ConcurrencyTest_check($rt_s(267), var$2);
+    d_ConcurrencyTest_check($rt_s(266), var$2);
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$11 = $seq => {
     $seq.$add(jl_Integer_valueOf(2));
@@ -15431,16 +15782,16 @@ d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$10 = $seq => {
     $seq.$add(jl_Integer_valueOf(1));
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$9 = $v => {
-    d_ConcurrencyTest_check($rt_s(268), jl_String_equals($rt_s(269), $v));
+    d_ConcurrencyTest_check($rt_s(267), jl_String_equals($rt_s(268), $v));
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$8 = $t => {
-    return $rt_s(269);
+    return $rt_s(268);
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$7 = () => {
-    $rt_throw(jl_IllegalStateException__init_($rt_s(216)));
+    $rt_throw(jl_IllegalStateException__init_($rt_s(215)));
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$6 = $v => {
-    d_ConcurrencyTest_check($rt_s(270), $v.$intValue() != 42 ? 0 : 1);
+    d_ConcurrencyTest_check($rt_s(269), $v.$intValue() != 42 ? 0 : 1);
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$5 = $v => {
     return jl_Integer_valueOf($v.$intValue() * 2 | 0);
@@ -15454,17 +15805,17 @@ d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$3 = ($ticks, $periodic) => {
     var$3[0] = var$3[0] + 1 | 0;
     if (var$3[0] == 3) {
         $periodic.data[0].$cancel(0);
-        d_ConcurrencyTest_check($rt_s(271), 1);
+        d_ConcurrencyTest_check($rt_s(270), 1);
     }
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$2 = () => {
-    d_ConcurrencyTest_check($rt_s(272), 1);
+    d_ConcurrencyTest_check($rt_s(271), 1);
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$1 = () => {
-    d_ConcurrencyTest_check($rt_s(273), 1);
+    d_ConcurrencyTest_check($rt_s(272), 1);
 },
 d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$0 = () => {
-    d_ConcurrencyTest_check($rt_s(274), 1);
+    d_ConcurrencyTest_check($rt_s(273), 1);
 },
 d_ConcurrencyTest_report$js_body$_0 = var$1 => {
     if (globalThis.__ankTest) globalThis.__ankTest(var$1);
@@ -15481,14 +15832,33 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_2__init_0 = () => {
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_2_run = var$0 => {
     d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$2();
 };
+function a_Component$frame$lambda$_46_0() {
+    jl_Object.call(this);
+    this.$_041 = null;
+}
+let a_Component$frame$lambda$_46_0__init_ = (var$0, var$1) => {
+    jl_Object__init_(var$0);
+    var$0.$_041 = var$1;
+},
+a_Component$frame$lambda$_46_0__init_0 = var_0 => {
+    let var_1 = new a_Component$frame$lambda$_46_0();
+    a_Component$frame$lambda$_46_0__init_(var_1, var_0);
+    return var_1;
+},
+a_Component$frame$lambda$_46_0_call = var$0 => {
+    a_Component_frame(var$0.$_041);
+},
+a_Component$frame$lambda$_46_0_call$exported$0 = var$1 => {
+    var$1.$call();
+};
 function d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3() {
     let a = this; jl_Object.call(a);
-    a.$_02 = null;
+    a.$_01 = null;
     a.$_1 = null;
 }
 let d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_02 = var$1;
+    var$0.$_01 = var$1;
     var$0.$_1 = var$2;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3__init_0 = (var_0, var_1) => {
@@ -15497,7 +15867,7 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3__init_0 = (var_0, var_1) 
     return var_2;
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3_run = var$0 => {
-    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$3(var$0.$_02, var$0.$_1);
+    d_ConcurrencyTest_lambda$deferredWorkActuallyRuns$3(var$0.$_01, var$0.$_1);
 },
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_0 = $rt_classWithoutFields(),
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_0__init_ = var$0 => {
@@ -15623,89 +15993,6 @@ d_Main_log$js_body$_1 = var$1 => {
 d_Main__clinit_ = () => {
     return;
 },
-otjde_EventListener = $rt_classWithoutFields(0);
-function a_Component$bindKeyboard$lambda$_51_0() {
-    jl_Object.call(this);
-    this.$_010 = null;
-}
-let a_Component$bindKeyboard$lambda$_51_0__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_010 = var$1;
-},
-a_Component$bindKeyboard$lambda$_51_0__init_0 = var_0 => {
-    let var_1 = new a_Component$bindKeyboard$lambda$_51_0();
-    a_Component$bindKeyboard$lambda$_51_0__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindKeyboard$lambda$_51_0_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindKeyboard$lambda$_51_0_handleEvent(var$0, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_0_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindKeyboard$8(var$0.$_010, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_0_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindKeyboard$lambda$_51_1() {
-    jl_Object.call(this);
-    this.$_0 = null;
-}
-let a_Component$bindKeyboard$lambda$_51_1__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_0 = var$1;
-},
-a_Component$bindKeyboard$lambda$_51_1__init_0 = var_0 => {
-    let var_1 = new a_Component$bindKeyboard$lambda$_51_1();
-    a_Component$bindKeyboard$lambda$_51_1__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindKeyboard$lambda$_51_1_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindKeyboard$lambda$_51_1_handleEvent(var$0, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_1_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindKeyboard$9(var$0.$_0, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_1_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindKeyboard$lambda$_51_2() {
-    jl_Object.call(this);
-    this.$_044 = null;
-}
-let a_Component$bindKeyboard$lambda$_51_2__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_044 = var$1;
-},
-a_Component$bindKeyboard$lambda$_51_2__init_0 = var_0 => {
-    let var_1 = new a_Component$bindKeyboard$lambda$_51_2();
-    a_Component$bindKeyboard$lambda$_51_2__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindKeyboard$lambda$_51_2_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindKeyboard$10(var$0.$_044, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_2_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindKeyboard$lambda$_51_3() {
-    jl_Object.call(this);
-    this.$_030 = null;
-}
-let a_Component$bindKeyboard$lambda$_51_3__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_030 = var$1;
-},
-a_Component$bindKeyboard$lambda$_51_3__init_0 = var_0 => {
-    let var_1 = new a_Component$bindKeyboard$lambda$_51_3();
-    a_Component$bindKeyboard$lambda$_51_3__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindKeyboard$lambda$_51_3_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindKeyboard$11(var$0.$_030, var$1);
-},
-a_Component$bindKeyboard$lambda$_51_3_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-},
 ju_Base64 = $rt_classWithoutFields(),
 ju_Base64_getUrlDecoder = () => {
     let var$1;
@@ -15755,8 +16042,8 @@ s_FloatControl$Type_toString = $this => {
     return $this.$name1;
 },
 s_FloatControl$Type__clinit_ = () => {
-    s_FloatControl$Type_MASTER_GAIN = s_FloatControl$Type__init_($rt_s(275));
-    s_FloatControl$Type_VOLUME = s_FloatControl$Type__init_($rt_s(276));
+    s_FloatControl$Type_MASTER_GAIN = s_FloatControl$Type__init_($rt_s(274));
+    s_FloatControl$Type_VOLUME = s_FloatControl$Type__init_($rt_s(275));
 },
 ji_UnsupportedEncodingException = $rt_classWithoutFields(ji_IOException),
 ji_UnsupportedEncodingException__init_ = $this => {
@@ -15775,25 +16062,6 @@ jn_BufferOverflowException__init_ = () => {
     let var_0 = new jn_BufferOverflowException();
     jn_BufferOverflowException__init_0(var_0);
     return var_0;
-};
-function a_Component$start$lambda$_44_0() {
-    jl_Object.call(this);
-    this.$_042 = null;
-}
-let a_Component$start$lambda$_44_0__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_042 = var$1;
-},
-a_Component$start$lambda$_44_0__init_0 = var_0 => {
-    let var_1 = new a_Component$start$lambda$_44_0();
-    a_Component$start$lambda$_44_0__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$start$lambda$_44_0_call = var$0 => {
-    a_Component_frame(var$0.$_042);
-},
-a_Component$start$lambda$_44_0_call$exported$0 = var$1 => {
-    var$1.$call1();
 };
 function n_BrowserWebSocket$BuilderImpl() {
     let a = this; jl_Object.call(a);
@@ -15849,12 +16117,12 @@ n_BrowserWebSocket$BuilderImpl_buildAsync = ($this, $uri, $listener) => {
 },
 n_BrowserWebSocket$BuilderImpl_headersAsJson = $this => {
     let $sb, $i, var$3, var$4;
-    $sb = jl_StringBuilder__init_2($rt_s(277));
+    $sb = jl_StringBuilder__init_2($rt_s(276));
     $i = 0;
     while ($i < $this.$headers.$size()) {
         if ($i > 0)
             $sb.$append0(44);
-        var$3 = (($sb.$append0(34)).$append14(($this.$headers.$get3($i)).data[0])).$append14($rt_s(278));
+        var$3 = (($sb.$append0(34)).$append14(($this.$headers.$get3($i)).data[0])).$append14($rt_s(277));
         var$4 = $this.$headers;
         (var$3.$append14((var$4.$get3($i)).data[1])).$append0(34);
         $i = $i + 1 | 0;
@@ -15898,12 +16166,12 @@ n_BrowserWebSocket$BuilderImpl_encode = $s => {
 };
 function n_Socket$connect$lambda$_13_0() {
     let a = this; jl_Object.call(a);
-    a.$_040 = null;
+    a.$_043 = null;
     a.$_111 = null;
 }
 let n_Socket$connect$lambda$_13_0__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_040 = var$1;
+    var$0.$_043 = var$1;
     var$0.$_111 = var$2;
 },
 n_Socket$connect$lambda$_13_0__init_0 = (var_0, var_1) => {
@@ -15912,7 +16180,7 @@ n_Socket$connect$lambda$_13_0__init_0 = (var_0, var_1) => {
     return var_2;
 },
 n_Socket$connect$lambda$_13_0_handle = var$0 => {
-    n_Socket_lambda$connect$0(var$0.$_040, var$0.$_111);
+    n_Socket_lambda$connect$0(var$0.$_043, var$0.$_111);
 },
 n_Socket$connect$lambda$_13_0_handle$exported$0 = var$1 => {
     var$1.$handle1();
@@ -16088,11 +16356,11 @@ ju_HashMap_areEqualKeys = ($key1, $key2) => {
 };
 function jl_Thread$start$lambda$_4_0() {
     jl_Object.call(this);
-    this.$_033 = null;
+    this.$_035 = null;
 }
 let jl_Thread$start$lambda$_4_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_033 = var$1;
+    var$0.$_035 = var$1;
 },
 jl_Thread$start$lambda$_4_0__init_0 = var_0 => {
     let var_1 = new jl_Thread$start$lambda$_4_0();
@@ -16108,7 +16376,7 @@ jl_Thread$start$lambda$_4_0_run = var$0 => {
     }
     main: while (true) { switch ($ptr) {
     case 0:
-        var$1 = var$0.$_033;
+        var$1 = var$0.$_035;
         $ptr = 1;
     case 1:
         jl_Thread_runThread(var$1);
@@ -16161,7 +16429,7 @@ jn_ByteBufferJsImpl__init_0 = (var_0, var_1, var_2, var_3, var_4) => {
 jn_ByteBufferJsImpl_arrayImpl = $this => {
     if ($this.$array3 !== null)
         return $this.$array3;
-    $rt_throw(jl_UnsupportedOperationException__init_1());
+    $rt_throw(jl_UnsupportedOperationException__init_0());
 },
 jn_ByteBufferJsImpl_hasArrayImpl = $this => {
     return $this.$array3 === null ? 0 : 1;
@@ -16237,7 +16505,7 @@ jnc_CoderResult_isUnmappable = $this => {
 jnc_CoderResult_length = $this => {
     if ($this.$isError())
         return $this.$length1;
-    $rt_throw(jl_UnsupportedOperationException__init_1());
+    $rt_throw(jl_UnsupportedOperationException__init_0());
 },
 jnc_CoderResult_malformedForLength = $length => {
     jnc_CoderResult_$callClinit();
@@ -16449,12 +16717,12 @@ otcit_DoubleAnalyzer__clinit_ = () => {
 };
 function n_Socket$connect$lambda$_13_3() {
     let a = this; jl_Object.call(a);
-    a.$_06 = null;
+    a.$_09 = null;
     a.$_11 = null;
 }
 let n_Socket$connect$lambda$_13_3__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_06 = var$1;
+    var$0.$_09 = var$1;
     var$0.$_11 = var$2;
 },
 n_Socket$connect$lambda$_13_3__init_0 = (var_0, var_1) => {
@@ -16463,18 +16731,18 @@ n_Socket$connect$lambda$_13_3__init_0 = (var_0, var_1) => {
     return var_2;
 },
 n_Socket$connect$lambda$_13_3_handle = var$0 => {
-    n_Socket_lambda$connect$3(var$0.$_06, var$0.$_11);
+    n_Socket_lambda$connect$3(var$0.$_09, var$0.$_11);
 },
 n_Socket$connect$lambda$_13_3_handle$exported$0 = var$1 => {
     var$1.$handle1();
 };
 function n_Socket$connect$lambda$_13_1() {
     jl_Object.call(this);
-    this.$_023 = null;
+    this.$_024 = null;
 }
 let n_Socket$connect$lambda$_13_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_023 = var$1;
+    var$0.$_024 = var$1;
 },
 n_Socket$connect$lambda$_13_1__init_0 = var_0 => {
     let var_1 = new n_Socket$connect$lambda$_13_1();
@@ -16482,7 +16750,7 @@ n_Socket$connect$lambda$_13_1__init_0 = var_0 => {
     return var_1;
 },
 n_Socket$connect$lambda$_13_1_handle = (var$0, var$1) => {
-    n_Socket_lambda$connect$1(var$0.$_023, var$1);
+    n_Socket_lambda$connect$1(var$0.$_024, var$1);
 },
 n_Socket$connect$lambda$_13_1_handle$exported$0 = (var$1, var$2) => {
     var$2 = $rt_str(var$2);
@@ -16490,11 +16758,11 @@ n_Socket$connect$lambda$_13_1_handle$exported$0 = (var$1, var$2) => {
 };
 function c_CompletableFuture$thenAccept$lambda$_12_0() {
     jl_Object.call(this);
-    this.$_017 = null;
+    this.$_019 = null;
 }
 let c_CompletableFuture$thenAccept$lambda$_12_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_017 = var$1;
+    var$0.$_019 = var$1;
 },
 c_CompletableFuture$thenAccept$lambda$_12_0__init_0 = var_0 => {
     let var_1 = new c_CompletableFuture$thenAccept$lambda$_12_0();
@@ -16505,16 +16773,16 @@ c_CompletableFuture$thenAccept$lambda$_12_0_apply0 = (var$0, var$1) => {
     return c_CompletableFuture$thenAccept$lambda$_12_0_apply(var$0, var$1);
 },
 c_CompletableFuture$thenAccept$lambda$_12_0_apply = (var$0, var$1) => {
-    return c_CompletableFuture_lambda$thenAccept$4(var$0.$_017, var$1);
+    return c_CompletableFuture_lambda$thenAccept$4(var$0.$_019, var$1);
 };
 function n_Socket$connect$lambda$_13_2() {
     let a = this; jl_Object.call(a);
-    a.$_020 = null;
+    a.$_022 = null;
     a.$_16 = null;
 }
 let n_Socket$connect$lambda$_13_2__init_ = (var$0, var$1, var$2) => {
     jl_Object__init_(var$0);
-    var$0.$_020 = var$1;
+    var$0.$_022 = var$1;
     var$0.$_16 = var$2;
 },
 n_Socket$connect$lambda$_13_2__init_0 = (var_0, var_1) => {
@@ -16523,7 +16791,7 @@ n_Socket$connect$lambda$_13_2__init_0 = (var_0, var_1) => {
     return var_2;
 },
 n_Socket$connect$lambda$_13_2_handle = (var$0, var$1, var$2) => {
-    n_Socket_lambda$connect$2(var$0.$_020, var$0.$_16, var$1, var$2);
+    n_Socket_lambda$connect$2(var$0.$_022, var$0.$_16, var$1, var$2);
 },
 n_Socket$connect$lambda$_13_2_handle$exported$0 = (var$1, var$2, var$3) => {
     let var$4;
@@ -16648,7 +16916,7 @@ d_WebSocketTest$Listener__init_0 = () => {
 },
 d_WebSocketTest$Listener_onOpen = ($this, $ws) => {
     d_WebSocketTest_$callClinit();
-    d_WebSocketTest_events.$add($rt_s(279));
+    d_WebSocketTest_events.$add($rt_s(278));
     $ws.$request(Long_fromInt(1));
 },
 d_WebSocketTest$Listener_onText = ($this, $ws, $data, $last) => {
@@ -16657,9 +16925,9 @@ d_WebSocketTest$Listener_onText = ($this, $ws, $data, $last) => {
     var$4 = d_WebSocketTest_events;
     var$5 = jl_String_valueOf($data);
     var$6 = jl_StringBuilder__init_();
-    jl_StringBuilder_append2(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(280)), var$5), 58), $last);
+    jl_StringBuilder_append2(jl_StringBuilder_append1(jl_StringBuilder_append(jl_StringBuilder_append(var$6, $rt_s(279)), var$5), 58), $last);
     var$4.$add(jl_StringBuilder_toString(var$6));
-    d_WebSocketTest_check($rt_s(281), $last);
+    d_WebSocketTest_check($rt_s(280), $last);
     return null;
 },
 d_WebSocketTest$Listener_onClose = ($this, $ws, $code, $reason) => {
@@ -16667,79 +16935,13 @@ d_WebSocketTest$Listener_onClose = ($this, $ws, $code, $reason) => {
     d_WebSocketTest_$callClinit();
     var$4 = d_WebSocketTest_events;
     var$5 = jl_StringBuilder__init_();
-    jl_StringBuilder_append(jl_StringBuilder_append1(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(282)), $code), 58), $reason);
+    jl_StringBuilder_append(jl_StringBuilder_append1(jl_StringBuilder_append0(jl_StringBuilder_append(var$5, $rt_s(281)), $code), 58), $reason);
     var$4.$add(jl_StringBuilder_toString(var$5));
     return null;
 },
 d_WebSocketTest$Listener_onError = ($this, $ws, $t) => {
     d_WebSocketTest_$callClinit();
-    d_WebSocketTest_events.$add($rt_s(283));
-};
-function a_Component$bindMouse$lambda$_50_6() {
-    jl_Object.call(this);
-    this.$_07 = null;
-}
-let a_Component$bindMouse$lambda$_50_6__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_07 = var$1;
-},
-a_Component$bindMouse$lambda$_50_6__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_6();
-    a_Component$bindMouse$lambda$_50_6__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_6_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_6_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_6_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$6(var$0.$_07, var$1);
-},
-a_Component$bindMouse$lambda$_50_6_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindMouse$lambda$_50_5() {
-    jl_Object.call(this);
-    this.$_016 = null;
-}
-let a_Component$bindMouse$lambda$_50_5__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_016 = var$1;
-},
-a_Component$bindMouse$lambda$_50_5__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_5();
-    a_Component$bindMouse$lambda$_50_5__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_5_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_5_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_5_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$5(var$0.$_016, var$1);
-},
-a_Component$bindMouse$lambda$_50_5_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindMouse$lambda$_50_4() {
-    jl_Object.call(this);
-    this.$_035 = null;
-}
-let a_Component$bindMouse$lambda$_50_4__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_035 = var$1;
-},
-a_Component$bindMouse$lambda$_50_4__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_4();
-    a_Component$bindMouse$lambda$_50_4__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_4_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_4_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_4_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$4(var$0.$_035, var$1);
-},
-a_Component$bindMouse$lambda$_50_4_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
+    d_WebSocketTest_events.$add($rt_s(282));
 };
 function otci_CharFlow() {
     let a = this; jl_Object.call(a);
@@ -16755,35 +16957,13 @@ otci_CharFlow__init_0 = var_0 => {
     otci_CharFlow__init_(var_1, var_0);
     return var_1;
 };
-function a_Component$bindMouse$lambda$_50_3() {
-    jl_Object.call(this);
-    this.$_045 = null;
-}
-let a_Component$bindMouse$lambda$_50_3__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_045 = var$1;
-},
-a_Component$bindMouse$lambda$_50_3__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_3();
-    a_Component$bindMouse$lambda$_50_3__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_3_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_3_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_3_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$3(var$0.$_045, var$1);
-},
-a_Component$bindMouse$lambda$_50_3_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
 function d_ConcurrencyTest$executeIsDeferred$lambda$_6_0() {
     jl_Object.call(this);
-    this.$_026 = null;
+    this.$_027 = null;
 }
 let d_ConcurrencyTest$executeIsDeferred$lambda$_6_0__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_026 = var$1;
+    var$0.$_027 = var$1;
 },
 d_ConcurrencyTest$executeIsDeferred$lambda$_6_0__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$executeIsDeferred$lambda$_6_0();
@@ -16791,51 +16971,7 @@ d_ConcurrencyTest$executeIsDeferred$lambda$_6_0__init_0 = var_0 => {
     return var_1;
 },
 d_ConcurrencyTest$executeIsDeferred$lambda$_6_0_run = var$0 => {
-    d_ConcurrencyTest_lambda$executeIsDeferred$14(var$0.$_026);
-};
-function a_Component$bindMouse$lambda$_50_2() {
-    jl_Object.call(this);
-    this.$_014 = null;
-}
-let a_Component$bindMouse$lambda$_50_2__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_014 = var$1;
-},
-a_Component$bindMouse$lambda$_50_2__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_2();
-    a_Component$bindMouse$lambda$_50_2__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_2_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_2_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_2_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$2(var$0.$_014, var$1);
-},
-a_Component$bindMouse$lambda$_50_2_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
-};
-function a_Component$bindMouse$lambda$_50_1() {
-    jl_Object.call(this);
-    this.$_029 = null;
-}
-let a_Component$bindMouse$lambda$_50_1__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_029 = var$1;
-},
-a_Component$bindMouse$lambda$_50_1__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_1();
-    a_Component$bindMouse$lambda$_50_1__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_1_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_1_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_1_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$1(var$0.$_029, var$1);
-},
-a_Component$bindMouse$lambda$_50_1_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
+    d_ConcurrencyTest_lambda$executeIsDeferred$14(var$0.$_027);
 },
 c_EventLoop = $rt_classWithoutFields(),
 c_EventLoop_defer$js_body$_1 = var$1 => {
@@ -16852,28 +16988,6 @@ c_EventLoop_repeat$js_body$_3 = (var$1, var$2) => {
     return setInterval(function() {
         var$1();
     }, var$2);
-};
-function a_Component$bindMouse$lambda$_50_0() {
-    jl_Object.call(this);
-    this.$_043 = null;
-}
-let a_Component$bindMouse$lambda$_50_0__init_ = (var$0, var$1) => {
-    jl_Object__init_(var$0);
-    var$0.$_043 = var$1;
-},
-a_Component$bindMouse$lambda$_50_0__init_0 = var_0 => {
-    let var_1 = new a_Component$bindMouse$lambda$_50_0();
-    a_Component$bindMouse$lambda$_50_0__init_(var_1, var_0);
-    return var_1;
-},
-a_Component$bindMouse$lambda$_50_0_handleEvent0 = (var$0, var$1) => {
-    a_Component$bindMouse$lambda$_50_0_handleEvent(var$0, var$1);
-},
-a_Component$bindMouse$lambda$_50_0_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$0(var$0.$_043, var$1);
-},
-a_Component$bindMouse$lambda$_50_0_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
 },
 d_ConcurrencyTest$completableFailure$lambda$_10_0 = $rt_classWithoutFields(),
 d_ConcurrencyTest$completableFailure$lambda$_10_0__init_ = var$0 => {
@@ -16892,11 +17006,11 @@ d_ConcurrencyTest$completableFailure$lambda$_10_0_apply = (var$0, var$1) => {
 };
 function d_ConcurrencyTest$completableFailure$lambda$_10_1() {
     jl_Object.call(this);
-    this.$_032 = null;
+    this.$_033 = null;
 }
 let d_ConcurrencyTest$completableFailure$lambda$_10_1__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_032 = var$1;
+    var$0.$_033 = var$1;
 },
 d_ConcurrencyTest$completableFailure$lambda$_10_1__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$completableFailure$lambda$_10_1();
@@ -16907,15 +17021,15 @@ d_ConcurrencyTest$completableFailure$lambda$_10_1_accept0 = (var$0, var$1) => {
     d_ConcurrencyTest$completableFailure$lambda$_10_1_accept(var$0, var$1);
 },
 d_ConcurrencyTest$completableFailure$lambda$_10_1_accept = (var$0, var$1) => {
-    d_ConcurrencyTest_lambda$completableFailure$21(var$0.$_032, var$1);
+    d_ConcurrencyTest_lambda$completableFailure$21(var$0.$_033, var$1);
 };
 function d_ConcurrencyTest$completableFailure$lambda$_10_2() {
     jl_Object.call(this);
-    this.$_053 = null;
+    this.$_054 = null;
 }
 let d_ConcurrencyTest$completableFailure$lambda$_10_2__init_ = (var$0, var$1) => {
     jl_Object__init_(var$0);
-    var$0.$_053 = var$1;
+    var$0.$_054 = var$1;
 },
 d_ConcurrencyTest$completableFailure$lambda$_10_2__init_0 = var_0 => {
     let var_1 = new d_ConcurrencyTest$completableFailure$lambda$_10_2();
@@ -16926,7 +17040,7 @@ d_ConcurrencyTest$completableFailure$lambda$_10_2_accept0 = (var$0, var$1, var$2
     d_ConcurrencyTest$completableFailure$lambda$_10_2_accept(var$0, var$1, var$2);
 },
 d_ConcurrencyTest$completableFailure$lambda$_10_2_accept = (var$0, var$1, var$2) => {
-    d_ConcurrencyTest_lambda$completableFailure$22(var$0.$_053, var$1, var$2);
+    d_ConcurrencyTest_lambda$completableFailure$22(var$0.$_054, var$1, var$2);
 };
 function jnc_UnmappableCharacterException() {
     jnc_CharacterCodingException.call(this);
@@ -16945,7 +17059,7 @@ jnc_UnmappableCharacterException_getMessage = $this => {
     let var$1, var$2;
     var$1 = $this.$length2;
     var$2 = jl_StringBuilder__init_();
-    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(284)), var$1);
+    jl_StringBuilder_append0(jl_StringBuilder_append(var$2, $rt_s(283)), var$1);
     return jl_StringBuilder_toString(var$2);
 };
 function a_FontMetrics() {
@@ -16994,10 +17108,10 @@ s_LineEvent$Type__init_ = var_0 => {
     return var_1;
 },
 s_LineEvent$Type__clinit_ = () => {
-    s_LineEvent$Type_OPEN = s_LineEvent$Type__init_($rt_s(285));
-    s_LineEvent$Type_CLOSE = s_LineEvent$Type__init_($rt_s(286));
-    s_LineEvent$Type_START = s_LineEvent$Type__init_($rt_s(287));
-    s_LineEvent$Type_STOP = s_LineEvent$Type__init_($rt_s(288));
+    s_LineEvent$Type_OPEN = s_LineEvent$Type__init_($rt_s(284));
+    s_LineEvent$Type_CLOSE = s_LineEvent$Type__init_($rt_s(285));
+    s_LineEvent$Type_START = s_LineEvent$Type__init_($rt_s(286));
+    s_LineEvent$Type_STOP = s_LineEvent$Type__init_($rt_s(287));
 },
 jn_BufferUnderflowException = $rt_classWithoutFields(jl_RuntimeException),
 jn_BufferUnderflowException__init_ = $this => {
@@ -17007,21 +17121,6 @@ jn_BufferUnderflowException__init_0 = () => {
     let var_0 = new jn_BufferUnderflowException();
     jn_BufferUnderflowException__init_(var_0);
     return var_0;
-},
-a_Component$bindMouse$lambda$_50_7 = $rt_classWithoutFields(),
-a_Component$bindMouse$lambda$_50_7__init_ = var$0 => {
-    jl_Object__init_(var$0);
-},
-a_Component$bindMouse$lambda$_50_7__init_0 = () => {
-    let var_0 = new a_Component$bindMouse$lambda$_50_7();
-    a_Component$bindMouse$lambda$_50_7__init_(var_0);
-    return var_0;
-},
-a_Component$bindMouse$lambda$_50_7_handleEvent = (var$0, var$1) => {
-    a_Component_lambda$bindMouse$7(var$1);
-},
-a_Component$bindMouse$lambda$_50_7_handleEvent$exported$0 = (var$1, var$2) => {
-    var$1.$handleEvent0(var$2);
 };
 function juc_TimeUnit() {
     jl_Enum.call(this);
@@ -17076,13 +17175,13 @@ juc_TimeUnit_$values = () => {
     return var$1;
 },
 juc_TimeUnit__clinit_ = () => {
-    juc_TimeUnit_NANOSECONDS = juc_TimeUnit__init_($rt_s(289), 0, Long_fromInt(1));
-    juc_TimeUnit_MICROSECONDS = juc_TimeUnit__init_($rt_s(290), 1, Long_fromInt(1000));
-    juc_TimeUnit_MILLISECONDS = juc_TimeUnit__init_($rt_s(291), 2, Long_fromInt(1000000));
-    juc_TimeUnit_SECONDS = juc_TimeUnit__init_($rt_s(292), 3, Long_fromInt(1000000000));
-    juc_TimeUnit_MINUTES = juc_TimeUnit__init_($rt_s(293), 4, Long_create(4165425152, 13));
-    juc_TimeUnit_HOURS = juc_TimeUnit__init_($rt_s(294), 5, Long_create(817405952, 838));
-    juc_TimeUnit_DAYS = juc_TimeUnit__init_($rt_s(295), 6, Long_create(2437873664, 20116));
+    juc_TimeUnit_NANOSECONDS = juc_TimeUnit__init_($rt_s(288), 0, Long_fromInt(1));
+    juc_TimeUnit_MICROSECONDS = juc_TimeUnit__init_($rt_s(289), 1, Long_fromInt(1000));
+    juc_TimeUnit_MILLISECONDS = juc_TimeUnit__init_($rt_s(290), 2, Long_fromInt(1000000));
+    juc_TimeUnit_SECONDS = juc_TimeUnit__init_($rt_s(291), 3, Long_fromInt(1000000000));
+    juc_TimeUnit_MINUTES = juc_TimeUnit__init_($rt_s(292), 4, Long_create(4165425152, 13));
+    juc_TimeUnit_HOURS = juc_TimeUnit__init_($rt_s(293), 5, Long_create(817405952, 838));
+    juc_TimeUnit_DAYS = juc_TimeUnit__init_($rt_s(294), 6, Long_create(2437873664, 20116));
     juc_TimeUnit_$VALUES = juc_TimeUnit_$values();
 };
 function otcit_FloatAnalyzer$Result() {
@@ -17422,6 +17521,8 @@ jnc_CharacterCodingException, 0, ji_IOException, [], 1, 0, 0, ["$_init_0", $rt_w
 jnc_MalformedInputException, "MalformedInputException", 4, jnc_CharacterCodingException, [], 1, 0, 0, ["$_init_5", $rt_wrapFunction1(jnc_MalformedInputException__init_), "$getMessage", $rt_wrapFunction0(jnc_MalformedInputException_getMessage)],
 js_GeneralSecurityException, 0, jl_Exception, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(js_GeneralSecurityException__init_)],
 s_SignatureException, "SignatureException", 0, js_GeneralSecurityException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(s_SignatureException__init_)],
+a_Component$Callback, 0, jl_Object, [otj_JSObject], 1537, 0, 0, 0,
+a_Component$start$lambda$_45_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$start$lambda$_45_0__init_), "$call", $rt_wrapFunction0(a_Component$start$lambda$_45_0_call)],
 ag_PathSink, 0, jl_Object, [], 1537, 0, 0, 0,
 a_Graphics2D$1, 0, jl_Object, [ag_PathSink], 0, 0, 0, ["$_init_107", $rt_wrapFunction1(a_Graphics2D$1__init_), "$moveTo", $rt_wrapFunction2(a_Graphics2D$1_moveTo), "$lineTo", $rt_wrapFunction2(a_Graphics2D$1_lineTo), "$quadTo", $rt_wrapFunction4(a_Graphics2D$1_quadTo), "$curveTo", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_Graphics2D$1_curveTo(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$closePath", $rt_wrapFunction0(a_Graphics2D$1_closePath)],
 jnci_BufferedEncoder$Controller, 0, jl_Object, [], 1, 0, 0, ["$_init_8", $rt_wrapFunction2(jnci_BufferedEncoder$Controller__init_), "$hasMoreInput0", $rt_wrapFunction0(jnci_BufferedEncoder$Controller_hasMoreInput), "$hasMoreInput", $rt_wrapFunction1(jnci_BufferedEncoder$Controller_hasMoreInput0), "$hasMoreOutput", $rt_wrapFunction0(jnci_BufferedEncoder$Controller_hasMoreOutput0), "$hasMoreOutput0", $rt_wrapFunction1(jnci_BufferedEncoder$Controller_hasMoreOutput), "$setInPosition", $rt_wrapFunction1(jnci_BufferedEncoder$Controller_setInPosition),
@@ -17451,7 +17552,7 @@ jl_Runnable, 0, jl_Object, [], 1537, 0, 0, 0,
 jl_Thread, 0, jl_Object, [jl_Runnable], 1, 0, () => jl_Thread_$callClinit(), ["$_init_", $rt_wrapFunction1(jl_Thread__init_1), "$_init_9", $rt_wrapFunction2(jl_Thread__init_), "$start", $rt_wrapFunction0(jl_Thread_start), "$run", $rt_wrapFunction0(jl_Thread_run), "$interrupt", $rt_wrapFunction0(jl_Thread_interrupt), "$getUncaughtExceptionHandler", $rt_wrapFunction0(jl_Thread_getUncaughtExceptionHandler)],
 ju_Map, 0, jl_Object, [], 1537, 0, 0, 0,
 juc_Callable, 0, jl_Object, [], 1537, 0, 0, 0,
-d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0, 0, jl_Object, [juc_Callable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0__init_), "$call2", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0_call0), "$call", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0_call)],
+d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0, 0, jl_Object, [juc_Callable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0__init_), "$call2", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0_call0), "$call0", $rt_wrapFunction0(d_ConcurrencyTest$submitRunsAndCompletes$lambda$_5_0_call)],
 ae_MouseListener, 0, jl_Object, [], 1537, 0, 0, 0,
 ae_MouseMotionListener, 0, jl_Object, [], 1537, 0, 0, 0,
 ae_MouseWheelListener, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -17462,10 +17563,10 @@ jm_BigInteger, 0, jl_Number, [jl_Comparable, ji_Serializable], 1, 0, () => jm_Bi
 "$negate", $rt_wrapFunction0(jm_BigInteger_negate), "$add1", $rt_wrapFunction1(jm_BigInteger_add), "$subtract0", $rt_wrapFunction1(jm_BigInteger_subtract), "$signum", $rt_wrapFunction0(jm_BigInteger_signum), "$shiftRight0", $rt_wrapFunction1(jm_BigInteger_shiftRight), "$shiftLeft0", $rt_wrapFunction1(jm_BigInteger_shiftLeft), "$bitLength0", $rt_wrapFunction0(jm_BigInteger_bitLength), "$testBit", $rt_wrapFunction1(jm_BigInteger_testBit), "$getLowestSetBit", $rt_wrapFunction0(jm_BigInteger_getLowestSetBit), "$compareTo",
 $rt_wrapFunction1(jm_BigInteger_compareTo), "$equals", $rt_wrapFunction1(jm_BigInteger_equals), "$equalsArrays", $rt_wrapFunction1(jm_BigInteger_equalsArrays), "$multiply0", $rt_wrapFunction1(jm_BigInteger_multiply), "$pow0", $rt_wrapFunction1(jm_BigInteger_pow), "$divide0", $rt_wrapFunction1(jm_BigInteger_divide), "$remainder", $rt_wrapFunction1(jm_BigInteger_remainder), "$modInverse", $rt_wrapFunction1(jm_BigInteger_modInverse), "$modPow", $rt_wrapFunction2(jm_BigInteger_modPow), "$mod", $rt_wrapFunction1(jm_BigInteger_mod),
 "$cutOffLeadingZeroes", $rt_wrapFunction0(jm_BigInteger_cutOffLeadingZeroes), "$isOne", $rt_wrapFunction0(jm_BigInteger_isOne), "$getFirstNonzeroDigit", $rt_wrapFunction0(jm_BigInteger_getFirstNonzeroDigit), "$copy", $rt_wrapFunction0(jm_BigInteger_copy), "$unCache", $rt_wrapFunction0(jm_BigInteger_unCache)],
-jl_ArithmeticException, "ArithmeticException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(jl_ArithmeticException__init_0)],
-d_InteractivePanel$1, 0, ae_MouseAdapter, [], 0, 0, 0, ["$_init_93", $rt_wrapFunction1(d_InteractivePanel$1__init_), "$mouseMoved", $rt_wrapFunction1(d_InteractivePanel$1_mouseMoved)],
-a_Paint, 0, jl_Object, [], 1537, 0, 0, 0]);
-$rt_metadata([a_Color, 0, jl_Object, [a_Paint], 1, 0, () => a_Color_$callClinit(), ["$_init_16", $rt_wrapFunction3(a_Color__init_2), "$_init_4", $rt_wrapFunction4(a_Color__init_0), "$brighter", $rt_wrapFunction0(a_Color_brighter), "$toCss", $rt_wrapFunction0(a_Color_toCss)],
+jl_ArithmeticException, "ArithmeticException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(jl_ArithmeticException__init_0)]]);
+$rt_metadata([d_InteractivePanel$1, 0, ae_MouseAdapter, [], 0, 0, 0, ["$_init_93", $rt_wrapFunction1(d_InteractivePanel$1__init_), "$mouseMoved", $rt_wrapFunction1(d_InteractivePanel$1_mouseMoved)],
+a_Paint, 0, jl_Object, [], 1537, 0, 0, 0,
+a_Color, 0, jl_Object, [a_Paint], 1, 0, () => a_Color_$callClinit(), ["$_init_16", $rt_wrapFunction3(a_Color__init_2), "$_init_4", $rt_wrapFunction4(a_Color__init_0), "$brighter", $rt_wrapFunction0(a_Color_brighter), "$toCss", $rt_wrapFunction0(a_Color_toCss)],
 s_FloatControl, 0, jl_Object, [], 1, 0, 0, ["$_init_23", $rt_wrapFunction1(s_FloatControl__init_), "$getMinimum", $rt_wrapFunction0(s_FloatControl_getMinimum), "$getMaximum", $rt_wrapFunction0(s_FloatControl_getMaximum)],
 jnc_BufferOverflowException, "BufferOverflowException", 4, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jnc_BufferOverflowException__init_)],
 ae_KeyListener, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -17480,7 +17581,10 @@ c_ScheduledExecutorService$repeating$lambda$_5_0, 0, jl_Object, [c_EventLoop$Tas
 s_Clip, 0, jl_Object, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(s_Clip__init_), "$open", $rt_wrapFunction1(s_Clip_open0), "$open0", $rt_wrapFunction1(s_Clip_open), "$start", $rt_wrapFunction0(s_Clip_start), "$stop", $rt_wrapFunction0(s_Clip_stop), "$close", $rt_wrapFunction0(s_Clip_close), "$loop", $rt_wrapFunction1(s_Clip_loop), "$isOpen", $rt_wrapFunction0(s_Clip_isOpen), "$getFramePosition", $rt_wrapFunction0(s_Clip_getFramePosition), "$setFramePosition", $rt_wrapFunction1(s_Clip_setFramePosition), "$isControlSupported",
 $rt_wrapFunction1(s_Clip_isControlSupported), "$getControl", $rt_wrapFunction1(s_Clip_getControl)],
 jl_CharSequence, 0, jl_Object, [], 1537, 0, 0, 0,
+otjde_EventListener, 0, jl_Object, [otj_JSObject], 1537, 0, 0, 0,
+a_Component$bindKeyboard$lambda$_53_2, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_2__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_2_handleEvent)],
 jl_StringIndexOutOfBoundsException, "StringIndexOutOfBoundsException", 7, jl_IndexOutOfBoundsException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_StringIndexOutOfBoundsException__init_0)],
+a_Component$bindKeyboard$lambda$_53_3, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_3__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_3_handleEvent)],
 jnc_CharsetDecoder, 0, jl_Object, [], 1025, 0, 0, ["$_init_7", $rt_wrapFunction3(jnc_CharsetDecoder__init_), "$onMalformedInput", $rt_wrapFunction1(jnc_CharsetDecoder_onMalformedInput), "$implOnMalformedInput", $rt_wrapFunction1(jnc_CharsetDecoder_implOnMalformedInput), "$onUnmappableCharacter", $rt_wrapFunction1(jnc_CharsetDecoder_onUnmappableCharacter), "$implOnUnmappableCharacter", $rt_wrapFunction1(jnc_CharsetDecoder_implOnUnmappableCharacter), "$decode", $rt_wrapFunction3(jnc_CharsetDecoder_decode), "$flush0",
 $rt_wrapFunction1(jnc_CharsetDecoder_flush), "$reset0", $rt_wrapFunction0(jnc_CharsetDecoder_reset), "$decode3", $rt_wrapFunction1(jnc_CharsetDecoder_decode0), "$implFlush0", $rt_wrapFunction1(jnc_CharsetDecoder_implFlush), "$implReset", $rt_wrapFunction0(jnc_CharsetDecoder_implReset)],
 jl_AutoCloseable, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -17490,6 +17594,8 @@ ji_OutputStream, 0, jl_Object, [ji_Closeable, ji_Flushable], 1025, 0, 0, ["$_ini
 n_Socket$SocketOutputStream, 0, ji_OutputStream, [], 16, 0, 0, ["$_init_66", $rt_wrapFunction1(n_Socket$SocketOutputStream__init_), "$write", $rt_wrapFunction3(n_Socket$SocketOutputStream_write), "$flush1", $rt_wrapFunction0(n_Socket$SocketOutputStream_flush)],
 juf_Function, 0, jl_Object, [], 1537, 0, 0, 0,
 c_CompletableFuture$thenRun$lambda$_13_0, 0, jl_Object, [juf_Function], 1, 0, 0, ["$_init_21", $rt_wrapFunction1(c_CompletableFuture$thenRun$lambda$_13_0__init_), "$apply", $rt_wrapFunction1(c_CompletableFuture$thenRun$lambda$_13_0_apply0), "$apply0", $rt_wrapFunction1(c_CompletableFuture$thenRun$lambda$_13_0_apply)],
+a_Component$bindKeyboard$lambda$_53_0, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_0__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_0_handleEvent0), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_0_handleEvent)],
+a_Component$bindKeyboard$lambda$_53_1, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_1__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_1_handleEvent0), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_53_1_handleEvent)],
 jn_ByteOrder, 0, jl_Object, [], 17, 0, () => jn_ByteOrder_$callClinit(), 0,
 ae_FocusListener, 0, jl_Object, [], 1537, 0, 0, 0,
 juf_Consumer, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -17514,25 +17620,26 @@ vr_RoomInfoCard, 0, jl_Object, [], 1, 0, () => vr_RoomInfoCard_$callClinit(), ["
 c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0, 0, jl_Object, [c_EventLoop$Task], 1, 0, 0, ["$_init_21", $rt_wrapFunction1(c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0__init_), "$run", $rt_wrapFunction0(c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0_run)],
 i_ImageIO, 0, jl_Object, [], 17, 0, () => i_ImageIO_$callClinit(), 0,
 d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_1_run)],
-ji_ByteArrayOutputStream, 0, ji_OutputStream, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_ByteArrayOutputStream__init_0), "$_init_5", $rt_wrapFunction1(ji_ByteArrayOutputStream__init_), "$write", $rt_wrapFunction3(ji_ByteArrayOutputStream_write), "$toByteArray", $rt_wrapFunction0(ji_ByteArrayOutputStream_toByteArray), "$reset1", $rt_wrapFunction0(ji_ByteArrayOutputStream_reset)],
+ji_ByteArrayOutputStream, 0, ji_OutputStream, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_ByteArrayOutputStream__init_1), "$_init_5", $rt_wrapFunction1(ji_ByteArrayOutputStream__init_), "$write", $rt_wrapFunction3(ji_ByteArrayOutputStream_write), "$toByteArray", $rt_wrapFunction0(ji_ByteArrayOutputStream_toByteArray), "$reset1", $rt_wrapFunction0(ji_ByteArrayOutputStream_reset), "$size", $rt_wrapFunction0(ji_ByteArrayOutputStream_size)],
 ju_Base64$Decoder, 0, jl_Object, [], 1, 0, 0, ["$decode1", $rt_wrapFunction1(ju_Base64$Decoder_decode0), "$decode5", $rt_wrapFunction1(ju_Base64$Decoder_decode)],
-d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0_run)],
-n_WebSocket$Native, 0, jl_Object, [], 17, 0, 0, 0,
+d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$invokeLaterOrdering$lambda$_12_0_run)]]);
+$rt_metadata([n_WebSocket$Native, 0, jl_Object, [], 17, 0, 0, 0,
 jnci_AsciiEncoder, 0, jnci_BufferedEncoder, [], 1, 0, 0, ["$_init_56", $rt_wrapFunction1(jnci_AsciiEncoder__init_), "$arrayEncode", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7) { return jnci_AsciiEncoder_arrayEncode(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7); }],
 jl_ClassCastException, "ClassCastException", 7, jl_RuntimeException, [], 1, 0, 0, 0,
 juf_Supplier, 0, jl_Object, [], 1537, 0, 0, 0,
 d_ImageTest, 0, jl_Object, [], 17, 0, 0, 0,
 jl_Error, 0, jl_Throwable, [], 1, 0, 0, ["$_init_35", $rt_wrapFunction2(jl_Error__init_0), "$_init_3", $rt_wrapFunction1(jl_Error__init_)],
-jnc_CoderMalfunctionError, "CoderMalfunctionError", 4, jl_Error, [], 1, 0, 0, ["$_init_3", $rt_wrapFunction1(jnc_CoderMalfunctionError__init_)]]);
-$rt_metadata([c_Executors, 0, jl_Object, [], 17, 0, 0, 0,
+jnc_CoderMalfunctionError, "CoderMalfunctionError", 4, jl_Error, [], 1, 0, 0, ["$_init_3", $rt_wrapFunction1(jnc_CoderMalfunctionError__init_)],
+c_Executors, 0, jl_Object, [], 17, 0, 0, 0,
 jn_Buffer, 0, jl_Object, [], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(jn_Buffer__init_), "$capacity", $rt_wrapFunction0(jn_Buffer_capacity), "$position0", $rt_wrapFunction0(jn_Buffer_position), "$position2", $rt_wrapFunction1(jn_Buffer_position0), "$limit", $rt_wrapFunction0(jn_Buffer_limit), "$clear1", $rt_wrapFunction0(jn_Buffer_clear), "$flip1", $rt_wrapFunction0(jn_Buffer_flip), "$remaining", $rt_wrapFunction0(jn_Buffer_remaining), "$hasRemaining", $rt_wrapFunction0(jn_Buffer_hasRemaining)],
 jnci_BufferedDecoder, 0, jnc_CharsetDecoder, [], 1025, 0, 0, ["$_init_7", $rt_wrapFunction3(jnci_BufferedDecoder__init_), "$decodeLoop", $rt_wrapFunction2(jnci_BufferedDecoder_decodeLoop)],
 jnci_AsciiDecoder, 0, jnci_BufferedDecoder, [], 1, 0, 0, ["$_init_56", $rt_wrapFunction1(jnci_AsciiDecoder__init_), "$arrayDecode", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7) { return jnci_AsciiDecoder_arrayDecode(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7); }],
 c_ScheduledFuture, 0, jl_Object, [c_Future], 1, 0, 0, ["$_init_85", $rt_wrapFunction2(c_ScheduledFuture__init_), "$complete", $rt_wrapFunction1(c_ScheduledFuture_complete), "$isDone", $rt_wrapFunction0(c_ScheduledFuture_isDone), "$isCancelled", $rt_wrapFunction0(c_ScheduledFuture_isCancelled), "$cancel", $rt_wrapFunction1(c_ScheduledFuture_cancel)],
 a_Cursor, 0, jl_Object, [], 1, 0, 0, ["$_init_5", $rt_wrapFunction1(a_Cursor__init_)],
+a_Component$bindResize$lambda$_54_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindResize$lambda$_54_0__init_), "$call", $rt_wrapFunction0(a_Component$bindResize$lambda$_54_0_call)],
 jl_Readable, 0, jl_Object, [], 1537, 0, 0, 0,
 ji_Reader, 0, jl_Object, [ji_Closeable, jl_Readable], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_Reader__init_), "$_init_2", $rt_wrapFunction1(ji_Reader__init_0)],
-ji_InputStreamReader, 0, ji_Reader, [], 1, 0, 0, ["$_init_38", $rt_wrapFunction2(ji_InputStreamReader__init_0), "$_init_41", $rt_wrapFunction1(ji_InputStreamReader__init_1), "$_init_37", $rt_wrapFunction2(ji_InputStreamReader__init_), "$read5", $rt_wrapFunction3(ji_InputStreamReader_read), "$ready", $rt_wrapFunction0(ji_InputStreamReader_ready)],
+ji_InputStreamReader, 0, ji_Reader, [], 1, 0, 0, ["$_init_38", $rt_wrapFunction2(ji_InputStreamReader__init_0), "$_init_41", $rt_wrapFunction1(ji_InputStreamReader__init_1), "$_init_37", $rt_wrapFunction2(ji_InputStreamReader__init_), "$read6", $rt_wrapFunction3(ji_InputStreamReader_read), "$ready", $rt_wrapFunction0(ji_InputStreamReader_ready)],
 s_SwingUtilities, 0, jl_Object, [], 17, 0, 0, 0,
 s_SwingUtilities$invokeLater$lambda$_1_0, 0, jl_Object, [c_EventLoop$Task], 1, 0, 0, ["$_init_21", $rt_wrapFunction1(s_SwingUtilities$invokeLater$lambda$_1_0__init_), "$run", $rt_wrapFunction0(s_SwingUtilities$invokeLater$lambda$_1_0_run)],
 ju_Iterator, 0, jl_Object, [], 1537, 0, 0, 0,
@@ -17545,7 +17652,7 @@ jn_CharBufferOverTypedArray, 0, jn_CharBufferImpl, [jn_ArrayBufferViewProvider],
 "$getArray", $rt_wrapFunction0(jn_CharBufferOverTypedArray_getArray), "$capacityImpl", $rt_wrapFunction0(jn_CharBufferOverTypedArray_capacityImpl), "$getImpl", $rt_wrapFunction4(jn_CharBufferOverTypedArray_getImpl), "$putImpl", $rt_wrapFunction4(jn_CharBufferOverTypedArray_putImpl0), "$putImpl0", $rt_wrapFunction4(jn_CharBufferOverTypedArray_putImpl)],
 ai_BufferedImage, 0, jl_Object, [], 1, 0, 0, ["$_init_31", $rt_wrapFunction1(ai_BufferedImage__init_0), "$getWidth", $rt_wrapFunction0(ai_BufferedImage_getWidth), "$getHeight", $rt_wrapFunction0(ai_BufferedImage_getHeight), "$element", $rt_wrapFunction0(ai_BufferedImage_element)],
 d_SocketTest, 0, jl_Object, [], 17, 0, () => d_SocketTest_$callClinit(), 0,
-jl_UnsupportedOperationException, "UnsupportedOperationException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_UnsupportedOperationException__init_), "$_init_", $rt_wrapFunction1(jl_UnsupportedOperationException__init_2)],
+jl_UnsupportedOperationException, "UnsupportedOperationException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_UnsupportedOperationException__init_), "$_init_", $rt_wrapFunction1(jl_UnsupportedOperationException__init_1)],
 jn_ReadOnlyBufferException, "ReadOnlyBufferException", 3, jl_UnsupportedOperationException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jn_ReadOnlyBufferException__init_0)],
 mr_Room, 0, jl_Object, [], 1, 0, 0, ["$_init_94", function(var_1, var_2, var_3, var_4, var_5, var_6) { mr_Room__init_(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$getRoomName", $rt_wrapFunction0(mr_Room_getRoomName), "$getOwnerUsername", $rt_wrapFunction0(mr_Room_getOwnerUsername), "$getCurrentPlayerCount", $rt_wrapFunction0(mr_Room_getCurrentPlayerCount), "$getMaxPlayers", $rt_wrapFunction0(mr_Room_getMaxPlayers)],
 cr_RoomController, 0, jl_Object, [], 1, 0, 0, ["$_init_96", $rt_wrapFunction2(cr_RoomController__init_), "$getCurrentRoom", $rt_wrapFunction0(cr_RoomController_getCurrentRoom), "$isOwnerOfCurrentRoom", $rt_wrapFunction0(cr_RoomController_isOwnerOfCurrentRoom)],
@@ -17564,26 +17671,27 @@ jl_Iterable, 0, jl_Object, [], 1537, 0, 0, 0,
 ju_Collection, 0, jl_Object, [jl_Iterable], 1537, 0, 0, 0,
 ju_AbstractCollection, 0, jl_Object, [ju_Collection], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ju_AbstractCollection__init_), "$isEmpty", $rt_wrapFunction0(ju_AbstractCollection_isEmpty), "$contains1", $rt_wrapFunction1(ju_AbstractCollection_contains), "$toArray", $rt_wrapFunction1(ju_AbstractCollection_toArray)],
 d_ConcurrencyTest$fixedRateRepeatsAndCancels$lambda$_8_0, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$fixedRateRepeatsAndCancels$lambda$_8_0__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$fixedRateRepeatsAndCancels$lambda$_8_0_run)],
-ji_InputStream, 0, jl_Object, [ji_Closeable], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_InputStream__init_)],
-ji_ByteArrayInputStream, 0, ji_InputStream, [], 1, 0, 0, ["$_init_46", $rt_wrapFunction3(ji_ByteArrayInputStream__init_0), "$_init_33", $rt_wrapFunction1(ji_ByteArrayInputStream__init_)],
+ji_InputStream, 0, jl_Object, [ji_Closeable], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_InputStream__init_), "$read0", $rt_wrapFunction1(ji_InputStream_read)],
+ji_ByteArrayInputStream, 0, ji_InputStream, [], 1, 0, 0, ["$_init_46", $rt_wrapFunction3(ji_ByteArrayInputStream__init_0), "$_init_33", $rt_wrapFunction1(ji_ByteArrayInputStream__init_), "$read4", $rt_wrapFunction3(ji_ByteArrayInputStream_read)],
 jnci_BufferedDecoder$Controller, 0, jl_Object, [], 1, 0, 0, ["$_init_36", $rt_wrapFunction2(jnci_BufferedDecoder$Controller__init_), "$hasMoreInput0", $rt_wrapFunction0(jnci_BufferedDecoder$Controller_hasMoreInput), "$hasMoreInput", $rt_wrapFunction1(jnci_BufferedDecoder$Controller_hasMoreInput0), "$hasMoreOutput0", $rt_wrapFunction1(jnci_BufferedDecoder$Controller_hasMoreOutput), "$setInPosition", $rt_wrapFunction1(jnci_BufferedDecoder$Controller_setInPosition), "$setOutPosition", $rt_wrapFunction1(jnci_BufferedDecoder$Controller_setOutPosition)],
-otci_IntegerUtil, 0, jl_Object, [], 17, 0, 0, 0,
-jl_Thread$UncaughtExceptionHandler, 0, jl_Object, [], 1537, 0, 0, 0,
+otci_IntegerUtil, 0, jl_Object, [], 17, 0, 0, 0]);
+$rt_metadata([jl_Thread$UncaughtExceptionHandler, 0, jl_Object, [], 1537, 0, 0, 0,
 jl_DefaultUncaughtExceptionHandler, 0, jl_Object, [jl_Thread$UncaughtExceptionHandler], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_DefaultUncaughtExceptionHandler__init_), "$uncaughtException", $rt_wrapFunction2(jl_DefaultUncaughtExceptionHandler_uncaughtException)],
 s_KeyFactory, 0, jl_Object, [], 1, 0, () => s_KeyFactory_$callClinit(), ["$generatePublic", $rt_wrapFunction1(s_KeyFactory_generatePublic)],
 s_NoSuchAlgorithmException, "NoSuchAlgorithmException", 0, js_GeneralSecurityException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(s_NoSuchAlgorithmException__init_)],
 otji_JS, 0, jl_Object, [], 17, 0, 0, 0,
+a_Component$_init_$lambda$_0_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$_init_$lambda$_0_0__init_), "$call", $rt_wrapFunction0(a_Component$_init_$lambda$_0_0_call)],
 s_Ed25519, 0, jl_Object, [], 17, 0, () => s_Ed25519_$callClinit(), 0,
 jnc_Charset, 0, jl_Object, [jl_Comparable], 1025, 0, 0, ["$_init_50", $rt_wrapFunction2(jnc_Charset__init_), "$name", $rt_wrapFunction0(jnc_Charset_name), "$decode3", $rt_wrapFunction1(jnc_Charset_decode), "$encode0", $rt_wrapFunction1(jnc_Charset_encode)],
-jnci_UTF16Charset, 0, jnc_Charset, [], 1, 0, 0, ["$_init_71", $rt_wrapFunction3(jnci_UTF16Charset__init_0), "$newDecoder", $rt_wrapFunction0(jnci_UTF16Charset_newDecoder), "$newEncoder", $rt_wrapFunction0(jnci_UTF16Charset_newEncoder)]]);
-$rt_metadata([otp_PlatformRunnable, 0, jl_Object, [], 1537, 0, 0, 0,
+jnci_UTF16Charset, 0, jnc_Charset, [], 1, 0, 0, ["$_init_71", $rt_wrapFunction3(jnci_UTF16Charset__init_0), "$newDecoder", $rt_wrapFunction0(jnci_UTF16Charset_newDecoder), "$newEncoder", $rt_wrapFunction0(jnci_UTF16Charset_newEncoder)],
+otp_PlatformRunnable, 0, jl_Object, [], 1537, 0, 0, 0,
 otciu_UnicodeHelper, 0, jl_Object, [], 17, 0, 0, 0,
 a_Font, 0, jl_Object, [], 1, 0, 0, ["$_init_30", $rt_wrapFunction3(a_Font__init_0), "$toCss", $rt_wrapFunction0(a_Font_toCss)],
 c_CompletableFuture$supplyAsync$lambda$_2_0, 0, jl_Object, [c_EventLoop$Task], 1, 0, 0, ["$_init_17", $rt_wrapFunction2(c_CompletableFuture$supplyAsync$lambda$_2_0__init_), "$run", $rt_wrapFunction0(c_CompletableFuture$supplyAsync$lambda$_2_0_run)],
 jl_Object$monitorEnterWait$lambda$_6_0, 0, jl_Object, [otp_PlatformRunnable], 1, 0, 0, ["$_init_1", $rt_wrapFunction4(jl_Object$monitorEnterWait$lambda$_6_0__init_), "$run", $rt_wrapFunction0(jl_Object$monitorEnterWait$lambda$_6_0_run)],
 jnci_Iso8859Decoder, 0, jnci_BufferedDecoder, [], 1, 0, 0, ["$_init_56", $rt_wrapFunction1(jnci_Iso8859Decoder__init_), "$arrayDecode", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7) { return jnci_Iso8859Decoder_arrayDecode(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7); }],
 ju_Objects, 0, jl_Object, [], 17, 0, 0, 0,
-d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0, 0, jl_Object, [juc_Callable], 1, 0, 0, ["$_init_99", $rt_wrapFunction1(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0__init_), "$call2", $rt_wrapFunction0(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0_call0), "$call0", $rt_wrapFunction0(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0_call)],
+d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0, 0, jl_Object, [juc_Callable], 1, 0, 0, ["$_init_99", $rt_wrapFunction1(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0__init_), "$call2", $rt_wrapFunction0(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0_call0), "$call1", $rt_wrapFunction0(d_ConcurrencyTest$scheduleRespectsDelay$lambda$_7_0_call)],
 ju_Map$Entry, 0, jl_Object, [], 1537, 0, 0, 0,
 jl_Cloneable, 0, jl_Object, [], 1537, 0, 0, 0,
 ju_MapEntry, 0, jl_Object, [ju_Map$Entry, jl_Cloneable], 0, 0, 0, ["$_init_54", $rt_wrapFunction2(ju_MapEntry__init_), "$equals", $rt_wrapFunction1(ju_MapEntry_equals), "$getKey", $rt_wrapFunction0(ju_MapEntry_getKey), "$getValue", $rt_wrapFunction0(ju_MapEntry_getValue)],
@@ -17603,7 +17711,6 @@ c_ExecutorService$execute$lambda$_3_0, 0, jl_Object, [c_EventLoop$Task], 1, 0, 0
 ag_Area, 0, jl_Object, [a_Shape], 1, 0, 0, ["$_init_80", $rt_wrapFunction1(ag_Area__init_0), "$add3", $rt_wrapFunction1(ag_Area_add), "$emit", $rt_wrapFunction1(ag_Area_emit)],
 n_WebSocket, 0, jl_Object, [], 1537, 0, 0, 0,
 n_BrowserWebSocket, 0, jl_Object, [n_WebSocket], 1, 0, () => n_BrowserWebSocket_$callClinit(), ["$_init_103", function(var_1, var_2, var_3, var_4, var_5) { n_BrowserWebSocket__init_(this, var_1, var_2, var_3, var_4, var_5); }, "$sendText", $rt_wrapFunction2(n_BrowserWebSocket_sendText), "$sendClose", $rt_wrapFunction2(n_BrowserWebSocket_sendClose), "$request", $rt_wrapFunction1(n_BrowserWebSocket_request), "$isInputClosed", $rt_wrapFunction0(n_BrowserWebSocket_isInputClosed), "$isOutputClosed", $rt_wrapFunction0(n_BrowserWebSocket_isOutputClosed)],
-a_Component$Callback, 0, jl_Object, [otj_JSObject], 1537, 0, 0, 0,
 otji_JSWrapper, 0, jl_Object, [], 17, 0, 0, 0,
 juf_BiConsumer, 0, jl_Object, [], 1537, 0, 0, 0,
 c_CompletableFuture$thenApply$lambda$_11_0, 0, jl_Object, [juf_BiConsumer], 1, 0, 0, ["$_init_19", $rt_wrapFunction2(c_CompletableFuture$thenApply$lambda$_11_0__init_), "$accept", $rt_wrapFunction2(c_CompletableFuture$thenApply$lambda$_11_0_accept0), "$accept2", $rt_wrapFunction2(c_CompletableFuture$thenApply$lambda$_11_0_accept)],
@@ -17617,18 +17724,17 @@ jnc_BufferUnderflowException, "BufferUnderflowException", 4, jl_RuntimeException
 ag_RoundRectangle2D, 0, jl_Object, [a_Shape], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ag_RoundRectangle2D__init_), "$trace", $rt_wrapFunction1(ag_RoundRectangle2D_trace), "$emit", $rt_wrapFunction1(ag_RoundRectangle2D_emit)],
 ji_Writer, 0, jl_Object, [jl_Appendable, ji_Closeable, ji_Flushable], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_Writer__init_), "$_init_2", $rt_wrapFunction1(ji_Writer__init_0)],
 ji_OutputStreamWriter, 0, ji_Writer, [], 1, 0, 0, ["$_init_60", $rt_wrapFunction1(ji_OutputStreamWriter__init_1), "$_init_62", $rt_wrapFunction2(ji_OutputStreamWriter__init_0), "$_init_63", $rt_wrapFunction2(ji_OutputStreamWriter__init_), "$flush1", $rt_wrapFunction0(ji_OutputStreamWriter_flush), "$write1", $rt_wrapFunction3(ji_OutputStreamWriter_write)],
-jl_Boolean, 0, jl_Object, [ji_Serializable, jl_Comparable], 1, 0, () => jl_Boolean_$callClinit(), ["$_init_64", $rt_wrapFunction1(jl_Boolean__init_0)],
-jl_IllegalArgumentException, "IllegalArgumentException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_IllegalArgumentException__init_2), "$_init_", $rt_wrapFunction1(jl_IllegalArgumentException__init_1)],
+jl_Boolean, 0, jl_Object, [ji_Serializable, jl_Comparable], 1, 0, () => jl_Boolean_$callClinit(), ["$_init_64", $rt_wrapFunction1(jl_Boolean__init_0)]]);
+$rt_metadata([jl_IllegalArgumentException, "IllegalArgumentException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_IllegalArgumentException__init_2), "$_init_", $rt_wrapFunction1(jl_IllegalArgumentException__init_1)],
 jnc_IllegalCharsetNameException, "IllegalCharsetNameException", 4, jl_IllegalArgumentException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(jnc_IllegalCharsetNameException__init_0)],
 d_WebSocketTest, 0, jl_Object, [], 17, 0, () => d_WebSocketTest_$callClinit(), 0,
-n_Socket$SocketInputStream, 0, ji_InputStream, [], 16, 0, 0, ["$_init_66", $rt_wrapFunction1(n_Socket$SocketInputStream__init_), "$read4", $rt_wrapFunction0(n_Socket$SocketInputStream_read), "$read3", $rt_wrapFunction3(n_Socket$SocketInputStream_read0), "$available", $rt_wrapFunction0(n_Socket$SocketInputStream_available)],
+n_Socket$SocketInputStream, 0, ji_InputStream, [], 16, 0, 0, ["$_init_66", $rt_wrapFunction1(n_Socket$SocketInputStream__init_), "$read5", $rt_wrapFunction0(n_Socket$SocketInputStream_read), "$read4", $rt_wrapFunction3(n_Socket$SocketInputStream_read0), "$available", $rt_wrapFunction0(n_Socket$SocketInputStream_available)],
 ju_NoSuchElementException, "NoSuchElementException", 2, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(ju_NoSuchElementException__init_)],
 vs_GroupIcon$draw$lambda$_1_0, 0, jl_Object, [juf_Consumer], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(vs_GroupIcon$draw$lambda$_1_0__init_), "$accept0", $rt_wrapFunction1(vs_GroupIcon$draw$lambda$_1_0_accept0), "$accept3", $rt_wrapFunction1(vs_GroupIcon$draw$lambda$_1_0_accept)],
 otjc_JSString, 0, jl_Object, [otj_JSObject], 1025, 0, 0, 0,
-jlr_AnnotatedElement, 0, jl_Object, [], 1537, 0, 0, 0]);
-$rt_metadata([jlr_GenericDeclaration, 0, jl_Object, [jlr_AnnotatedElement], 1537, 0, 0, 0,
+jlr_AnnotatedElement, 0, jl_Object, [], 1537, 0, 0, 0,
+jlr_GenericDeclaration, 0, jl_Object, [jlr_AnnotatedElement], 1537, 0, 0, 0,
 otcic_JSStderrPrintStream, 0, otcic_JsConsolePrintStream, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(otcic_JSStderrPrintStream__init_), "$print", $rt_wrapFunction1(otcic_JSStderrPrintStream_print)],
-a_Component$bindResize$lambda$_52_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindResize$lambda$_52_0__init_), "$call1", $rt_wrapFunction0(a_Component$bindResize$lambda$_52_0_call)],
 s_Jwt, 0, jl_Object, [], 17, 0, 0, 0,
 vs_Theme, 0, jl_Object, [], 17, 0, () => vs_Theme_$callClinit(), 0,
 n_Socket, 0, jl_Object, [], 1, 0, 0, ["$_init_12", $rt_wrapFunction2(n_Socket__init_), "$getInputStream", $rt_wrapFunction0(n_Socket_getInputStream), "$getOutputStream", $rt_wrapFunction0(n_Socket_getOutputStream), "$isClosed", $rt_wrapFunction0(n_Socket_isClosed), "$isConnected", $rt_wrapFunction0(n_Socket_isConnected)],
@@ -17670,15 +17776,15 @@ d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_12, 0, jl_Object, [jl_Runna
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_11_run)],
 jl_Enum, 0, jl_Object, [jl_Comparable, ji_Serializable], 1025, 0, 0, ["$_init_12", $rt_wrapFunction2(jl_Enum__init_)],
 mr_Room$RoomType, 0, jl_Enum, [], 65553, 0, () => mr_Room$RoomType_$callClinit(), 0,
-d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10_run)],
-jnc_StandardCharsets, 0, jl_Object, [], 17, 0, () => jnc_StandardCharsets_$callClinit(), 0,
+d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_10_run)]]);
+$rt_metadata([jnc_StandardCharsets, 0, jl_Object, [], 17, 0, () => jnc_StandardCharsets_$callClinit(), 0,
 jl_Thread$SleepHandler$interrupted$lambda$_1_1, 0, jl_Object, [otp_PlatformRunnable], 1, 0, 0, ["$_init_57", $rt_wrapFunction1(jl_Thread$SleepHandler$interrupted$lambda$_1_1__init_), "$run", $rt_wrapFunction0(jl_Thread$SleepHandler$interrupted$lambda$_1_1_run)],
 ae_ComponentEvent, 0, jl_Object, [], 1, 0, 0, ["$_init_2", $rt_wrapFunction1(ae_ComponentEvent__init_)],
 jl_Object$NotifyListener, 0, jl_Object, [otp_PlatformRunnable, otr_EventQueue$Event], 1536, 0, 0, 0,
 jnc_UnsupportedCharsetException, "UnsupportedCharsetException", 4, jl_IllegalArgumentException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(jnc_UnsupportedCharsetException__init_)],
 jm_Multiplication, 0, jl_Object, [], 0, 0, () => jm_Multiplication_$callClinit(), 0,
-c_CompletedFuture, 0, jl_Object, [c_Future], 1, 0, 0, ["$_init_2", $rt_wrapFunction1(c_CompletedFuture__init_), "$_init_83", $rt_wrapFunction1(c_CompletedFuture__init_0), "$get0", $rt_wrapFunction0(c_CompletedFuture_get), "$isDone", $rt_wrapFunction0(c_CompletedFuture_isDone)]]);
-$rt_metadata([ae_MouseEvent, 0, jl_Object, [], 1, 0, 0, ["$_init_73", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9) { ae_MouseEvent__init_(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9); }, "$getX", $rt_wrapFunction0(ae_MouseEvent_getX), "$getY", $rt_wrapFunction0(ae_MouseEvent_getY)],
+c_CompletedFuture, 0, jl_Object, [c_Future], 1, 0, 0, ["$_init_2", $rt_wrapFunction1(c_CompletedFuture__init_), "$_init_83", $rt_wrapFunction1(c_CompletedFuture__init_0), "$get0", $rt_wrapFunction0(c_CompletedFuture_get), "$isDone", $rt_wrapFunction0(c_CompletedFuture_isDone)],
+ae_MouseEvent, 0, jl_Object, [], 1, 0, 0, ["$_init_73", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9) { ae_MouseEvent__init_(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9); }, "$getX", $rt_wrapFunction0(ae_MouseEvent_getX), "$getY", $rt_wrapFunction0(ae_MouseEvent_getY)],
 ae_MouseWheelEvent, 0, ae_MouseEvent, [], 1, 0, 0, ["$_init_92", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9) { ae_MouseWheelEvent__init_(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9); }, "$getWheelRotation", $rt_wrapFunction0(ae_MouseWheelEvent_getWheelRotation)],
 s_Sha512, 0, jl_Object, [], 16, 0, () => s_Sha512_$callClinit(), 0,
 jnci_Iso8859Charset, 0, jnc_Charset, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jnci_Iso8859Charset__init_), "$newDecoder", $rt_wrapFunction0(jnci_Iso8859Charset_newDecoder), "$newEncoder", $rt_wrapFunction0(jnci_Iso8859Charset_newEncoder)],
@@ -17703,12 +17809,19 @@ jnc_Charset$Charsets, 0, jl_Object, [], 0, 0, () => jnc_Charset$Charsets_$callCl
 ag_RoundRectangle2D$Float, 0, ag_RoundRectangle2D, [], 1, 0, 0, ["$_init_29", function(var_1, var_2, var_3, var_4, var_5, var_6) { ag_RoundRectangle2D$Float__init_(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$x", $rt_wrapFunction0(ag_RoundRectangle2D$Float_x), "$y", $rt_wrapFunction0(ag_RoundRectangle2D$Float_y), "$w", $rt_wrapFunction0(ag_RoundRectangle2D$Float_w), "$h", $rt_wrapFunction0(ag_RoundRectangle2D$Float_h), "$arcW", $rt_wrapFunction0(ag_RoundRectangle2D$Float_arcW), "$arcH", $rt_wrapFunction0(ag_RoundRectangle2D$Float_arcH)],
 jl_NegativeArraySizeException, "NegativeArraySizeException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_NegativeArraySizeException__init_)],
 jnci_UTF8Encoder, 0, jnci_BufferedEncoder, [], 1, 0, 0, ["$_init_56", $rt_wrapFunction1(jnci_UTF8Encoder__init_), "$arrayEncode", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7) { return jnci_UTF8Encoder_arrayEncode(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7); }],
+a_Component$bindMouse$lambda$_52_4, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_4__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_4_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_4_handleEvent)],
 a_RenderingHints, 0, jl_Object, [], 1, 0, () => a_RenderingHints_$callClinit(), 0,
+a_Component$bindMouse$lambda$_52_3, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_3__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_3_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_3_handleEvent)],
 d_SoundCryptoTest, 0, jl_Object, [], 17, 0, 0, 0,
-a_Component$frame$lambda$_45_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$frame$lambda$_45_0__init_), "$call1", $rt_wrapFunction0(a_Component$frame$lambda$_45_0_call)],
+a_Component$bindMouse$lambda$_52_2, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_2__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_2_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_2_handleEvent)],
+a_Component$bindMouse$lambda$_52_1, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_1__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_1_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_1_handleEvent)],
+a_Component$bindMouse$lambda$_52_0, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_0__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_0_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_0_handleEvent)],
 a_GradientPaint, 0, jl_Object, [a_Paint], 1, 0, 0, ["$_init_76", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_GradientPaint__init_0(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$_init_27", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_GradientPaint__init_(this, var_1, var_2, var_3, var_4, var_5, var_6); }],
 jl_NumberFormatException, "NumberFormatException", 7, jl_IllegalArgumentException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_NumberFormatException__init_1), "$_init_", $rt_wrapFunction1(jl_NumberFormatException__init_)],
 s_AudioSystem, 0, jl_Object, [], 17, 0, 0, 0,
+a_Component$bindMouse$lambda$_52_7, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(a_Component$bindMouse$lambda$_52_7__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_7_handleEvent)],
+a_Component$bindMouse$lambda$_52_6, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_6__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_6_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_6_handleEvent)],
+a_Component$bindMouse$lambda$_52_5, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_5__init_), "$handleEvent", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_5_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_52_5_handleEvent)],
 jnci_UTF8Charset, 0, jnc_Charset, [], 1, 0, () => jnci_UTF8Charset_$callClinit(), ["$newDecoder", $rt_wrapFunction0(jnci_UTF8Charset_newDecoder), "$newEncoder", $rt_wrapFunction0(jnci_UTF8Charset_newEncoder)],
 ji_BufferedReader, 0, ji_Reader, [], 1, 0, 0, ["$_init_77", $rt_wrapFunction2(ji_BufferedReader__init_), "$_init_40", $rt_wrapFunction1(ji_BufferedReader__init_0), "$readLine", $rt_wrapFunction0(ji_BufferedReader_readLine)],
 vs_GroupIcon, 0, jl_Object, [], 17, 0, 0, 0,
@@ -17717,8 +17830,8 @@ ju_ArrayDeque, 0, ju_AbstractCollection, [ju_Deque, jl_Cloneable, ji_Serializabl
 "$isEmpty", $rt_wrapFunction0(ju_ArrayDeque_isEmpty)],
 jnci_UTF16Decoder, 0, jnci_BufferedDecoder, [], 1, 0, 0, ["$_init_51", $rt_wrapFunction3(jnci_UTF16Decoder__init_), "$arrayDecode", function(var_1, var_2, var_3, var_4, var_5, var_6, var_7) { return jnci_UTF16Decoder_arrayDecode(this, var_1, var_2, var_3, var_4, var_5, var_6, var_7); }],
 jl_IllegalStateException, "IllegalStateException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_IllegalStateException__init_2), "$_init_", $rt_wrapFunction1(jl_IllegalStateException__init_1)],
-n_Socket$StringHandler, 0, jl_Object, [otj_JSObject], 1536, 0, 0, 0,
-i_ImageIO$preload$lambda$_7_0, 0, jl_Object, [i_ImageIO$Callback], 1, 0, 0, ["$_init_32", $rt_wrapFunction2(i_ImageIO$preload$lambda$_7_0__init_), "$call1", $rt_wrapFunction0(i_ImageIO$preload$lambda$_7_0_call)],
+n_Socket$StringHandler, 0, jl_Object, [otj_JSObject], 1536, 0, 0, 0]);
+$rt_metadata([i_ImageIO$preload$lambda$_7_0, 0, jl_Object, [i_ImageIO$Callback], 1, 0, 0, ["$_init_32", $rt_wrapFunction2(i_ImageIO$preload$lambda$_7_0__init_), "$call", $rt_wrapFunction0(i_ImageIO$preload$lambda$_7_0_call)],
 jl_NullPointerException, "NullPointerException", 7, jl_RuntimeException, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(jl_NullPointerException__init_2), "$_init_0", $rt_wrapFunction0(jl_NullPointerException__init_0)],
 jn_ByteBuffer, 0, jn_Buffer, [jl_Comparable], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(jn_ByteBuffer__init_), "$get2", $rt_wrapFunction3(jn_ByteBuffer_get0), "$get5", $rt_wrapFunction1(jn_ByteBuffer_get), "$put0", $rt_wrapFunction3(jn_ByteBuffer_put0), "$put", $rt_wrapFunction1(jn_ByteBuffer_put), "$hasArray", $rt_wrapFunction0(jn_ByteBuffer_hasArray), "$array", $rt_wrapFunction0(jn_ByteBuffer_array), "$clear0", $rt_wrapFunction0(jn_ByteBuffer_clear), "$flip", $rt_wrapFunction0(jn_ByteBuffer_flip), "$position1",
 $rt_wrapFunction1(jn_ByteBuffer_position)],
@@ -17733,8 +17846,8 @@ otci_Base64Impl, 0, jl_Object, [], 17, 0, () => otci_Base64Impl_$callClinit(), 0
 n_BrowserWebSocket$HeaderMode, 0, jl_Enum, [], 65553, 0, () => n_BrowserWebSocket$HeaderMode_$callClinit(), 0,
 a_Graphics, 0, jl_Object, [], 1025, 0, 0, ["$_init_0", $rt_wrapFunction0(a_Graphics__init_)],
 jl_Object$Monitor, 0, jl_Object, [], 0, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_Object$Monitor__init_)],
-c_ExecutorService, 0, jl_Object, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(c_ExecutorService__init_), "$submit", $rt_wrapFunction1(c_ExecutorService_submit), "$execute", $rt_wrapFunction1(c_ExecutorService_execute), "$shutdown", $rt_wrapFunction0(c_ExecutorService_shutdown), "$isShutdown", $rt_wrapFunction0(c_ExecutorService_isShutdown)]]);
-$rt_metadata([c_ScheduledExecutorService, 0, c_ExecutorService, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(c_ScheduledExecutorService__init_), "$schedule0", $rt_wrapFunction3(c_ScheduledExecutorService_schedule0), "$schedule1", $rt_wrapFunction3(c_ScheduledExecutorService_schedule), "$scheduleAtFixedRate", $rt_wrapFunction4(c_ScheduledExecutorService_scheduleAtFixedRate)],
+c_ExecutorService, 0, jl_Object, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(c_ExecutorService__init_), "$submit", $rt_wrapFunction1(c_ExecutorService_submit), "$execute", $rt_wrapFunction1(c_ExecutorService_execute), "$shutdown", $rt_wrapFunction0(c_ExecutorService_shutdown), "$isShutdown", $rt_wrapFunction0(c_ExecutorService_isShutdown)],
+c_ScheduledExecutorService, 0, c_ExecutorService, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(c_ScheduledExecutorService__init_), "$schedule0", $rt_wrapFunction3(c_ScheduledExecutorService_schedule0), "$schedule1", $rt_wrapFunction3(c_ScheduledExecutorService_schedule), "$scheduleAtFixedRate", $rt_wrapFunction4(c_ScheduledExecutorService_scheduleAtFixedRate)],
 jl_Math, 0, jl_Object, [], 17, 0, 0, 0,
 jn_URI, 0, jl_Object, [jl_Comparable, ji_Serializable], 17, 0, 0, ["$_init_", $rt_wrapFunction1(jn_URI__init_), "$toString", $rt_wrapFunction0(jn_URI_toString)],
 a_Component, 0, jl_Object, [], 1, 0, () => a_Component_$callClinit(), ["$_init_0", $rt_wrapFunction0(a_Component__init_), "$attach0", $rt_wrapFunction1(a_Component_attach), "$getWidth", $rt_wrapFunction0(a_Component_getWidth), "$getHeight", $rt_wrapFunction0(a_Component_getHeight), "$addMouseListener", $rt_wrapFunction1(a_Component_addMouseListener), "$addMouseMotionListener", $rt_wrapFunction1(a_Component_addMouseMotionListener), "$addMouseWheelListener", $rt_wrapFunction1(a_Component_addMouseWheelListener),
@@ -17743,24 +17856,19 @@ d_InteractivePanel, 0, a_Component, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(
 ag_RoundRectangle2D$Double, 0, ag_RoundRectangle2D, [], 1, 0, 0, ["$_init_79", function(var_1, var_2, var_3, var_4, var_5, var_6) { ag_RoundRectangle2D$Double__init_(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$x", $rt_wrapFunction0(ag_RoundRectangle2D$Double_x), "$y", $rt_wrapFunction0(ag_RoundRectangle2D$Double_y), "$w", $rt_wrapFunction0(ag_RoundRectangle2D$Double_w), "$h", $rt_wrapFunction0(ag_RoundRectangle2D$Double_h), "$arcW", $rt_wrapFunction0(ag_RoundRectangle2D$Double_arcW), "$arcH", $rt_wrapFunction0(ag_RoundRectangle2D$Double_arcH)],
 d_ConcurrencyTest, 0, jl_Object, [], 17, 0, 0, 0,
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_2, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_2__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_2_run)],
+a_Component$frame$lambda$_46_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Component$frame$lambda$_46_0__init_), "$call", $rt_wrapFunction0(a_Component$frame$lambda$_46_0_call)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_97", $rt_wrapFunction2(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_3_run)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_0, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_0__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_0_run)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_1, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_1__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_1_run)],
 s_Ed25519$Point, 0, jl_Object, [], 16, 0, 0, ["$_init_49", $rt_wrapFunction4(s_Ed25519$Point__init_), "$equalsPoint", $rt_wrapFunction1(s_Ed25519$Point_equalsPoint)],
 s_AudioInputStream, 0, jl_Object, [], 1, 0, 0, ["$_init_", $rt_wrapFunction1(s_AudioInputStream__init_), "$url", $rt_wrapFunction0(s_AudioInputStream_url)],
 d_Main, 0, jl_Object, [], 17, 0, () => d_Main_$callClinit(), 0,
-otjde_EventListener, 0, jl_Object, [otj_JSObject], 1537, 0, 0, 0,
-a_Component$bindKeyboard$lambda$_51_0, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_0__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_0_handleEvent0), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_0_handleEvent)],
-a_Component$bindKeyboard$lambda$_51_1, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_1__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_1_handleEvent0), "$handleEvent", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_1_handleEvent)],
-a_Component$bindKeyboard$lambda$_51_2, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_2__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_2_handleEvent)],
-a_Component$bindKeyboard$lambda$_51_3, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_3__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindKeyboard$lambda$_51_3_handleEvent)],
 ju_Base64, 0, jl_Object, [], 17, 0, 0, 0,
 n_Socket$VoidHandler, 0, jl_Object, [otj_JSObject], 1536, 0, 0, 0,
 m_GamePanel, 0, jl_Object, [], 1, 0, 0, ["$_init_5", $rt_wrapFunction1(m_GamePanel__init_), "$getHeight", $rt_wrapFunction0(m_GamePanel_getHeight)],
 s_FloatControl$Type, 0, jl_Object, [], 1, 0, () => s_FloatControl$Type_$callClinit(), ["$toString", $rt_wrapFunction0(s_FloatControl$Type_toString)],
 ji_UnsupportedEncodingException, "UnsupportedEncodingException", 5, ji_IOException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(ji_UnsupportedEncodingException__init_)],
 jn_BufferOverflowException, "BufferOverflowException", 3, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jn_BufferOverflowException__init_0)],
-a_Component$start$lambda$_44_0, 0, jl_Object, [a_Component$Callback], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$start$lambda$_44_0__init_), "$call1", $rt_wrapFunction0(a_Component$start$lambda$_44_0_call)],
 n_BrowserWebSocket$BuilderImpl, 0, jl_Object, [n_WebSocket$Builder], 0, 0, 0, ["$_init_0", $rt_wrapFunction0(n_BrowserWebSocket$BuilderImpl__init_), "$header", $rt_wrapFunction2(n_BrowserWebSocket$BuilderImpl_header), "$connectTimeout", $rt_wrapFunction1(n_BrowserWebSocket$BuilderImpl_connectTimeout), "$buildAsync", $rt_wrapFunction2(n_BrowserWebSocket$BuilderImpl_buildAsync)],
 n_Socket$connect$lambda$_13_0, 0, jl_Object, [n_Socket$VoidHandler], 1, 0, 0, ["$_init_67", $rt_wrapFunction2(n_Socket$connect$lambda$_13_0__init_), "$handle1", $rt_wrapFunction0(n_Socket$connect$lambda$_13_0_handle)],
 ju_HashMap, 0, ju_AbstractMap, [jl_Cloneable, ji_Serializable], 1, 0, 0, ["$newElementArray", $rt_wrapFunction1(ju_HashMap_newElementArray), "$_init_0", $rt_wrapFunction0(ju_HashMap__init_1), "$_init_5", $rt_wrapFunction1(ju_HashMap__init_), "$_init_69", $rt_wrapFunction2(ju_HashMap__init_0), "$clear", $rt_wrapFunction0(ju_HashMap_clear), "$get1", $rt_wrapFunction1(ju_HashMap_get), "$entryByKey", $rt_wrapFunction1(ju_HashMap_entryByKey), "$findNonNullKeyEntry", $rt_wrapFunction3(ju_HashMap_findNonNullKeyEntry),
@@ -17778,23 +17886,16 @@ c_CompletableFuture$thenAccept$lambda$_12_0, 0, jl_Object, [juf_Function], 1, 0,
 n_Socket$connect$lambda$_13_2, 0, jl_Object, [n_Socket$CloseHandler], 1, 0, 0, ["$_init_67", $rt_wrapFunction2(n_Socket$connect$lambda$_13_2__init_), "$handle0", $rt_wrapFunction2(n_Socket$connect$lambda$_13_2_handle)],
 otr_StringInfo, 0, otrr_ReflectionInfo, [], 17, 0, 0, 0,
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_6, 0, jl_Object, [juf_Consumer], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_6__init_), "$accept0", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_6_accept0), "$accept5", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_6_accept)],
-d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7, 0, jl_Object, [juf_Supplier], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7__init_), "$get0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7_get0), "$get6", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7_get)],
-d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4, 0, jl_Object, [juf_Supplier], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4__init_), "$get0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4_get0), "$get7", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4_get)],
+d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7, 0, jl_Object, [juf_Supplier], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7__init_), "$get0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7_get0), "$get6", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_7_get)]]);
+$rt_metadata([d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4, 0, jl_Object, [juf_Supplier], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4__init_), "$get0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4_get0), "$get7", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_4_get)],
 otciu_CharMapping, 0, jl_Object, [], 1, 0, 0, ["$_init_52", $rt_wrapFunction2(otciu_CharMapping__init_)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_5, 0, jl_Object, [juf_Function], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_5__init_), "$apply", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_5_apply0), "$apply1", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_5_apply)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_8, 0, jl_Object, [juf_Function], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_8__init_), "$apply", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_8_apply0), "$apply2", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_8_apply)],
 d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_9, 0, jl_Object, [juf_Consumer], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_9__init_), "$accept0", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_9_accept0), "$accept6", $rt_wrapFunction1(d_ConcurrencyTest$deferredWorkActuallyRuns$lambda$_4_9_accept)],
 d_WebSocketTest$Listener, 0, jl_Object, [n_WebSocket$Listener], 0, 0, 0, ["$_init_0", $rt_wrapFunction0(d_WebSocketTest$Listener__init_), "$onOpen", $rt_wrapFunction1(d_WebSocketTest$Listener_onOpen), "$onText", $rt_wrapFunction3(d_WebSocketTest$Listener_onText), "$onClose", $rt_wrapFunction3(d_WebSocketTest$Listener_onClose), "$onError", $rt_wrapFunction2(d_WebSocketTest$Listener_onError)],
-a_Component$bindMouse$lambda$_50_6, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_6__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_6_handleEvent0), "$handleEvent1", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_6_handleEvent)],
-a_Component$bindMouse$lambda$_50_5, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_5__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_5_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_5_handleEvent)],
-a_Component$bindMouse$lambda$_50_4, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_4__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_4_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_4_handleEvent)]]);
-$rt_metadata([otci_CharFlow, 0, jl_Object, [], 1, 0, 0, ["$_init_47", $rt_wrapFunction1(otci_CharFlow__init_)],
-a_Component$bindMouse$lambda$_50_3, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_3__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_3_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_3_handleEvent)],
+otci_CharFlow, 0, jl_Object, [], 1, 0, 0, ["$_init_47", $rt_wrapFunction1(otci_CharFlow__init_)],
 d_ConcurrencyTest$executeIsDeferred$lambda$_6_0, 0, jl_Object, [jl_Runnable], 1, 0, 0, ["$_init_98", $rt_wrapFunction1(d_ConcurrencyTest$executeIsDeferred$lambda$_6_0__init_), "$run", $rt_wrapFunction0(d_ConcurrencyTest$executeIsDeferred$lambda$_6_0_run)],
-a_Component$bindMouse$lambda$_50_2, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_2__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_2_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_2_handleEvent)],
-a_Component$bindMouse$lambda$_50_1, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_1__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_1_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_1_handleEvent)],
 c_EventLoop, 0, jl_Object, [], 17, 0, 0, 0,
-a_Component$bindMouse$lambda$_50_0, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_0__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_0_handleEvent0), "$handleEvent2", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_0_handleEvent)],
 d_ConcurrencyTest$completableFailure$lambda$_10_0, 0, jl_Object, [juf_Function], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(d_ConcurrencyTest$completableFailure$lambda$_10_0__init_), "$apply", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_0_apply0), "$apply2", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_0_apply)],
 d_ConcurrencyTest$completableFailure$lambda$_10_1, 0, jl_Object, [juf_Consumer], 1, 0, 0, ["$_init_101", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_1__init_), "$accept0", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_1_accept0), "$accept6", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_1_accept)],
 d_ConcurrencyTest$completableFailure$lambda$_10_2, 0, jl_Object, [juf_BiConsumer], 1, 0, 0, ["$_init_99", $rt_wrapFunction1(d_ConcurrencyTest$completableFailure$lambda$_10_2__init_), "$accept", $rt_wrapFunction2(d_ConcurrencyTest$completableFailure$lambda$_10_2_accept0), "$accept4", $rt_wrapFunction2(d_ConcurrencyTest$completableFailure$lambda$_10_2_accept)],
@@ -17802,13 +17903,12 @@ jnc_UnmappableCharacterException, "UnmappableCharacterException", 4, jnc_Charact
 a_FontMetrics, 0, jl_Object, [], 1, 0, 0, ["$_init_108", $rt_wrapFunction2(a_FontMetrics__init_), "$stringWidth", $rt_wrapFunction1(a_FontMetrics_stringWidth), "$charWidth", $rt_wrapFunction1(a_FontMetrics_charWidth)],
 s_LineEvent$Type, 0, jl_Object, [], 1, 0, () => s_LineEvent$Type_$callClinit(), 0,
 jn_BufferUnderflowException, "BufferUnderflowException", 3, jl_RuntimeException, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jn_BufferUnderflowException__init_)],
-a_Component$bindMouse$lambda$_50_7, 0, jl_Object, [otjde_EventListener], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(a_Component$bindMouse$lambda$_50_7__init_), "$handleEvent0", $rt_wrapFunction1(a_Component$bindMouse$lambda$_50_7_handleEvent)],
 juc_TimeUnit, 0, jl_Enum, [], 65553, 0, () => juc_TimeUnit_$callClinit(), ["$convert", $rt_wrapFunction2(juc_TimeUnit_convert), "$toMillis", $rt_wrapFunction1(juc_TimeUnit_toMillis)],
 otcit_FloatAnalyzer$Result, 0, jl_Object, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(otcit_FloatAnalyzer$Result__init_)],
 jl_InterruptedException, "InterruptedException", 7, jl_Exception, [], 1, 0, 0, ["$_init_0", $rt_wrapFunction0(jl_InterruptedException__init_)],
 otrr_ClassInfo, 0, otrr_ReflectionInfo, [], 17, 0, 0, ["$newArrayInstance", $rt_wrapFunction1(otrr_ClassInfo_newArrayInstance)],
 ae_ComponentListener, 0, jl_Object, [], 1537, 0, 0, 0,
-a_Graphics2D, 0, a_Graphics, [], 1, 0, 0, ["$_init_89", $rt_wrapFunction1(a_Graphics2D__init_), "$setColor", $rt_wrapFunction1(a_Graphics2D_setColor), "$setPaint", $rt_wrapFunction1(a_Graphics2D_setPaint), "$setStroke", $rt_wrapFunction1(a_Graphics2D_setStroke), "$setComposite", $rt_wrapFunction1(a_Graphics2D_setComposite), "$getComposite", $rt_wrapFunction0(a_Graphics2D_getComposite), "$setFont", $rt_wrapFunction1(a_Graphics2D_setFont), "$getFont", $rt_wrapFunction0(a_Graphics2D_getFont), "$getFontMetrics",
+a_Graphics2D, 0, a_Graphics, [], 1, 0, 0, ["$_init_90", $rt_wrapFunction1(a_Graphics2D__init_), "$setColor", $rt_wrapFunction1(a_Graphics2D_setColor), "$setPaint", $rt_wrapFunction1(a_Graphics2D_setPaint), "$setStroke", $rt_wrapFunction1(a_Graphics2D_setStroke), "$setComposite", $rt_wrapFunction1(a_Graphics2D_setComposite), "$getComposite", $rt_wrapFunction0(a_Graphics2D_getComposite), "$setFont", $rt_wrapFunction1(a_Graphics2D_setFont), "$getFont", $rt_wrapFunction0(a_Graphics2D_getFont), "$getFontMetrics",
 $rt_wrapFunction0(a_Graphics2D_getFontMetrics), "$measureTextWidth", $rt_wrapFunction1(a_Graphics2D_measureTextWidth), "$drawString", $rt_wrapFunction3(a_Graphics2D_drawString), "$fillRect", $rt_wrapFunction4(a_Graphics2D_fillRect), "$fillRoundRect", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_Graphics2D_fillRoundRect(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$drawRoundRect", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_Graphics2D_drawRoundRect(this, var_1, var_2, var_3, var_4,
 var_5, var_6); }, "$roundRectPath", function(var_1, var_2, var_3, var_4, var_5, var_6) { a_Graphics2D_roundRectPath(this, var_1, var_2, var_3, var_4, var_5, var_6); }, "$fillOval", $rt_wrapFunction4(a_Graphics2D_fillOval), "$drawOval", $rt_wrapFunction4(a_Graphics2D_drawOval), "$drawLine", $rt_wrapFunction4(a_Graphics2D_drawLine), "$fillPolygon", $rt_wrapFunction3(a_Graphics2D_fillPolygon), "$clip", $rt_wrapFunction1(a_Graphics2D_clip), "$getClip", $rt_wrapFunction0(a_Graphics2D_getClip), "$setClip", $rt_wrapFunction1(a_Graphics2D_setClip),
 "$translate", $rt_wrapFunction2(a_Graphics2D_translate), "$scale", $rt_wrapFunction2(a_Graphics2D_scale), "$setRenderingHint", $rt_wrapFunction2(a_Graphics2D_setRenderingHint), "$create", $rt_wrapFunction0(a_Graphics2D_create), "$dispose", $rt_wrapFunction0(a_Graphics2D_dispose), "$sink", $rt_wrapFunction0(a_Graphics2D_sink), "$fill2", $rt_wrapFunction1(a_Graphics2D_fill), "$draw", $rt_wrapFunction1(a_Graphics2D_draw)]]);
@@ -17821,18 +17921,18 @@ $rt_longArrayCls = $rt_arraycls($rt_longcls),
 $rt_doubleArrayCls = $rt_arraycls($rt_doublecls);
 $rt_stringPool(["Can\'t enter monitor from another thread synchronously", "", ": ", "\tat ", "Caused by: ", "Malformed input of length ", "String is null", "String is empty", "String contains invalid digits: ", "String contains digits out of radix ", "The value is too big for int type: ", "The value is too big for integer type", "Illegal radix: ", "Replacement preconditions do not hold", "Action must be non-null", "The value is too big for long type: ", "The value is too big for long type", "main", "gear clicked - handleClick returned true  (",
 "click at ", " - not the gear", "Zero length BigInteger", "Radix out of range", "Negative bit address", "Negative exponent", "BigInteger divide by zero", "BigInteger: modulus not positive", "BigInteger not invertible.", "rgb(", "rgba(", "space - card visible=", "key \'", "\'  code=", "join() on an incomplete CompletableFuture cannot block in a browser; use thenAccept/whenComplete instead", "unsupported control: ", "�", "averageCharsPerByte must be positive. Actual value is ", "maxCharsPerByte must be positive. Actual value is ",
-"newAction must be non-null", "UTF-8", "BIG_ENDIAN", "LITTLE_ENDIAN", "null", "false", "true", "gp must not be null", "controller must not be null", "SansSerif", "FUTURA", " / ", "…", "image/png", "ImageIO.read(InputStream) cannot work in a browser: there is no classpath and no synchronous file read. Use ImageIO.read(String url) with the asset served over HTTP, and ImageIO.setResourceBase(...) to keep existing paths.", "http://", "https://", "data:", "/", "FAIL ", "PASS ", "assets", "/res/tile/wall.png", "read() returns immediately",
-"dimensions are 0 while decoding", "isLoaded false while decoding", "repeat read shares one image", "https://cdn.test/sprite.png", "absolute URLs bypass the resource base", "read(String url)", "read(InputStream) fails loudly with a fix in the message", "read(byte[]) returns an image", "/res/tile/floor.png", "/res/icons/chat.png", "preload resolves even when an image fails", "dimensions become correct after load", "isLoaded true after load", "New position ", " is outside of range [0;", "Capacity is negative: ",
-"localhost", "connect threw: ", "Socket connected", "streams are available", "server-message-watcher", "join Player7", "move 3 4 down true", "chat café 你好", "println did not throw", "socket-test-verify", "blocking readLine() delivered the greeting", "welcome", "second line arrived", "echo:join Player7", "lines arrived in order", "utf-8 survived the round trip", "echo:chat café 你好", "watcher threw: ", "readLine() returned null at end of stream", "INFO  received: ", "//", "+-.", "_-!.~\'()*,;:$&+=?/[]@", "@[]_-!.~\'()*,;:$&+=",
-"/@_-!.~\'()*,;:$&+=", "_-!.~\'()*,;:$&+=?/[]@\\\"", "-.", "0", "KeyFactory supports Ed25519 only; asked for ", "Ed25519", "EdDSA", "1.3.101.112", "expected 32 raw bytes or a 44-byte Ed25519 SubjectPublicKeyInfo, got ", "not an Ed25519 SubjectPublicKeyInfo: prefix mismatch at byte ", "27742317777372353535851937790883648493", "charsetName is null", "Should never been thrown", "italic ", "bold ", "px ", "sans-serif", "Serif", "serif", "Monospaced", "monospace", "Dialog", "US-ASCII", "websocket error", "\n", "IGNORE",
-"REPLACE", "REPORT", "Writer already closed", "X-Game-Version", "1.4.2", "wss://example.test/socket", "buildAsync returns a future", "future is not complete before the socket opens", "future completes when the socket opens", "hello", "isInputClosed false while open", "bye", "isOutputClosed true after sendClose", "exp", "could not connect to ", " — is the AnkillousJ gateway running?", "ws://", "wss://", "[L", "Either src or dest is null", "PUBLIC", "PRIVATE", "UTF-16", "UTF-16BE", "UTF-16LE", "ISO-8859-1", "BigInteger not invertible",
-"round", "butt", "square", "miter", "bevel", "antialiasing", "on", "off", "strokeControl", "pure", "rendering", "quality", "textAntialiasing", "lcd-hrgb", "lcd-vrgb", "gasp", "alphaInterpolation", "colorRendering", "nearest", "bicubic", "fractionalMetrics", "interpolation", "bilinear", "audio threw: ", "crypto threw: ", "getClip returns a closed clip", "/res/sound/theme.mp3", "open() opens the clip", "MASTER_GAIN is supported", "rewind to frame 0 lands at 0", "gain range is in decibels", "0 dB is unity gain",
-"-6 dB is about half amplitude", "-80 dB is silence", "close() closes the clip", "getAudioInputStream(String url)", "stream overload fails loudly with a fix in the message", "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c", "KeyFactory accepts a raw 32-byte key", "72", "RFC 8032 vector verifies in the browser", "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00", "tampered signature is rejected", "73", "tampered message is rejected",
-"S >= L is rejected", "302a300506032b657003210 0", " ", "X.509 SubjectPublicKeyInfo unwraps and verifies", "INFO  Ed25519 verify: ~", " ms each in compiled JS", "a verification completes in under 400 ms", "signing is refused", "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGF5ZXItNyIsImV4cCI6MjAwMDAwMDAwMCwiaWF0IjoxNzAwMDAwMDAwfQ.c2lnbmF0dXJl", "payload decodes without verifying", "player-7", "header decodes", "numeric claim reads exp", "numeric claim reads iat", "iat", "missing claim returns -1", "nope",
-"not expired before exp", "expired after exp", "malformed token returns null", "not-a-jwt", "null token returns null", "AudioSystem.getAudioInputStream(InputStream) cannot work in a browser: there is no synchronous file read. Use getAudioInputStream(String url) and let the browser fetch and decode the audio.", "Signature supports Ed25519 only; asked for ", ". Other algorithms would need their own implementation, since WebCrypto is asynchronous and cannot back this API.", "initVerify was not called", "Ed25519 signing is not implemented: it needs constant-time arithmetic to be safe, and a browser client should not hold a signing key. Verification is supported.",
-"QUERY", "SUBPROTOCOL", "FIRST_MESSAGE", "QUERY_AND_FIRST_MESSAGE", "executor is shut down", "Enter", "Tab", "Backspace", "move the mouse over the gear", "room-42", "Futura Lounge — Rooftop", "AnkillousDev", ", ", "wheel: icon ", "px", "submit(Callable) completes and get() works", "shutdown() flags the executor", "caller", "execute() defers past the caller", "schedule() does not run immediately", "schedule() returns a live handle", "scheduled task can be cancelled", "fixed-rate task cancels cleanly", "thenApply/thenAccept chain runs",
-"x", "whenComplete sees value and null error", "x:true", "boom", "completeExceptionally marks failure", "exceptionally substitutes a value", "recovered", "whenComplete sees the error", "join() on incomplete future throws rather than blocking", "now", "invokeLater defers past the caller", "isEventDispatchThread is always true", "invokeAndWait runs inline", "wait", "later", "task", "invokeLater preserves FIFO order", "supplyAsync failure reaches exceptionally", "handled", "supplyAsync resolves through the chain",
-"scheduleAtFixedRate repeats", "schedule() fires after its delay", "invokeLater() eventually runs the task", "execute() eventually runs the task", "Master Gain", "Volume", "{", "\":\"", "open", "text:", "onText delivers a whole message with last=true", "close:", "error", "Unmappable characters of length ", "Open", "Close", "Start", "Stop", "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS"]);
+"newAction must be non-null", "UTF-8", "BIG_ENDIAN", "LITTLE_ENDIAN", "null", "false", "true", "gp must not be null", "controller must not be null", "SansSerif", "FUTURA", " / ", "…", "image/png", "http://", "https://", "data:", "/", "FAIL ", "PASS ", "assets", "/res/tile/wall.png", "read() returns immediately", "dimensions are 0 while decoding", "isLoaded false while decoding", "repeat read shares one image", "https://cdn.test/sprite.png", "absolute URLs bypass the resource base", "read(String url)", "read(InputStream) fails loudly with a fix in the message",
+"read(byte[]) returns an image", "/res/tile/floor.png", "/res/icons/chat.png", "preload resolves even when an image fails", "dimensions become correct after load", "isLoaded true after load", "New position ", " is outside of range [0;", "Capacity is negative: ", "localhost", "connect threw: ", "Socket connected", "streams are available", "server-message-watcher", "join Player7", "move 3 4 down true", "chat café 你好", "println did not throw", "socket-test-verify", "blocking readLine() delivered the greeting",
+"welcome", "second line arrived", "echo:join Player7", "lines arrived in order", "utf-8 survived the round trip", "echo:chat café 你好", "watcher threw: ", "readLine() returned null at end of stream", "INFO  received: ", "//", "+-.", "_-!.~\'()*,;:$&+=?/[]@", "@[]_-!.~\'()*,;:$&+=", "/@_-!.~\'()*,;:$&+=", "_-!.~\'()*,;:$&+=?/[]@\\\"", "-.", "0", "KeyFactory supports Ed25519 only; asked for ", "Ed25519", "EdDSA", "1.3.101.112", "expected 32 raw bytes or a 44-byte Ed25519 SubjectPublicKeyInfo, got ", "not an Ed25519 SubjectPublicKeyInfo: prefix mismatch at byte ",
+"27742317777372353535851937790883648493", "charsetName is null", "Should never been thrown", "italic ", "bold ", "px ", "sans-serif", "Serif", "serif", "Monospaced", "monospace", "Dialog", "US-ASCII", "websocket error", "\n", "IGNORE", "REPLACE", "REPORT", "Writer already closed", "X-Game-Version", "1.4.2", "wss://example.test/socket", "buildAsync returns a future", "future is not complete before the socket opens", "future completes when the socket opens", "hello", "isInputClosed false while open", "bye", "isOutputClosed true after sendClose",
+"exp", "could not connect to ", " — is the AnkillousJ gateway running?", "ws://", "wss://", "[L", "Either src or dest is null", "PUBLIC", "PRIVATE", "UTF-16", "UTF-16BE", "UTF-16LE", "ISO-8859-1", "BigInteger not invertible", "round", "butt", "square", "miter", "bevel", "antialiasing", "on", "off", "strokeControl", "pure", "rendering", "quality", "textAntialiasing", "lcd-hrgb", "lcd-vrgb", "gasp", "alphaInterpolation", "colorRendering", "nearest", "bicubic", "fractionalMetrics", "interpolation", "bilinear",
+"audio threw: ", "crypto threw: ", "getClip returns a closed clip", "/res/sound/theme.mp3", "open() opens the clip", "MASTER_GAIN is supported", "rewind to frame 0 lands at 0", "gain range is in decibels", "0 dB is unity gain", "-6 dB is about half amplitude", "-80 dB is silence", "close() closes the clip", "getAudioInputStream(String url)", "stream overload fails loudly with a fix in the message", "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c", "KeyFactory accepts a raw 32-byte key", "72",
+"RFC 8032 vector verifies in the browser", "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00", "tampered signature is rejected", "73", "tampered message is rejected", "S >= L is rejected", "302a300506032b657003210 0", " ", "X.509 SubjectPublicKeyInfo unwraps and verifies", "INFO  Ed25519 verify: ~", " ms each in compiled JS", "a verification completes in under 400 ms", "signing is refused", "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGF5ZXItNyIsImV4cCI6MjAwMDAwMDAwMCwiaWF0IjoxNzAwMDAwMDAwfQ.c2lnbmF0dXJl",
+"payload decodes without verifying", "player-7", "header decodes", "numeric claim reads exp", "numeric claim reads iat", "iat", "missing claim returns -1", "nope", "not expired before exp", "expired after exp", "malformed token returns null", "not-a-jwt", "null token returns null", "AudioSystem.getAudioInputStream(InputStream) cannot work in a browser: there is no synchronous file read. Use getAudioInputStream(String url) and let the browser fetch and decode the audio.", "Signature supports Ed25519 only; asked for ",
+". Other algorithms would need their own implementation, since WebCrypto is asynchronous and cannot back this API.", "initVerify was not called", "Ed25519 signing is not implemented: it needs constant-time arithmetic to be safe, and a browser client should not hold a signing key. Verification is supported.", "QUERY", "SUBPROTOCOL", "FIRST_MESSAGE", "QUERY_AND_FIRST_MESSAGE", "executor is shut down", "Enter", "Tab", "Backspace", "move the mouse over the gear", "room-42", "Futura Lounge — Rooftop", "AnkillousDev",
+", ", "wheel: icon ", "px", "submit(Callable) completes and get() works", "shutdown() flags the executor", "caller", "execute() defers past the caller", "schedule() does not run immediately", "schedule() returns a live handle", "scheduled task can be cancelled", "fixed-rate task cancels cleanly", "thenApply/thenAccept chain runs", "x", "whenComplete sees value and null error", "x:true", "boom", "completeExceptionally marks failure", "exceptionally substitutes a value", "recovered", "whenComplete sees the error",
+"join() on incomplete future throws rather than blocking", "now", "invokeLater defers past the caller", "isEventDispatchThread is always true", "invokeAndWait runs inline", "wait", "later", "task", "invokeLater preserves FIFO order", "supplyAsync failure reaches exceptionally", "handled", "supplyAsync resolves through the chain", "scheduleAtFixedRate repeats", "schedule() fires after its delay", "invokeLater() eventually runs the task", "execute() eventually runs the task", "Master Gain", "Volume", "{", "\":\"",
+"open", "text:", "onText delivers a whole message with last=true", "close:", "error", "Unmappable characters of length ", "Open", "Close", "Start", "Stop", "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS"]);
 jl_String.prototype.toString = function() {
     return $rt_ustr(this);
 };
@@ -17850,6 +17950,8 @@ let $rt_jso_marker = Symbol('jsoClass');
     let c;
     c = c_ScheduledExecutorService$repeating$lambda$_5_1.prototype;
     c.run = $rt_callWithReceiver(c_ScheduledExecutorService$repeating$lambda$_5_1_run$exported$0);
+    c = a_Component$start$lambda$_45_0.prototype;
+    c.call = $rt_callWithReceiver(a_Component$start$lambda$_45_0_call$exported$0);
     c = n_BrowserWebSocket$_init_$lambda$_0_1.prototype;
     c.handle = $rt_callWithReceiver(n_BrowserWebSocket$_init_$lambda$_0_1_handle$exported$0);
     c = n_BrowserWebSocket$_init_$lambda$_0_2.prototype;
@@ -17860,34 +17962,50 @@ let $rt_jso_marker = Symbol('jsoClass');
     c.handle = $rt_callWithReceiver(n_BrowserWebSocket$_init_$lambda$_0_3_handle$exported$0);
     c = c_ScheduledExecutorService$repeating$lambda$_5_0.prototype;
     c.run = $rt_callWithReceiver(c_ScheduledExecutorService$repeating$lambda$_5_0_run$exported$0);
+    c = a_Component$bindKeyboard$lambda$_53_2.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_53_2_handleEvent$exported$0);
+    c = a_Component$bindKeyboard$lambda$_53_3.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_53_3_handleEvent$exported$0);
+    c = a_Component$bindKeyboard$lambda$_53_0.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_53_0_handleEvent$exported$0);
+    c = a_Component$bindKeyboard$lambda$_53_1.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_53_1_handleEvent$exported$0);
     c = c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0.prototype;
     c.run = $rt_callWithReceiver(c_ScheduledExecutorService$lambda$repeating$2$lambda$_7_0_run$exported$0);
+    c = a_Component$bindResize$lambda$_54_0.prototype;
+    c.call = $rt_callWithReceiver(a_Component$bindResize$lambda$_54_0_call$exported$0);
     c = s_SwingUtilities$invokeLater$lambda$_1_0.prototype;
     c.run = $rt_callWithReceiver(s_SwingUtilities$invokeLater$lambda$_1_0_run$exported$0);
+    c = a_Component$_init_$lambda$_0_0.prototype;
+    c.call = $rt_callWithReceiver(a_Component$_init_$lambda$_0_0_call$exported$0);
     c = c_CompletableFuture$supplyAsync$lambda$_2_0.prototype;
     c.run = $rt_callWithReceiver(c_CompletableFuture$supplyAsync$lambda$_2_0_run$exported$0);
     c = c_ScheduledExecutorService$schedule$lambda$_2_0.prototype;
     c.run = $rt_callWithReceiver(c_ScheduledExecutorService$schedule$lambda$_2_0_run$exported$0);
     c = c_ExecutorService$execute$lambda$_3_0.prototype;
     c.run = $rt_callWithReceiver(c_ExecutorService$execute$lambda$_3_0_run$exported$0);
-    c = a_Component$bindResize$lambda$_52_0.prototype;
-    c.call = $rt_callWithReceiver(a_Component$bindResize$lambda$_52_0_call$exported$0);
     c = c_ScheduledExecutorService$schedule$lambda$_1_0.prototype;
     c.run = $rt_callWithReceiver(c_ScheduledExecutorService$schedule$lambda$_1_0_run$exported$0);
-    c = a_Component$frame$lambda$_45_0.prototype;
-    c.call = $rt_callWithReceiver(a_Component$frame$lambda$_45_0_call$exported$0);
+    c = a_Component$bindMouse$lambda$_52_4.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_4_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_3.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_3_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_2.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_2_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_1.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_1_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_0.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_0_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_7.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_7_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_6.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_6_handleEvent$exported$0);
+    c = a_Component$bindMouse$lambda$_52_5.prototype;
+    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_52_5_handleEvent$exported$0);
     c = i_ImageIO$preload$lambda$_7_0.prototype;
     c.call = $rt_callWithReceiver(i_ImageIO$preload$lambda$_7_0_call$exported$0);
-    c = a_Component$bindKeyboard$lambda$_51_0.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_51_0_handleEvent$exported$0);
-    c = a_Component$bindKeyboard$lambda$_51_1.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_51_1_handleEvent$exported$0);
-    c = a_Component$bindKeyboard$lambda$_51_2.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_51_2_handleEvent$exported$0);
-    c = a_Component$bindKeyboard$lambda$_51_3.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindKeyboard$lambda$_51_3_handleEvent$exported$0);
-    c = a_Component$start$lambda$_44_0.prototype;
-    c.call = $rt_callWithReceiver(a_Component$start$lambda$_44_0_call$exported$0);
+    c = a_Component$frame$lambda$_46_0.prototype;
+    c.call = $rt_callWithReceiver(a_Component$frame$lambda$_46_0_call$exported$0);
     c = n_Socket$connect$lambda$_13_0.prototype;
     c.handle = $rt_callWithReceiver(n_Socket$connect$lambda$_13_0_handle$exported$0);
     c = n_Socket$connect$lambda$_13_3.prototype;
@@ -17896,22 +18014,6 @@ let $rt_jso_marker = Symbol('jsoClass');
     c.handle = $rt_callWithReceiver(n_Socket$connect$lambda$_13_1_handle$exported$0);
     c = n_Socket$connect$lambda$_13_2.prototype;
     c.handle = $rt_callWithReceiver(n_Socket$connect$lambda$_13_2_handle$exported$0);
-    c = a_Component$bindMouse$lambda$_50_6.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_6_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_5.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_5_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_4.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_4_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_3.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_3_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_2.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_2_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_1.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_1_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_0.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_0_handleEvent$exported$0);
-    c = a_Component$bindMouse$lambda$_50_7.prototype;
-    c.handleEvent = $rt_callWithReceiver(a_Component$bindMouse$lambda$_50_7_handleEvent$exported$0);
 })();
 $rt_exports.main = $rt_export_main;
 }));

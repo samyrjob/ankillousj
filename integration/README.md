@@ -10,21 +10,25 @@ source, ported, compiled by TeaVM, and booted.
 | Baseline on a real JDK | 0 errors, 216 classes |
 | javac, ported, against the shims | **0 errors** — was 298 |
 | **TeaVM** | **BUILD SUCCESS — 2.8 MB of futura.js** |
-| Boot | **the game's own code runs** |
+| Boot | **constructor completes, `GamePanel live: 1280x720`** |
+| **First frame** | **11,302 canvas operations, 2,263 colours** |
 
-Booted headlessly, the compiled output prints Futura's own log lines:
+`first-frame.png` is what it draws. A colour census of the quadrants:
 
 ```
-[RENDERER] Look 1 not in cache! Sprites will be null until downloaded.
-[ROOM API] Client initialized
-[ROOM CTRL] Controller created
-[FRIEND CTRL] Loading data from backend API...
+top-left      UI chrome     (198,199,208), (168,170,182)
+top-right     UI chrome + floor tiles
+bottom-left   floor tiles   (115,74,35)
+bottom-right  HUD cards     (32,37,63), (24,28,52)  <- Theme.CARD_GRAD_*
 ```
 
-That is `RoomController`, `FriendController` and the sprite renderer executing
-as JavaScript. It then fails in `GamePanel.paint` on a renderer that is null
-because its assets never arrived — the harness serves no files and blocks the
-network. Expected, and the next thing to wire up.
+Grey panels, brown floor tiles, and the Deep Indigo HUD colours from
+`view.shared.Theme`. That is the isometric renderer, the tile manager and the
+HUD, all executing as JavaScript.
+
+The art is stand-in — the real assets are not in the source drop, so
+`render/genassets.mjs` produces coloured tiles and glyphs at the paths the game
+asks for. Swapping in the real files changes the pixels and nothing else.
 
 ## Gson had to go
 
@@ -138,10 +142,49 @@ cd ../awt/render && node futura.smoke.mjs
 
 boots the compiled output headlessly and prints what happens.
 
+## Three bugs the boot found
+
+**The render loop started inside the constructor.** `awt.Component` claimed the
+canvas and began painting in its own constructor — but `super()` runs before a
+subclass's field initialisers, so the first frame arrived while `GamePanel` was
+still building and `gameRenderer` was null. The loop now starts on a deferred
+tick, after the whole constructor chain completes. Which is also when Swing
+would first paint.
+
+**An exception inside requestAnimationFrame kills the loop silently.** The page
+just stops updating, with nothing in the console. `Component.frame` now catches,
+reports once, and keeps going — so a bad frame is debuggable instead of fatal.
+
+**`ImageIO.read(InputStream)` refused to work.** The first shim threw and told
+the caller to migrate a dozen call sites. That was wrong: by the time the stream
+exists the bytes are already in memory, so it drains them and decodes through a
+blob URL. Zero call sites changed.
+
+## Assets
+
+`BrowserMain` does the whole setup in two lines:
+
+```java
+Resources.setBase("assets");
+ImageIO.setResourceBase("assets");
+```
+
+Classpath paths keep their shape — `/res/tile/grass00.png` is simply prefixed.
+`render/futura.assets.mjs` boots the game and records every path it asks for,
+which is how the manifest below was produced:
+
+```
+/res/maps/map01.txt
+/res/tile/wooden_floor_tile.png
+/res/tile/grass00.png
+/res/icons/chat_icon.png, chat_badge.png, app_icon.png
+/res/object/GoldenCred.png
+/res/looks/<id>/sprite-<dir>[-mov-N].png     (18 per look)
+```
+
 ## Next
 
-1. **Serve the assets.** `Resources.setBase(...)` and `ImageIO.setResourceBase(...)`,
-   then `preload` before the first frame. That is what the null renderer is
-   waiting for.
-2. **Point the client at the gateway** so the protocol connects.
-3. **The ten Swing files** as HTML overlays.
+1. **Point the client at the gateway** so the protocol connects. The socket
+   layer is done and tested; it needs the URL and a running gateway.
+2. **Drop in the real art** at the paths above.
+3. **The ten Swing files** as HTML overlays — the last of the port.

@@ -40,8 +40,9 @@ import org.teavm.jso.dom.html.HTMLImageElement;
  *
  * {@code ImageIO.read(getClass().getResourceAsStream(path))} cannot work: the
  * browser has no classpath and no synchronous file read. Those call sites need
- * to become URLs. {@link #read(InputStream)} therefore fails with a message
- * saying so rather than returning null and leaving you to wonder.
+ * to become URLs — but {@link #read(InputStream)} still works, because
+ * {@code ankillousj.Resources} fetches the bytes first and the stream is over
+ * bytes already in memory.
  */
 public final class ImageIO {
 
@@ -97,15 +98,24 @@ public final class ImageIO {
     }
 
     /**
-     * @throws UnsupportedOperationException always — see the class docs. A
-     *     stream implies a synchronous read the browser cannot perform.
-     *     If the bytes are already in hand, use {@link #read(byte[])}.
+     * Drains the stream and decodes the bytes.
+     *
+     * <p>This works because the bytes are already in hand by the time the
+     * stream exists — {@code ankillousj.Resources.open} fetched them. What
+     * still cannot happen synchronously is the *decode*, so the returned image
+     * populates on a later tick exactly as {@link #read(String)} does.
      */
     public static BufferedImage read(InputStream stream) {
-        throw new UnsupportedOperationException(
-            "ImageIO.read(InputStream) cannot work in a browser: there is no classpath "
-            + "and no synchronous file read. Use ImageIO.read(String url) with the asset "
-            + "served over HTTP, and ImageIO.setResourceBase(...) to keep existing paths.");
+        if (stream == null) return null;
+        try {
+            java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+            byte[] chunk = new byte[8192];
+            int n;
+            while ((n = stream.read(chunk)) > 0) buffer.write(chunk, 0, n);
+            return buffer.size() == 0 ? null : read(buffer.toByteArray(), "image/png");
+        } catch (java.io.IOException e) {
+            return null;
+        }
     }
 
     /**
