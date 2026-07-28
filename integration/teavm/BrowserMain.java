@@ -1,5 +1,6 @@
 package main;
 
+import ankillousj.GameJsonReaders;
 import ankillousj.Resources;
 import imageio.ImageIO;
 import net.Socket;
@@ -36,10 +37,20 @@ public final class BrowserMain {
                                  + "else if (typeof console !== 'undefined') console.log(m);")
     private static native void log(String m);
 
+    @JSBody(script = "return typeof location !== 'undefined' "
+                   + "&& location.search.indexOf('uidemo') >= 0;")
+    private static native boolean uiDemoRequested();
+
     private BrowserMain() { }
 
     public static void main(String[] args) {
         log("AnkillousJ: starting Futura in the browser");
+
+        // Explicit JSON readers, in place of reflective binding.
+        GameJsonReaders.install();
+
+        // Opt-in dialog demo, for the harness and for eyeballing the overlays.
+        if (uiDemoRequested()) { ankillousj.UiProof.run(); return; }
 
         Resources.setBase(ASSET_BASE);
         ImageIO.setResourceBase(ASSET_BASE);
