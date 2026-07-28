@@ -45,7 +45,8 @@ java.util.concurrent.ExecutorService concurrent.ExecutorService
 java.util.concurrent.ScheduledFuture concurrent.ScheduledFuture
 java.util.concurrent.Executors concurrent.Executors
 java.util.concurrent.Future concurrent.Future
-java.net.Socket net.Socket"
+java.net.Socket net.Socket
+System.exit ankillousj.Platform.exit"
 
 REVERSE=no
 [ "$MODE" = "--revert" ] && REVERSE=yes
