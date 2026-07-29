@@ -44,7 +44,8 @@ const check = (n, ok) => results.push((ok ? 'PASS ' : 'FAIL ') + n)
 const html = appended.map(a => a.innerHTML || '').join('\n')
 
 check('a stylesheet was injected once', styles.length === 1)
-check('every dialog reached the page', appended.length === 5)
+// at least the five from UiProof; NonBlockingProof opens more in the same run
+check('every dialog reached the page  (' + appended.length + ')', appended.length >= 5)
 check('error dialog rendered its message', html.includes('Could not reach the server'))
 check('choice dialog listed its options', html.includes('>20<') && html.includes('>50<'))
 check('room form has a name field', html.includes('data-name'))

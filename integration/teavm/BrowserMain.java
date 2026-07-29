@@ -50,7 +50,7 @@ public final class BrowserMain {
         GameJsonReaders.install();
 
         // Opt-in dialog demo, for the harness and for eyeballing the overlays.
-        if (uiDemoRequested()) { ankillousj.UiProof.run(); return; }
+        if (uiDemoRequested()) { ankillousj.UiProof.run(); ankillousj.NonBlockingProof.run(); return; }
 
         Resources.setBase(ASSET_BASE);
         ImageIO.setResourceBase(ASSET_BASE);
@@ -60,6 +60,7 @@ public final class BrowserMain {
         Socket.setUrlMapper((host, port) -> "ws://" + host + ":" + GATEWAY_PORT);
 
         try {
+            ankillousj.NonBlockingProof.install();
             log("constructing GamePanel...");
             GamePanel gp = new GamePanel("WebPlayer", "MALE", "", 1, "");
             log("GamePanel live: " + gp.getWidth() + "x" + gp.getHeight());

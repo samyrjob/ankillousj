@@ -47,6 +47,50 @@ body moved into the callback — there are not many, and the compiler does not
 flag them, so they are worth grepping for: `promptInput`, `promptChoice`,
 `showConfirm`.
 
+## They do not block the game
+
+This is the question worth asking, because a naive port gets it wrong: Swing's
+modal dialogs genuinely stop the calling thread, and reproducing that in a
+browser would mean spinning — which does not merely delay the caller, it
+freezes the event loop the dialog needs in order to ever be dismissed. The page
+would hang for good.
+
+Two separate things are checked, because they can fail independently.
+
+**The caller returns immediately.**
+
+```
+$ node nonblocking.test.mjs
+
+  ✓ all dialogs opened
+  ✓ opening five dialogs took under 50 ms  (1 ms)
+  ✓ the caller returned
+  ✓ prompts returned without waiting for an answer
+  ✓ main() itself returned promptly  (174 ms)
+  ✓ the event loop still turns  (a blocking dialog would deadlock it)
+```
+
+**And the render loop keeps running with a dialog open.** That is the one that
+would ruin a game, so it is tested against a live loop rather than a fresh
+page — opening dialogs before the panel exists proves nothing about whether
+they stall it:
+
+```
+$ node midrun.test.mjs
+
+  ✓ the game is rendering before the dialog  (4039 ops)
+  ✓ a dialog was opened mid-run
+  ✓ frames kept coming with the dialog open  (+5649 ops)
+  ✓ the event loop still turns
+```
+
+5,649 further canvas operations after the dialog opened. The game never
+noticed.
+
+This is better than the desktop build, not merely equivalent: there, a modal
+`JOptionPane` blocks the event dispatch thread, so anything on the EDT stops
+until it is dismissed.
+
 ## Tests
 
 ```bash
