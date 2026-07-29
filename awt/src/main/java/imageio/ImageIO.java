@@ -62,7 +62,7 @@ public final class ImageIO {
     }
 
     /** Starts loading and returns immediately. Repeat calls share one image. */
-    public static BufferedImage read(String url) {
+    public static BufferedImage read(String url) throws java.io.IOException {
         String resolved = resolve(url);
         BufferedImage cached = CACHE.get(resolved);
         if (cached != null) return cached;
@@ -74,7 +74,7 @@ public final class ImageIO {
         return bi;
     }
 
-    public static BufferedImage read(java.net.URL url) {
+    public static BufferedImage read(java.net.URL url) throws java.io.IOException {
         return read(url.toString());
     }
 
@@ -86,11 +86,11 @@ public final class ImageIO {
      * <p>This covers the {@code ImageIO.read(new ByteArrayInputStream(bytes))}
      * shape without any change to how the bytes were obtained.
      */
-    public static BufferedImage read(byte[] bytes) {
+    public static BufferedImage read(byte[] bytes) throws java.io.IOException {
         return read(bytes, "image/png");
     }
 
-    public static BufferedImage read(byte[] bytes, String mimeType) {
+    public static BufferedImage read(byte[] bytes, String mimeType) throws java.io.IOException {
         HTMLImageElement img = newImage();
         BufferedImage bi = new BufferedImage(img);
         setSrc(img, blobUrl(toJs(bytes), mimeType));
@@ -105,24 +105,20 @@ public final class ImageIO {
      * still cannot happen synchronously is the *decode*, so the returned image
      * populates on a later tick exactly as {@link #read(String)} does.
      */
-    public static BufferedImage read(InputStream stream) {
+    public static BufferedImage read(InputStream stream) throws java.io.IOException {
         if (stream == null) return null;
-        try {
-            java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
-            byte[] chunk = new byte[8192];
-            int n;
-            while ((n = stream.read(chunk)) > 0) buffer.write(chunk, 0, n);
-            return buffer.size() == 0 ? null : read(buffer.toByteArray(), "image/png");
-        } catch (java.io.IOException e) {
-            return null;
-        }
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        byte[] chunk = new byte[8192];
+        int n;
+        while ((n = stream.read(chunk)) > 0) buffer.write(chunk, 0, n);
+        return buffer.size() == 0 ? null : read(buffer.toByteArray(), "image/png");
     }
 
     /**
      * Loads everything up front. Resolve this before the first frame and
      * {@code getWidth()} will be correct from the start.
      */
-    public static CompletableFuture<Void> preload(String... urls) {
+    public static CompletableFuture<Void> preload(String... urls) throws java.io.IOException {
         CompletableFuture<Void> done = new CompletableFuture<>();
         if (urls.length == 0) {
             done.complete(null);

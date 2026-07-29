@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Futura — AnkillousJ</title>
+<style>
+  html,body{margin:0;height:100%;background:#0d0e1c;overflow:hidden}
+  #c{display:block;width:100vw;height:100vh;cursor:default}
+</style>
+</head>
+<body>
+  <canvas id="c" width="1280" height="720"></canvas>
+<script src="futura.js"></script>
+<script>
+  // AWT renders at native display resolution, so the canvas has to be told.
+  // awt.Component does the scaling from the Java side; all this does is give
+  // the element a CSS size for it to read.
+  const c = document.getElementById('c');
+  function size() {
+    c.style.width = window.innerWidth + 'px';
+    c.style.height = window.innerHeight + 'px';
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+  }
+  size();
+  window.addEventListener('resize', size);
+
+  main([]);
+  c.focus();
+</script>
+</body>
+</html>

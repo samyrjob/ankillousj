@@ -1,61 +1,56 @@
 # AnkillousJ
 
-Java in the browser. Free software, no commercial licence, ever.
+Java desktop applications, compiled for the browser. Free software, no
+commercial licence, ever.
 
-Two projects:
+```powershell
+cd toolchain
+.\build.ps1 -Source C:\path\to\your\src
+npx serve build\web
+```
+
+One command from a Swing/AWT source tree to a running browser build.
 
 | | |
 |---|---|
-| [`compiler/`](compiler) | Java bytecode → WebAssembly, written from scratch. 147/147 in-scope opcodes, 97 tests. |
-| [`awt/`](awt) | `java.awt` over Canvas2D, on TeaVM. 100% of Futura's drawing surface, plus events, concurrency, networking, images, sound and crypto. |
-| [`gateway/`](gateway) | WebSocket-to-TCP bridge, so a browser reaches an unmodified `ServerSocket` game server. |
-| [`integration/`](integration) | The real client, ported and compiled. javac: 0 errors. |
+| [`toolchain/`](toolchain) | **The build.** Point it at your sources. |
+| [`awt/`](awt) | The runtime: `java.awt` over Canvas2D, plus concurrency, networking, images, sound, crypto, JSON. 144 tests. |
+| [`gateway/`](gateway) | WebSocket-to-TCP bridge, so a browser reaches an unmodified `ServerSocket` server. |
+| [`loop/`](loop) | End-to-end: compiled client joining a real server through the gateway. |
+| [`integration/`](integration) | The record of porting a real 33k-line game, and what it cost. |
+| [`compiler/`](compiler) | A bytecode-to-Wasm front end, written from scratch. Reference, not the path. |
 | [`teavm-color-patch/`](teavm-color-patch) | Upstream patch: `Color.brighter()` / `darker()`. |
 | [`teavm-atomic-array-patch/`](teavm-atomic-array-patch) | Upstream patch: `AtomicIntegerArray` / `AtomicLongArray`. |
 
-## Which one matters
+## What it does
 
-`awt/` is the one to build on.
+Compiles with [TeaVM](https://teavm.org) and supplies what TeaVM does not: the
+whole AWT surface over Canvas2D, and replacements for the JDK corners a browser
+cannot reach.
 
-Futura imports 92 JDK types. TeaVM 0.14.1 already covers 44 of them, including
-everything that looked hardest: `LambdaMetafactory` and `MethodHandles` for the
-270 lambdas and method references, the full `java.lang.reflect` Gson needs,
-`Thread` and `ConcurrentHashMap` and the atomics, and 1,502 class-library
-classes across `java.util`, `java.io`, `java.nio`, `java.text` and streams.
+Verified on a 33,000-line isometric multiplayer game. It compiles, renders,
+handles input, and reaches its server — with the server unmodified.
 
-Of the 152 import sites TeaVM does *not* cover, **112 were AWT/Swing**. That is
-what `awt/` is. What is left after it:
+## What it cannot do, stated plainly
 
-```
-Executors / CompletableFuture     16 sites   thin wrappers over the event loop
-java.net.http + java.time          8 sites   fetch / WebSocket via JSO
-java.security (JWT verify)         8 sites   WebCrypto, or move it server-side
-javax.imageio                      7 sites   browser-native decode
-javax.sound                        1 site    Web Audio
-```
+Three things have no browser equivalent, and no shim can invent one:
 
-Forty import sites, plus the six Swing files (four dialogs and window setup,
-about 2,000 lines) that want rebuilding as HTML rather than emulating.
+- **WebSocket handshake headers.** The browser builds the handshake itself. Your
+  values move to the query string; the gateway hands them back under their
+  original names.
+- **Blocking dialogs.** `JOptionPane` stops the calling thread. Suspending in a
+  browser freezes the event loop the dialog needs in order to be dismissed —
+  that is a deadlock, not a delay. The prompts take callbacks instead.
+- **Synchronous image decode.** `ImageIO.read` returns immediately and the
+  pixels arrive later. `preload()` exists for when that matters.
 
-`compiler/` is a complete, tested bytecode→Wasm front end. It is how the
-bytecode and Wasm models got learned, and it stands as a clean reference. But
-carrying it to the point it could run Futura means rebuilding TeaVM's decade,
-and TeaVM is Apache 2.0.
-
-## Quick start
-
-```bash
-# see the game's own code render and respond in a browser
-cd awt && npx serve web
-
-# the compiler's test suite
-cd compiler && npm install && npm run check
-```
+Everything else is either implemented or reported.
 
 ## Licence
 
-GPLv3 with the Classpath Exception. The compiler and runtime stay free
-forever; anything you build with them is yours to licence however you want.
+GPLv3 with the Classpath Exception. The compiler and runtime stay free forever;
+anything you build with them is yours to licence however you want.
 
-Clean-room throughout — written against the JVM Specification (JVMS SE 21) and
-the WebAssembly Core Specification. No CheerpJ source or output was read.
+Clean-room throughout — written against the JVM Specification, the WebAssembly
+Core Specification, and RFCs 6455 and 8032. No CheerpJ source or output was
+read.
