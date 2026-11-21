@@ -6,11 +6,12 @@
  * path works end to end and to produce a real frame — swapping in the actual
  * art changes nothing but the pixels.
  */
+import { WEB } from './paths.mjs'
 import { createCanvas } from '@napi-rs/canvas'
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 
-const BASE = '/home/claude/full/web/assets'
+const BASE = WEB + 'assets'
 
 function tile(path, top, bottom, label) {
   const c = createCanvas(96, 48)

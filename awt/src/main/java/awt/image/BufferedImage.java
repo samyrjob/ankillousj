@@ -14,8 +14,13 @@ import org.teavm.jso.dom.html.HTMLImageElement;
  * can wrap either: one you loaded from a URL, or one you draw into.
  */
 public class BufferedImage {
-    public static final int TYPE_INT_ARGB = 2;
-    public static final int TYPE_INT_RGB  = 1;
+    public static final int TYPE_INT_RGB      = 1;
+    public static final int TYPE_INT_ARGB     = 2;
+    public static final int TYPE_INT_ARGB_PRE = 3;
+    public static final int TYPE_INT_BGR      = 4;
+    public static final int TYPE_3BYTE_BGR    = 5;
+    public static final int TYPE_4BYTE_ABGR   = 6;
+    public static final int TYPE_BYTE_GRAY    = 10;
 
     private final CanvasImageSource src;
     private final HTMLCanvasElement canvas;   // null when wrapping a loaded image
@@ -86,8 +91,45 @@ public class BufferedImage {
     }
 
     public void setRGB(int x, int y, int rgb) {
-        Native.setPixel(pixelSource(), x, y, rgb);
+        Native.setPixel(writable(), x, y, rgb);
     }
+
+    /** The bulk form: writes a rectangle of packed 0xAARRGGBB pixels, row by row. */
+    public void setRGB(int startX, int startY, int w, int h,
+                       int[] rgb, int offset, int scansize) {
+        if (w <= 0 || h <= 0 || rgb == null) return;
+        Native.setPixels(writable(), startX, startY, w, h, rgb, offset, scansize);
+    }
+
+    /** A picture drawn into is a canvas; a loaded one is read-only, as its pixels are the browser's. */
+    private HTMLCanvasElement writable() {
+        if (canvas == null) throw new IllegalStateException("image is read-only");
+        return canvas;
+    }
+
+    /**
+     * A new picture holding the rectangle (x, y, w, h) of this one.
+     *
+     * <p>The JDK's shares its pixels with the original; this one is a copy,
+     * which is the same to anyone who only looks at it or draws it.
+     */
+    public BufferedImage getSubimage(int x, int y, int w, int h) {
+        BufferedImage part = new BufferedImage(Math.max(1, w), Math.max(1, h), TYPE_INT_ARGB);
+        Native.copyRegion(part.canvas, src, x, y, w, h);
+        return part;
+    }
+
+    /** Always ARGB: a canvas has no other kind of pixel. */
+    public int getType() { return TYPE_INT_ARGB; }
+
+    public ColorModel getColorModel() { return ColorModel.RGBA; }
+
+    /** java.awt.Image's form, which takes an observer nobody needs here. */
+    public int getWidth(Object observer)  { return getWidth(); }
+    public int getHeight(Object observer) { return getHeight(); }
+
+    /** Nothing to release: the browser collects a canvas like anything else. */
+    public void flush() { }
 
     /** An offscreen canvas holding this image's pixels, created on demand. */
     private HTMLCanvasElement pixelCache;
@@ -139,5 +181,25 @@ public class BufferedImage {
               + "d.data[2] = rgb & 255;         d.data[3] = (rgb >>> 24) & 255;"
               + "ctx.putImageData(d, x, y);")
         static native void setPixel(HTMLCanvasElement c, int x, int y, int rgb);
+
+        @org.teavm.jso.JSBody(params = { "c", "x", "y", "w", "h", "rgb", "off", "scan" }, script =
+                "var ctx = c.getContext('2d');"
+              + "var d = ctx.createImageData(w, h);"
+              + "var px = d.data;"
+              + "for (var j = 0; j < h; j++) {"
+              + "  for (var i = 0; i < w; i++) {"
+              + "    var v = rgb[off + j * scan + i], s = (j * w + i) * 4;"
+              + "    px[s] = (v >> 16) & 255; px[s+1] = (v >> 8) & 255;"
+              + "    px[s+2] = v & 255;       px[s+3] = (v >>> 24) & 255;"
+              + "  }"
+              + "}"
+              + "ctx.putImageData(d, x, y);")
+        static native void setPixels(HTMLCanvasElement c, int x, int y, int w, int h,
+                                     int[] rgb, int off, int scan);
+
+        @org.teavm.jso.JSBody(params = { "c", "img", "x", "y", "w", "h" }, script =
+                "try { c.getContext('2d').drawImage(img, x, y, w, h, 0, 0, w, h); } catch (e) { }")
+        static native void copyRegion(HTMLCanvasElement c, CanvasImageSource img,
+                                      int x, int y, int w, int h);
     }
 }

@@ -1,4 +1,5 @@
 /** Boots the compiled game headlessly and reports what happens. */
+import { WEB } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { installDom } from './dom-stub.mjs'
 const require = createRequire(import.meta.url)
@@ -14,7 +15,7 @@ globalThis.fetch = () => Promise.reject(new Error('offline'))
 
 let err = null
 try {
-  require('/home/claude/full/web/futura.js').main([])
+  require(WEB + 'futura.js').main([])
 } catch (e) {
   err = e
 }

@@ -136,6 +136,13 @@ extra_rewrites() {
   # A page cannot exit. See ankillousj.Platform.exit for what happens instead.
   sed -i -E 's/\bSystem\.exit\(/ankillousj.Platform.exit(/g' "$f"
 
+  # Two methods TeaVM's own classes lack. A missing METHOD cannot be substituted the way a
+  # missing class can (the class library's own class wins), so the call moves instead.
+  # Runtime.maxMemory: a page has no fixed heap; ankillousj.Platform.maxMemory answers a budget.
+  sed -i -E 's/\bRuntime\.getRuntime\(\)\.maxMemory\(\)/ankillousj.Platform.maxMemory()/g' "$f"
+  # ConcurrentHashMap.newKeySet: the same set, from concurrent.KeySets. A type witness is kept.
+  sed -i -E 's/\b(java\.util\.concurrent\.)?ConcurrentHashMap\.(<[^>()]*>)?newKeySet\(/concurrent.KeySets.\2newKeySet(/g' "$f"
+
   # A game panel is a JPanel only because Swing had nothing better. What it
   # actually is, is a canvas with a paint method — which is what awt.Component
   # provides. This is the single highest-value rewrite in the whole script:

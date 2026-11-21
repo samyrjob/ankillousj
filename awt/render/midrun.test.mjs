@@ -2,13 +2,14 @@
  * The case that actually matters: a dialog opened while the game loop is
  * running. Frames must keep coming.
  */
+import { WEB } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { readFileSync, existsSync } from 'node:fs'
 import { installDom, reportAndExit } from './dom-stub.mjs'
 import { Image as RealImage } from '@napi-rs/canvas'
 const require = createRequire(import.meta.url)
 
-const ROOT = '/home/claude/full/web/'
+const ROOT = WEB
 const dom = installDom({ width: 1280, height: 720, traceCanvas: true })
 
 // assets + REST, same as the render harness

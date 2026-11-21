@@ -167,6 +167,12 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         return value;
     }
 
+    /** The value when it is there already, else {@code valueIfAbsent}: never waits. */
+    public T getNow(T valueIfAbsent) {
+        if (!done) return valueIfAbsent;
+        return join();
+    }
+
     @Override public T get() { return join(); }
     @Override public T get(long timeout, java.util.concurrent.TimeUnit unit) { return join(); }
     @Override public boolean isDone() { return done; }

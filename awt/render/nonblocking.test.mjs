@@ -8,6 +8,7 @@
  * The second is the one that would ruin a game, and the one a naive port
  * gets wrong.
  */
+import { WEB } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { installDom, reportAndExit } from './dom-stub.mjs'
 const require = createRequire(import.meta.url)
@@ -39,7 +40,7 @@ const realLog = console.log
 console.log = (...a) => out.push(a.join(' '))
 
 const wall0 = Date.now()
-require('/home/claude/full/web/futura.js').main([])
+require(WEB + 'futura.js').main([])
 const wall = Date.now() - wall0
 
 console.log = realLog

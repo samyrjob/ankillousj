@@ -37,6 +37,25 @@ public final class Platform {
     /** True once {@link #exit} has been called. */
     public static boolean isHalted() { return halted; }
 
+    /**
+     * What {@code Runtime.getRuntime().maxMemory()} answers in a browser (TeaVM has no such
+     * method; the port rewrites the call to this one).
+     *
+     * <p>A program asks it to size its caches: so many percent of the memory it may use. A
+     * page has no fixed heap, so the answer is a budget: a quarter of the device's memory as
+     * the browser reports it, between 512 MB and 2 GB; 1 GB when the browser does not say.
+     */
+    public static long maxMemory() {
+        double gigabytes = deviceMemory();
+        long budget = gigabytes <= 0 ? 1024L * 1024 * 1024
+                                    : (long) (gigabytes * 0.25 * 1024 * 1024 * 1024);
+        return Math.max(512L * 1024 * 1024, Math.min(2048L * 1024 * 1024, budget));
+    }
+
+    @JSBody(script =
+            "return (typeof navigator !== 'undefined' && navigator.deviceMemory) ? navigator.deviceMemory : 0;")
+    private static native double deviceMemory();
+
     /** Hook for showing an error state, since there is no window to close. */
     public static void setExitHandler(Runnable handler) { onExit = handler; }
 

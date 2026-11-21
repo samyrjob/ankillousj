@@ -44,6 +44,7 @@ public class HttpRequest {
         public Builder uri(URI uri)                        { this.uri = uri; return this; }
         public Builder header(String name, String value)   { headers.add(new String[]{name, value}); return this; }
         public Builder timeout(time.Duration d)            { timeoutMillis = d.toMillis(); return this; }
+        public Builder timeout(java.time.Duration d)       { timeoutMillis = d.toMillis(); return this; }
         public Builder GET()                               { method = "GET"; return this; }
 
         public Builder POST(BodyPublisher publisher) {

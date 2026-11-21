@@ -1,4 +1,5 @@
 /** Opens every dialog and checks what actually reaches the page. */
+import { WEB } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
@@ -36,7 +37,7 @@ globalThis.document = {
 const out = []
 const realLog = console.log
 console.log = (...a) => out.push(a.join(' '))
-require('/home/claude/full/web/futura.js').main([])
+require(WEB + 'futura.js').main([])
 console.log = realLog
 
 const results = []

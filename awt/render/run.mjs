@@ -5,6 +5,7 @@
  * The same compiled output runs in a browser — the only difference is that
  * there the DOM is real.
  */
+import { PROOF_WEB_JS } from './paths.mjs'
 import { createCanvas } from '@napi-rs/canvas'
 import { writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -48,7 +49,7 @@ globalThis.requestAnimationFrame = (cb) => { rafQueue.push(cb); return 1 }
 globalThis.__ankLog = (m) => console.log('  [java]', m)
 
 console.log('running compiled Java...')
-require('/home/claude/proof/web/proof.js').main([])
+require(PROOF_WEB_JS).main([])
 
 // Drive a few frames so the component paints
 for (let i = 0; i < 3; i++) { const q = rafQueue; rafQueue = []; q.forEach((f) => f()) }

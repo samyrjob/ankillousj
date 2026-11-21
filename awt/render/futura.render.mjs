@@ -4,13 +4,14 @@
  * The XHR stub reads from disk, which is what a web server would do — the
  * game cannot tell the difference.
  */
+import { WEB, OUT } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { readFileSync, existsSync, writeFileSync } from 'node:fs'
 import { installDom } from './dom-stub.mjs'
 import { createCanvas, Image as RealImage } from '@napi-rs/canvas'
 const require = createRequire(import.meta.url)
 
-const ROOT = '/home/claude/full/web/'
+const ROOT = WEB
 const dom = installDom({ width: 1280, height: 720, traceCanvas: true })
 const logs = []
 const missing = []
@@ -111,7 +112,7 @@ await dom.settle(600)
 // GamePanel drives its own thread; pump frames and let assets settle between
 for (let i = 0; i < 30; i++) { dom.pump(2); await dom.settle(40) }
 
-writeFileSync('/home/claude/render/futura-frame.png', dom.canvas.toBuffer('image/png'))
+writeFileSync(OUT + 'futura-frame.png', dom.canvas.toBuffer('image/png'))
 
 console.log('rAF callbacks queued: ' + (globalThis.__rafCount || 0))
 console.log('java log:')

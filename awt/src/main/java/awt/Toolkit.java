@@ -73,6 +73,21 @@ public class Toolkit {
 
     public void beep() { }
 
+    /**
+     * A desktop setting by name. The one a game asks for is how long two
+     * clicks may be apart to count as a double click: 500 ms, the usual value
+     * (a page cannot read the system's). Anything else is unknown: null.
+     */
+    public Object getDesktopProperty(String name) {
+        if ("awt.multiClickInterval".equals(name)) return Integer.valueOf(500);
+        return null;
+    }
+
+    private final awt.datatransfer.Clipboard clipboard = new awt.datatransfer.Clipboard("System");
+
+    /** The browser's clipboard: text copied here reaches other programs. */
+    public awt.datatransfer.Clipboard getSystemClipboard() { return clipboard; }
+
     @JSFunctor
     interface Handler extends JSObject { void handle(); }
 

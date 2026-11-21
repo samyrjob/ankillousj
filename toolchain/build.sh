@@ -102,7 +102,9 @@ fi
 echo "5. compiling with TeaVM (this takes a minute)"
 echo
 
-if ! (cd "$WORK" && mvn -B -q process-classes 2>&1 | tee "$OUT/build.log" | grep -E '^\[ERROR\]' | head -30); then
+# Maven when it is installed; else the wrapper beside this script, which fetches it once.
+if command -v mvn >/dev/null 2>&1; then MVN=mvn; else MVN="$HERE/mvnw"; fi
+if ! (cd "$WORK" && "$MVN" -B -q process-classes 2>&1 | tee "$OUT/build.log" | grep -E '^\[ERROR\]' | head -30); then
   :
 fi
 

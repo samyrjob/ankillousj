@@ -1,5 +1,6 @@
 /* Minimal DOM so we can exercise the *browser* branch without a browser:
    proves the event wiring builds and dispatches, and that coordinates land. */
+import { PROOF_JS, OUT } from './paths.mjs'
 import { createCanvas } from '@napi-rs/canvas'
 import { createRequire } from 'node:module'
 import { writeFileSync } from 'node:fs'
@@ -26,7 +27,7 @@ globalThis.requestAnimationFrame = (cb) => { rafQueue.push(cb); return 1 }
 const logs = []
 globalThis.__ankLog = (m) => logs.push(m)
 
-const mod = require('/home/claude/proof/target/js/proof.js')
+const mod = require(PROOF_JS)
 mod.main([])
 
 const pump = (n = 3) => { for (let i = 0; i < n; i++) { const q = rafQueue; rafQueue = []; q.forEach(f => f()) } }
@@ -49,6 +50,6 @@ pump()
 fire('keydown', { key: ' ', keyCode: 32 })
 pump()
 
-writeFileSync('/home/claude/render/interactive.png', canvas.toBuffer('image/png'))
+writeFileSync(OUT + 'interactive.png', canvas.toBuffer('image/png'))
 console.log('java logged:', logs.join(' | '))
 console.log('wrote interactive.png')

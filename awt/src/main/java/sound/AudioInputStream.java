@@ -6,7 +6,7 @@ package sound;
  * There is no stream — the browser fetches and decodes the audio itself. This
  * only carries the URL through to the Clip.
  */
-public class AudioInputStream {
+public class AudioInputStream implements java.io.Closeable {
 
     private final String url;
 
@@ -14,5 +14,5 @@ public class AudioInputStream {
 
     public String url() { return url; }
 
-    public void close() { }
+    @Override public void close() { }
 }

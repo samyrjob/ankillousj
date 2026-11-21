@@ -138,6 +138,7 @@ public class BrowserWebSocket implements WebSocket {
 
         /** The browser owns the handshake; there is no timeout to set. */
         @Override public Builder connectTimeout(time.Duration timeout) { return this; }
+        @Override public Builder connectTimeout(java.time.Duration timeout) { return this; }
 
         @Override public Builder subprotocols(String most, String... rest) {
             protocols.add(most);

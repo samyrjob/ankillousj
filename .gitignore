@@ -4,3 +4,6 @@ target/
 out/
 *.class
 test/java/Harness.java
+
+# what build.sh and build.ps1 produce
+build/

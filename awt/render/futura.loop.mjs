@@ -7,6 +7,7 @@
  * The only stub is the DOM, because Node has no browser. The socket is a
  * genuine WebSocket connection over the loopback interface.
  */
+import { WEB, OUT } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { readFileSync, existsSync, writeFileSync } from 'node:fs'
 import { installDom } from './dom-stub.mjs'
@@ -14,7 +15,7 @@ import { Image as RealImage } from '@napi-rs/canvas'
 import WS from 'ws'
 const require = createRequire(import.meta.url)
 
-const ROOT = '/home/claude/full/web/'
+const ROOT = WEB
 const dom = installDom({ width: 1280, height: 720, traceCanvas: true })
 const logs = []
 globalThis.__ankLog = (m) => logs.push(m)
@@ -125,7 +126,7 @@ require(ROOT + 'futura.js').main([])
 await new Promise((r) => setTimeout(r, 2500))
 for (let i = 0; i < 40; i++) { dom.pump(2); await new Promise((r) => setTimeout(r, 40)) }
 
-writeFileSync('/home/claude/render/futura-loop.png', dom.canvas.toBuffer('image/png'))
+writeFileSync(OUT + 'futura-loop.png', dom.canvas.toBuffer('image/png'))
 
 console.log('java log:')
 for (const l of logs) console.log('   ' + l)

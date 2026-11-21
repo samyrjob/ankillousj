@@ -1,4 +1,5 @@
 /** Boots the game and records every asset it asks for. */
+import { WEB } from './paths.mjs'
 import { createRequire } from 'node:module'
 import { installDom } from './dom-stub.mjs'
 const require = createRequire(import.meta.url)
@@ -22,7 +23,7 @@ globalThis.Image = class extends RealImage {
   get src() { return super.src }
 }
 
-try { require('/home/claude/full/web/futura.js').main([]) } catch (e) { /* expected */ }
+try { require(WEB + 'futura.js').main([]) } catch (e) { /* expected */ }
 await dom.settle(200)
 
 const uniq = [...new Set(requested)].sort()
