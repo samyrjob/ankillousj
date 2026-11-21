@@ -96,6 +96,7 @@ public class HttpClient {
     /** Accepts and ignores the usual configuration; the browser owns the connection. */
     public static class Builder {
         public Builder connectTimeout(time.Duration timeout) { return this; }
+        public Builder connectTimeout(java.time.Duration timeout) { return this; }
         public Builder followRedirects(Object policy)        { return this; }
         public Builder version(Object version)               { return this; }
         public HttpClient build()                            { return new HttpClient(); }

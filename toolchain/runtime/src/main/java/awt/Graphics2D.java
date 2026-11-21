@@ -1,9 +1,12 @@
 package awt;
 
+import awt.geom.AffineTransform;
 import awt.geom.PathSink;
 import awt.image.BufferedImage;
 
+import org.teavm.jso.JSBody;
 import org.teavm.jso.canvas.CanvasGradient;
+import org.teavm.jso.canvas.CanvasImageSource;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 
 /**
@@ -18,6 +21,12 @@ import org.teavm.jso.canvas.CanvasRenderingContext2D;
  *    strokeStyle. We keep a shadow copy and push it to both.
  *  - AWT clipping is set/restored by value (getClip / setClip); Canvas2D only
  *    has save()/restore(). We keep a depth counter and unwind on setClip(null).
+ *    A restore() also takes back the colour, font, stroke and transform set
+ *    since the save, which AWT's setClip never does: the shadow state is
+ *    pushed again after each unwinding.
+ *  - AWT can read its transform back (getTransform) and put it back
+ *    (setTransform). The transform is shadowed here, and the canvas matrix is
+ *    always the device matrix (the pixel ratio) times it.
  *  - AWT text is drawn from the baseline, same as fillText, so drawString maps
  *    directly with no y adjustment.
  */
@@ -29,17 +38,49 @@ public class Graphics2D extends Graphics {
     private Color currentColor = Color.BLACK;
     private Paint currentPaint = null;
     private Font currentFont = new Font("SansSerif", Font.PLAIN, 12);
-    private Composite currentComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+    private Composite currentComposite = AlphaComposite.SrcOver;
     private Stroke currentStroke = new BasicStroke(1f);
     private Shape currentClip = null;
     private int clipDepth = 0;
     /** True when this instance came from create() and owes the context a restore(). */
     private boolean ownsSave = false;
 
+    /** The device matrix: what the canvas applies before anything the caller asks (the pixel ratio). */
+    private double d00 = 1, d10 = 0, d01 = 0, d11 = 1, d02 = 0, d12 = 0;
+    /** The caller's transform, as getTransform() reports it. */
+    private final AffineTransform user = new AffineTransform();
+
+    private final RenderingHints hints = new RenderingHints();
+    /** KEY_INTERPOLATION: Java2D's default is nearest neighbour, so it is here too. */
+    private boolean smooth = false;
+    /** AlphaComposite.CLEAR is active: whatever is drawn erases. */
+    private boolean clearing = false;
+    /** AlphaComposite.SRC is active: what is drawn replaces what was there. */
+    private boolean replacing = false;
+
     public Graphics2D(CanvasRenderingContext2D ctx) {
         this.ctx = ctx;
-        ctx.setTextBaseline("alphabetic");
-        ctx.setFont(currentFont.toCss());
+        // A context keeps what its last user left in it; AWT hands out a fresh state.
+        applyAll();
+    }
+
+    /** The child of create(): the same context, the parent's state. */
+    private Graphics2D(Graphics2D parent) {
+        this.ctx = parent.ctx;
+        this.ownsSave = true;
+        this.currentColor     = parent.currentColor;
+        this.currentPaint     = parent.currentPaint;
+        this.currentFont      = parent.currentFont;
+        this.currentComposite = parent.currentComposite;
+        this.currentStroke    = parent.currentStroke;
+        this.currentClip      = parent.currentClip;
+        this.d00 = parent.d00; this.d10 = parent.d10; this.d01 = parent.d01;
+        this.d11 = parent.d11; this.d02 = parent.d02; this.d12 = parent.d12;
+        this.user.setTransform(parent.user);
+        this.hints.add(parent.hints);
+        this.smooth    = parent.smooth;
+        this.clearing  = parent.clearing;
+        this.replacing = parent.replacing;
     }
 
     /** Debug aid: how many unbalanced save() calls this instance is holding. */
@@ -47,26 +88,74 @@ public class Graphics2D extends Graphics {
 
     CanvasRenderingContext2D ctx() { return ctx; }
 
+    // ── Shadow state -> canvas ────────────────────────────────────────
+
+    /** Pushes the whole shadow state to the canvas: after a restore(), a resize, or at creation. */
+    private void applyAll() {
+        pushTransform();
+        applyComposite();
+        applyPaint();
+        ctx.setFont(currentFont.toCss());
+        ctx.setTextBaseline("alphabetic");
+        applyStroke();
+        smoothing(ctx, smooth);
+    }
+
+    /** The canvas matrix is the device matrix times the caller's. */
+    private void pushTransform() {
+        double[] u = new double[6];
+        user.getMatrix(u);
+        ctx.setTransform(
+                d00 * u[0] + d01 * u[1],
+                d10 * u[0] + d11 * u[1],
+                d00 * u[2] + d01 * u[3],
+                d10 * u[2] + d11 * u[3],
+                d00 * u[4] + d01 * u[5] + d02,
+                d10 * u[4] + d11 * u[5] + d12);
+    }
+
+    /**
+     * The canvas was sized for a pixel ratio (and so lost all its state, saved
+     * levels included): {@code scale} is how many device pixels one unit is.
+     */
+    void setDeviceScale(double scale) {
+        d00 = scale; d10 = 0; d01 = 0; d11 = scale; d02 = 0; d12 = 0;
+        clipDepth = 0;
+        currentClip = null;
+        applyAll();
+    }
+
     // ── Paint / colour ────────────────────────────────────────────────
 
     public void setColor(Color c) {
         if (c == null) return;
         currentColor = c;
         currentPaint = null;
-        String css = c.toCss();
-        ctx.setFillStyle(css);
-        ctx.setStrokeStyle(css);
+        applyPaint();
     }
 
     public Color getColor() { return currentColor; }
 
     public void setPaint(Paint p) {
         if (p == null) return;
-        currentPaint = p;
         if (p instanceof Color) {
             setColor((Color) p);
             return;
         }
+        currentPaint = p;
+        applyPaint();
+    }
+
+    public Paint getPaint() { return currentPaint != null ? currentPaint : currentColor; }
+
+    private void applyPaint() {
+        if (clearing) {
+            // CLEAR ignores the paint: an opaque source erases wholly.
+            ctx.setFillStyle("#000");
+            ctx.setStrokeStyle("#000");
+            return;
+        }
+        Paint p = currentPaint;
         if (p instanceof GradientPaint) {
             GradientPaint gp = (GradientPaint) p;
             CanvasGradient grad = ctx.createLinearGradient(gp.x1, gp.y1, gp.x2, gp.y2);
@@ -74,34 +163,74 @@ public class Graphics2D extends Graphics {
             grad.addColorStop(1, gp.c2.toCss());
             ctx.setFillStyle(grad);
             ctx.setStrokeStyle(grad);
+        } else if (p instanceof RadialGradientPaint) {
+            RadialGradientPaint rp = (RadialGradientPaint) p;
+            CanvasGradient grad = ctx.createRadialGradient(rp.fx, rp.fy, 0, rp.cx, rp.cy, rp.radius);
+            for (int i = 0; i < rp.stops(); i++) {
+                grad.addColorStop(Math.max(0f, Math.min(1f, rp.fraction(i))), rp.color(i).toCss());
+            }
+            ctx.setFillStyle(grad);
+            ctx.setStrokeStyle(grad);
+        } else if (p instanceof TexturePaint) {
+            TexturePaint tp = (TexturePaint) p;
+            BufferedImage img = tp.getImage();
+            int w = img == null ? 0 : img.getWidth(), h = img == null ? 0 : img.getHeight();
+            if (w > 0 && h > 0) {
+                pattern(ctx, img.source(), tp.anchorX(), tp.anchorY(),
+                        tp.anchorWidth() / w, tp.anchorHeight() / h);
+            }
+        } else {
+            String css = currentColor.toCss();
+            ctx.setFillStyle(css);
+            ctx.setStrokeStyle(css);
         }
     }
-
-    public Paint getPaint() { return currentPaint != null ? currentPaint : currentColor; }
 
     // ── Stroke ────────────────────────────────────────────────────────
 
     public void setStroke(Stroke s) {
+        if (s == null) return;
         currentStroke = s;
-        if (s instanceof BasicStroke) {
-            BasicStroke bs = (BasicStroke) s;
-            ctx.setLineWidth(bs.getLineWidth());
-            ctx.setLineCap(bs.capCss());
-            ctx.setLineJoin(bs.joinCss());
-        }
+        applyStroke();
     }
 
     public Stroke getStroke() { return currentStroke; }
+
+    private void applyStroke() {
+        if (currentStroke instanceof BasicStroke) {
+            BasicStroke bs = (BasicStroke) currentStroke;
+            ctx.setLineWidth(bs.getLineWidth());
+            ctx.setLineCap(bs.capCss());
+            ctx.setLineJoin(bs.joinCss());
+            lineDetails(ctx, bs.getMiterLimit(), bs.getDashArray(), bs.getDashPhase());
+        }
+    }
 
     // ── Composite (alpha) ─────────────────────────────────────────────
 
     public void setComposite(Composite c) {
         if (c == null) return;
+        boolean wasClearing = clearing;
         currentComposite = c;
-        ctx.setGlobalAlpha(c.getAlpha());
+        applyComposite();
+        if (wasClearing != clearing) applyPaint();
     }
 
     public Composite getComposite() { return currentComposite; }
+
+    private void applyComposite() {
+        String operation = "source-over";
+        clearing = false;
+        replacing = false;
+        if (currentComposite instanceof AlphaComposite) {
+            AlphaComposite ac = (AlphaComposite) currentComposite;
+            operation = ac.cssOperation();
+            clearing = ac.getRule() == AlphaComposite.CLEAR;
+            replacing = ac.getRule() == AlphaComposite.SRC;
+        }
+        ctx.setGlobalAlpha(clearing ? 1.0 : currentComposite.getAlpha());
+        ctx.setGlobalCompositeOperation(operation);
+    }
 
     // ── Font & text ───────────────────────────────────────────────────
 
@@ -115,9 +244,18 @@ public class Graphics2D extends Graphics {
 
     public FontMetrics getFontMetrics() { return new FontMetrics(this, currentFont); }
 
-    public FontMetrics getFontMetrics(Font f) { return new FontMetrics(this, f); }
+    public FontMetrics getFontMetrics(Font f) { return new FontMetrics(this, f != null ? f : currentFont); }
 
     double measureTextWidth(String s) { return ctx.measureText(s).getWidth(); }
+
+    /** The width of {@code s} in {@code f}, whatever font is current. */
+    double measureTextWidth(String s, Font f) {
+        if (f == null || f == currentFont) return measureTextWidth(s);
+        ctx.setFont(f.toCss());
+        double width = ctx.measureText(s).getWidth();
+        ctx.setFont(currentFont.toCss());
+        return width;
+    }
 
     /** AWT draws from the baseline; so does fillText with textBaseline=alphabetic. */
     public void drawString(String s, int x, int y) {
@@ -132,7 +270,11 @@ public class Graphics2D extends Graphics {
 
     // ── Rectangles ────────────────────────────────────────────────────
 
-    public void fillRect(int x, int y, int w, int h) { ctx.fillRect(x, y, w, h); }
+    public void fillRect(int x, int y, int w, int h) {
+        if (replacing) ctx.clearRect(x, y, w, h);
+        ctx.fillRect(x, y, w, h);
+    }
+
     public void clearRect(int x, int y, int w, int h) { ctx.clearRect(x, y, w, h); }
     public void drawRect(int x, int y, int w, int h) { ctx.strokeRect(x, y, w, h); }
 
@@ -223,6 +365,7 @@ public class Graphics2D extends Graphics {
         if (s == null) return;
         ctx.save();
         clipDepth++;
+        ctx.beginPath();
         s.trace(this);
         ctx.clip();
         currentClip = s;
@@ -230,19 +373,29 @@ public class Graphics2D extends Graphics {
 
     public Shape getClip() { return currentClip; }
 
+    /** The box around the clip, or null when nothing is clipped. */
+    public Rectangle getClipBounds() { return currentClip == null ? null : currentClip.getBounds(); }
+
+    /** Takes every clip of this instance off the canvas, and puts back the state the restores took with them. */
+    private void unwindClips() {
+        if (clipDepth == 0) return;
+        while (clipDepth > 0) { ctx.restore(); clipDepth--; }
+        applyAll();
+    }
+
     /**
      * AWT restores a clip by value. Canvas2D can only pop it, so restoring the
      * clip that was captured before ours means unwinding our saves.
      */
     public void setClip(Shape s) {
-        while (clipDepth > 0) { ctx.restore(); clipDepth--; }
+        unwindClips();
         currentClip = null;
         if (s != null) clip(s);
     }
 
     /** The int overload of setClip, which resets rather than intersects. */
     public void setClip(int x, int y, int w, int h) {
-        while (clipDepth > 0) { ctx.restore(); clipDepth--; }
+        unwindClips();
         currentClip = null;
         clipRect(x, y, w, h);
     }
@@ -253,20 +406,82 @@ public class Graphics2D extends Graphics {
         ctx.beginPath();
         ctx.rect(x, y, w, h);
         ctx.clip();
+        currentClip = new Rectangle(x, y, w, h);
     }
 
     // ── Transform ─────────────────────────────────────────────────────
 
-    public void translate(int x, int y)       { ctx.translate(x, y); }
-    public void translate(double x, double y) { ctx.translate(x, y); }
-    public void scale(double sx, double sy)   { ctx.scale(sx, sy); }
-    public void rotate(double theta)          { ctx.rotate(theta); }
-    public void shear(double shx, double shy) { ctx.transform(1, shy, shx, 1, 0, 0); }
+    public void translate(int x, int y)       { user.translate(x, y);  ctx.translate(x, y); }
+    public void translate(double x, double y) { user.translate(x, y);  ctx.translate(x, y); }
+    public void scale(double sx, double sy)   { user.scale(sx, sy);    ctx.scale(sx, sy); }
+    public void rotate(double theta)          { user.rotate(theta);    ctx.rotate(theta); }
+    public void shear(double shx, double shy) { user.shear(shx, shy);  ctx.transform(1, shy, shx, 1, 0, 0); }
 
-    // ── Rendering hints (no-ops on canvas; antialiasing is always on) ──
+    /** A rotation about the point (x, y). */
+    public void rotate(double theta, double x, double y) {
+        translate(x, y);
+        rotate(theta);
+        translate(-x, -y);
+    }
 
-    public void setRenderingHint(Object key, Object value) { }
-    public Object getRenderingHint(Object key) { return null; }
+    /** Appends {@code t}: it is applied to what is drawn before the transform already there. */
+    public void transform(AffineTransform t) {
+        if (t == null) return;
+        user.concatenate(t);
+        double[] m = new double[6];
+        t.getMatrix(m);
+        ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+    }
+
+    /** Replaces the transform: with what getTransform() returned, puts it back as it was. */
+    public void setTransform(AffineTransform t) {
+        if (t == null) user.setToIdentity();
+        else user.setTransform(t);
+        pushTransform();
+    }
+
+    /** A copy of the current transform. */
+    public AffineTransform getTransform() { return new AffineTransform(user); }
+
+    /** The screen drawn on: its default transform is the device pixel ratio. */
+    public GraphicsConfiguration getDeviceConfiguration() { return new GraphicsConfiguration(d00); }
+
+    // ── Rendering hints ───────────────────────────────────────────────
+    //
+    // A canvas antialiases shapes and text whatever is asked. The hint that
+    // changes something is KEY_INTERPOLATION: how a scaled picture is sampled.
+
+    public void setRenderingHint(Object key, Object value) {
+        if (key == null) return;
+        if (value == null) hints.remove(key); else hints.put(key, value);
+        if (RenderingHints.KEY_INTERPOLATION.equals(key)) {
+            smooth = value != null && !RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR.equals(value);
+            smoothing(ctx, smooth);
+        }
+    }
+
+    public Object getRenderingHint(Object key) { return hints.get(key); }
+
+    /** A copy of the hints set on this graphics. */
+    public RenderingHints getRenderingHints() { return new RenderingHints(hints); }
+
+    /** Replaces every hint. */
+    public void setRenderingHints(RenderingHints all) {
+        hints.clear();
+        setRenderingHint(RenderingHints.KEY_INTERPOLATION, null);
+        addRenderingHints(all);
+    }
+
+    public void setRenderingHints(java.util.Map<?, ?> all) { setRenderingHints(new RenderingHints(all)); }
+
+    public void addRenderingHints(RenderingHints more) {
+        if (more == null) return;
+        for (java.util.Map.Entry<Object, Object> e : more.asMap().entrySet()) {
+            setRenderingHint(e.getKey(), e.getValue());
+        }
+    }
+
+    public void addRenderingHints(java.util.Map<?, ?> more) { addRenderingHints(new RenderingHints(more)); }
 
     // ── Scratch contexts ──────────────────────────────────────────────
 
@@ -279,14 +494,7 @@ public class Graphics2D extends Graphics {
     @Override
     public Graphics2D create() {
         ctx.save();
-        Graphics2D child = new Graphics2D(ctx);
-        child.ownsSave = true;
-        child.currentColor     = currentColor;
-        child.currentPaint     = currentPaint;
-        child.currentFont      = currentFont;
-        child.currentComposite = currentComposite;
-        child.currentStroke    = currentStroke;
-        return child;
+        return new Graphics2D(this);
     }
 
     public void dispose() {
@@ -346,16 +554,22 @@ public class Graphics2D extends Graphics {
     }
 
     // ── Images ────────────────────────────────────────────────────────
+    //
+    // Through helpers that never throw: a picture that failed to load makes a
+    // canvas throw where AWT simply draws nothing, and an exception here would
+    // cost the rest of the frame, every frame.
 
     public boolean drawImage(BufferedImage img, int x, int y, Object observer) {
         if (img == null) return false;
-        ctx.drawImage(img.source(), x, y);
+        if (replacing) ctx.clearRect(x, y, img.getWidth(), img.getHeight());
+        image(ctx, img.source(), x, y);
         return true;
     }
 
     public boolean drawImage(BufferedImage img, int x, int y, int w, int h, Object observer) {
         if (img == null) return false;
-        ctx.drawImage(img.source(), x, y, w, h);
+        if (replacing) ctx.clearRect(x, y, w, h);
+        imageScaled(ctx, img.source(), x, y, w, h);
         return true;
     }
 
@@ -363,7 +577,7 @@ public class Graphics2D extends Graphics {
      * The transform overload. AWT applies the transform to this draw only, so
      * the canvas state is saved and restored around it.
      */
-    public boolean drawImage(BufferedImage img, awt.geom.AffineTransform xform, Object observer) {
+    public boolean drawImage(BufferedImage img, AffineTransform xform, Object observer) {
         if (img == null) return false;
         double[] m = new double[6];
         if (xform != null) {
@@ -371,7 +585,7 @@ public class Graphics2D extends Graphics {
             ctx.save();
             ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
         }
-        ctx.drawImage(img.source(), 0, 0);
+        image(ctx, img.source(), 0, 0);
         if (xform != null) ctx.restore();
         return true;
     }
@@ -380,8 +594,54 @@ public class Graphics2D extends Graphics {
                              int dx1, int dy1, int dx2, int dy2,
                              int sx1, int sy1, int sx2, int sy2, Object observer) {
         if (img == null) return false;
-        ctx.drawImage(img.source(), sx1, sy1, sx2 - sx1, sy2 - sy1,
-                                    dx1, dy1, dx2 - dx1, dy2 - dy1);
+        if (replacing) ctx.clearRect(dx1, dy1, dx2 - dx1, dy2 - dy1);
+        imagePart(ctx, img.source(), sx1, sy1, sx2 - sx1, sy2 - sy1,
+                                     dx1, dy1, dx2 - dx1, dy2 - dy1);
         return true;
     }
+
+    // ── JS interop ────────────────────────────────────────────────────
+
+    @JSBody(params = { "ctx", "img", "x", "y" }, script =
+            "try { ctx.drawImage(img, x, y); } catch (e) { }")
+    private static native void image(CanvasRenderingContext2D ctx, CanvasImageSource img, double x, double y);
+
+    @JSBody(params = { "ctx", "img", "x", "y", "w", "h" }, script =
+            "try { ctx.drawImage(img, x, y, w, h); } catch (e) { }")
+    private static native void imageScaled(CanvasRenderingContext2D ctx, CanvasImageSource img,
+                                           double x, double y, double w, double h);
+
+    @JSBody(params = { "ctx", "img", "sx", "sy", "sw", "sh", "dx", "dy", "dw", "dh" }, script =
+            "try { ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh); } catch (e) { }")
+    private static native void imagePart(CanvasRenderingContext2D ctx, CanvasImageSource img,
+                                         double sx, double sy, double sw, double sh,
+                                         double dx, double dy, double dw, double dh);
+
+    @JSBody(params = { "ctx", "on" }, script = "ctx.imageSmoothingEnabled = on;")
+    private static native void smoothing(CanvasRenderingContext2D ctx, boolean on);
+
+    @JSBody(params = { "ctx", "miter", "dash", "phase" }, script =
+            "ctx.miterLimit = miter;"
+          + "if (ctx.setLineDash) {"
+          + "  ctx.setLineDash(dash ? Array.prototype.slice.call(dash) : []);"
+          + "  ctx.lineDashOffset = phase;"
+          + "}")
+    private static native void lineDetails(CanvasRenderingContext2D ctx, double miter, float[] dash, double phase);
+
+    /**
+     * A repeating picture as the fill and stroke style. One copy sits at
+     * (x, y) scaled by (sx, sy): the anchor rectangle of a TexturePaint.
+     */
+    @JSBody(params = { "ctx", "img", "x", "y", "sx", "sy" }, script =
+            "try {"
+          + "  var p = ctx.createPattern(img, 'repeat');"
+          + "  if (!p) return;"
+          + "  if (p.setTransform && typeof DOMMatrix !== 'undefined') {"
+          + "    p.setTransform(new DOMMatrix([sx, 0, 0, sy, x, y]));"
+          + "  }"
+          + "  ctx.fillStyle = p;"
+          + "  ctx.strokeStyle = p;"
+          + "} catch (e) { }")
+    private static native void pattern(CanvasRenderingContext2D ctx, CanvasImageSource img,
+                                       double x, double y, double sx, double sy);
 }

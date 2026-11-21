@@ -114,7 +114,9 @@ public class Component {
         canvas.setWidth((int) Math.round(cssW * dpr));
         canvas.setHeight((int) Math.round(cssH * dpr));
         setCssSize(canvas, cssW, cssH);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // Sizing a canvas wipes its whole state: the graphics pushes its own
+        // again, on top of the pixel ratio.
+        graphics.setDeviceScale(dpr);
     }
 
     public int getWidth()  { return width; }
@@ -165,6 +167,11 @@ public class Component {
      * that draws through it lands on the same surface.
      */
     public Graphics2D getGraphics() { return graphics; }
+
+    /** Text measured in {@code font}, without drawing and whatever font the graphics is set to. */
+    public FontMetrics getFontMetrics(Font font) {
+        return graphics != null ? graphics.getFontMetrics(font) : null;
+    }
 
     // ── container methods ─────────────────────────────────────────────
     //
@@ -281,41 +288,61 @@ public class Component {
         }
     }
 
-    private awt.event.MouseEvent toAwt(org.teavm.jso.dom.events.MouseEvent e, int clickCount) {
+    private awt.event.MouseEvent toAwt(org.teavm.jso.dom.events.MouseEvent e, int clickCount, int id) {
         return new awt.event.MouseEvent(this, localX(e), localY(e),
                 awtButton(e.getButton()), clickCount,
-                e.getShiftKey(), e.getCtrlKey(), e.getAltKey(), e.getMetaKey());
+                e.getShiftKey(), e.getCtrlKey(), e.getAltKey(), e.getMetaKey())
+                .with(id, buttonsDown(domButtons(e)));
+    }
+
+    /** DOM `buttons` is a bit per button held: 1 left, 2 right, 4 middle. AWT's extended masks say the same. */
+    private static int buttonsDown(int domButtons) {
+        return ((domButtons & 1) != 0 ? awt.event.InputEvent.BUTTON1_DOWN_MASK : 0)
+             | ((domButtons & 4) != 0 ? awt.event.InputEvent.BUTTON2_DOWN_MASK : 0)
+             | ((domButtons & 2) != 0 ? awt.event.InputEvent.BUTTON3_DOWN_MASK : 0);
     }
 
     private void bindMouse() {
         canvas.addEventListener("mousedown", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             pressed = true;
-            awt.event.MouseEvent me = toAwt(e, 1);
+            awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_PRESSED);
             for (MouseListener l : mouseListeners) l.mousePressed(me);
         });
         canvas.addEventListener("mouseup", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            pressed = false;
-            awt.event.MouseEvent me = toAwt(e, 1);
+            pressed = domButtons(e) != 0;
+            awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_RELEASED);
             for (MouseListener l : mouseListeners) l.mouseReleased(me);
         });
         canvas.addEventListener("click", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             int clicks = detailOf(e);
-            awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1);
+            awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
+            for (MouseListener l : mouseListeners) l.mouseClicked(me);
+        });
+        // The DOM fires "click" for the left button only; AWT clicks with every button.
+        canvas.addEventListener("auxclick", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
+            int clicks = detailOf(e);
+            awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
             for (MouseListener l : mouseListeners) l.mouseClicked(me);
         });
         canvas.addEventListener("mouseenter", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            awt.event.MouseEvent me = toAwt(e, 0);
+            awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_ENTERED);
             for (MouseListener l : mouseListeners) l.mouseEntered(me);
         });
         canvas.addEventListener("mouseleave", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            awt.event.MouseEvent me = toAwt(e, 0);
+            awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_EXITED);
             for (MouseListener l : mouseListeners) l.mouseExited(me);
         });
         // AWT splits movement by button state; the DOM does not.
         canvas.addEventListener("mousemove", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            awt.event.MouseEvent me = toAwt(e, 0);
-            if (pressed) for (MouseMotionListener l : motionListeners) l.mouseDragged(me);
-            else         for (MouseMotionListener l : motionListeners) l.mouseMoved(me);
+            // A button let go outside the canvas never said so here: the DOM's own count is the truth.
+            pressed = domButtons(e) != 0;
+            if (pressed) {
+                awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_DRAGGED);
+                for (MouseMotionListener l : motionListeners) l.mouseDragged(me);
+            } else {
+                awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_MOVED);
+                for (MouseMotionListener l : motionListeners) l.mouseMoved(me);
+            }
         });
         canvas.addEventListener("wheel", (EventListener<WheelEvent>) e -> {
             double dy = e.getDeltaY();
@@ -334,21 +361,39 @@ public class Component {
         // The canvas needs to be focusable to receive key events at all.
         makeFocusable(canvas);
 
+        // As AWT: each event goes to the KeyEventDispatchers first, and to the
+        // listeners only when none of them kept it. A character key gives two
+        // events, KEY_PRESSED then KEY_TYPED.
         canvas.addEventListener("keydown", (EventListener<KeyboardEvent>) e -> {
-            KeyEvent ke = new KeyEvent(this, domKeyCode(e), keyCharOf(e),
-                    e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
-            for (KeyListener l : keyListeners) l.keyPressed(ke);
-            // AWT fires keyTyped only for characters
+            int code = awtKeyCode(domKeyCode(e));
             char c = keyCharOf(e);
-            if (c != KeyEvent.CHAR_UNDEFINED) {
-                for (KeyListener l : keyListeners) l.keyTyped(ke);
+            KeyboardFocusManager focus = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+
+            KeyEvent pressedEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, code, c,
+                    e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
+            boolean kept = focus.dispatchToDispatchers(pressedEvent);
+            if (!kept) for (KeyListener l : keyListeners) l.keyPressed(pressedEvent);
+
+            boolean typedKept = false;
+            KeyEvent typedEvent = null;
+            // AWT fires keyTyped only for characters, and never for a Ctrl or Meta chord.
+            if (c != KeyEvent.CHAR_UNDEFINED && !e.isCtrlKey() && !e.isMetaKey()) {
+                typedEvent = new KeyEvent(this, KeyEvent.KEY_TYPED, KeyEvent.VK_UNDEFINED, c,
+                        e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
+                typedKept = focus.dispatchToDispatchers(typedEvent);
+                if (!typedKept) for (KeyListener l : keyListeners) l.keyTyped(typedEvent);
             }
-            if (ke.isConsumed()) e.preventDefault();
+            if (kept || typedKept || pressedEvent.isConsumed()
+                    || (typedEvent != null && typedEvent.isConsumed()) || browserWouldAct(code, e)) {
+                e.preventDefault();
+            }
         });
         canvas.addEventListener("keyup", (EventListener<KeyboardEvent>) e -> {
-            KeyEvent ke = new KeyEvent(this, domKeyCode(e), keyCharOf(e),
+            KeyEvent ke = new KeyEvent(this, KeyEvent.KEY_RELEASED, awtKeyCode(domKeyCode(e)), keyCharOf(e),
                     e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
-            for (KeyListener l : keyListeners) l.keyReleased(ke);
+            if (!KeyboardFocusManager.getCurrentKeyboardFocusManager().dispatchToDispatchers(ke)) {
+                for (KeyListener l : keyListeners) l.keyReleased(ke);
+            }
         });
         canvas.addEventListener("focus", (EventListener<org.teavm.jso.dom.events.Event>) e -> {
             FocusEvent fe = new FocusEvent(this);
@@ -371,8 +416,9 @@ public class Component {
 
     /**
      * DOM `key` maps to a character; `keyCode` is deprecated but still the
-     * closest thing to AWT's virtual key codes, and the values agree for the
-     * keys a game cares about (arrows, WASD, enter, escape, space).
+     * closest thing to AWT's virtual key codes. The values agree for letters,
+     * digits, arrows, function keys, escape and space; {@link #awtKeyCode}
+     * translates the ones that do not.
      */
     private static char keyCharOf(KeyboardEvent e) {
         String k = e.getKey();
@@ -380,7 +426,52 @@ public class Component {
         if ("Enter".equals(k)) return '\n';
         if ("Tab".equals(k)) return '\t';
         if ("Backspace".equals(k)) return '\b';
+        if ("Escape".equals(k)) return (char) 27;
+        if ("Delete".equals(k)) return (char) 127;
         return KeyEvent.CHAR_UNDEFINED;
+    }
+
+    /** A DOM keyCode as the JDK's virtual key code: they differ for Enter, Delete, Insert and punctuation. */
+    static int awtKeyCode(int dom) {
+        switch (dom) {
+            case 13:  return KeyEvent.VK_ENTER;
+            case 46:  return KeyEvent.VK_DELETE;
+            case 45:  return KeyEvent.VK_INSERT;
+            case 44:  return KeyEvent.VK_PRINTSCREEN;
+            case 91:  case 92: case 224: return KeyEvent.VK_META;   // the OS keys (93 is the menu key)
+            case 93:  return KeyEvent.VK_CONTEXT_MENU;
+            case 186: case 59:  return KeyEvent.VK_SEMICOLON;       // Firefox says 59
+            case 187: case 61:  return KeyEvent.VK_EQUALS;          // Firefox says 61
+            case 188: return KeyEvent.VK_COMMA;
+            case 189: case 173: return KeyEvent.VK_MINUS;           // Firefox says 173
+            case 190: return KeyEvent.VK_PERIOD;
+            case 191: return KeyEvent.VK_SLASH;
+            case 219: return KeyEvent.VK_OPEN_BRACKET;
+            case 220: return KeyEvent.VK_BACK_SLASH;
+            case 221: return KeyEvent.VK_CLOSE_BRACKET;
+            default:  return dom;
+        }
+    }
+
+    /**
+     * Keys a browser acts on by itself while the game has the keyboard: it
+     * would scroll the page, move the focus off the canvas, go back a page or
+     * open its quick search. The game gets them; the browser does not. Chords
+     * with Ctrl or Meta are left to the browser (copy, paste, reload, new tab).
+     */
+    private static boolean browserWouldAct(int awtCode, KeyboardEvent e) {
+        if (e.isCtrlKey() || e.isMetaKey()) return false;
+        switch (awtCode) {
+            case KeyEvent.VK_TAB: case KeyEvent.VK_SPACE: case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_LEFT: case KeyEvent.VK_UP: case KeyEvent.VK_RIGHT: case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_PAGE_UP: case KeyEvent.VK_PAGE_DOWN: case KeyEvent.VK_HOME: case KeyEvent.VK_END:
+            case KeyEvent.VK_SLASH: case KeyEvent.VK_QUOTE:
+            case KeyEvent.VK_F1: case KeyEvent.VK_F3: case KeyEvent.VK_F6: case KeyEvent.VK_F7:
+            case KeyEvent.VK_F9: case KeyEvent.VK_F10:
+                return true;
+            default:
+                return false;
+        }
     }
 
     // ── JS interop ────────────────────────────────────────────────────
@@ -417,6 +508,10 @@ public class Component {
 
     @JSBody(params = "e", script = "return e.keyCode || e.which || 0;")
     private static native int domKeyCode(KeyboardEvent e);
+
+    /** DOM `buttons`: which mouse buttons are held, one bit each. JSO does not expose it. */
+    @JSBody(params = "e", script = "return e.buttons || 0;")
+    private static native int domButtons(org.teavm.jso.dom.events.MouseEvent e);
 
     /** DOM 'detail' carries the click count; JSO does not expose it. */
     @JSBody(params = "e", script = "return e.detail || 0;")

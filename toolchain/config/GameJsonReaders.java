@@ -6,6 +6,8 @@ import json.JsonObject;
 import json.JsonReaders;
 
 import model.room.Room;
+import service.api.AgentApprovalClient;
+import service.api.AgentFileClient;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,10 +47,71 @@ public final class GameJsonReaders {
 
         JsonReaders.register(Room.class, GameJsonReaders::readRoom);
         JsonReaders.register(Map.class, GameJsonReaders::readMap);
+        JsonReaders.register(AgentApprovalClient.Pending.class, GameJsonReaders::readPending);
+        JsonReaders.register(AgentApprovalClient.Grant.class, GameJsonReaders::readGrant);
+        JsonReaders.register(AgentFileClient.Doc.class, GameJsonReaders::readDoc);
 
         // Types with package-private fields register themselves from their own
         // static initialiser instead — see service.api.HttpClient.ApiResponse
         // in the guide. The reader belongs beside the thing it reads.
+    }
+
+    /** One request waiting for the owner (the agents' approvals inbox). */
+    private static AgentApprovalClient.Pending readPending(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        AgentApprovalClient.Pending p = new AgentApprovalClient.Pending();
+        p.id = num(o, "id", 0L);
+        p.agent = str(o, "agent");
+        p.visitor = str(o, "visitor");
+        p.tool = str(o, "tool");
+        p.arguments = str(o, "arguments");
+        p.reason = str(o, "reason");
+        p.kind = str(o, "kind");
+        p.canAlways = bool(o, "canAlways", false);
+        p.createdAt = str(o, "createdAt");
+        if (o.has("editable") && o.get("editable").isJsonArray()) {
+            List<String> names = new ArrayList<>();
+            for (JsonElement e : o.getAsJsonArray("editable")) names.add(e.isJsonNull() ? null : e.getAsString());
+            p.editable = names;
+        }
+        if (o.has("values") && o.get("values").isJsonObject()) {
+            Map<String, String> values = new LinkedHashMap<>();
+            JsonObject v = o.getAsJsonObject("values");
+            for (String key : v.keySet()) {
+                JsonElement e = v.get(key);
+                values.put(key, e == null || e.isJsonNull() ? null : e.getAsString());
+            }
+            p.values = values;
+        }
+        return p;
+    }
+
+    /** A tool the owner said to always approve. */
+    private static AgentApprovalClient.Grant readGrant(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        AgentApprovalClient.Grant g = new AgentApprovalClient.Grant();
+        g.id = num(o, "id", 0L);
+        g.agent = str(o, "agent");
+        g.tool = str(o, "tool");
+        g.grantedBy = str(o, "grantedBy");
+        g.createdAt = str(o, "createdAt");
+        return g;
+    }
+
+    /** A document given to an agent. */
+    private static AgentFileClient.Doc readDoc(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        AgentFileClient.Doc d = new AgentFileClient.Doc();
+        d.id = num(o, "id", 0L);
+        d.name = str(o, "name");
+        d.type = str(o, "type");
+        d.sizeBytes = num(o, "sizeBytes", 0L);
+        d.status = str(o, "status");
+        d.readable = bool(o, "readable", false);
+        d.characters = num(o, "characters", 0);
+        d.pages = o.has("pages") && !o.get("pages").isJsonNull() ? Integer.valueOf(num(o, "pages", 0)) : null;
+        d.problem = str(o, "problem");
+        return d;
     }
 
     private static Room readRoom(JsonElement element) {

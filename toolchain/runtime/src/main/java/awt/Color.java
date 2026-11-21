@@ -93,6 +93,12 @@ public class Color implements Paint {
         return new Color(clamp((int)(r*0.7)), clamp((int)(g*0.7)), clamp((int)(b*0.7)), a);
     }
 
+    /** "#RRGGBB", "0xRRGGBB" or a decimal number, as java.awt.Color.decode: an opaque colour. */
+    public static Color decode(String nm) throws NumberFormatException {
+        int rgb = Integer.decode(nm).intValue();
+        return new Color((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+    }
+
     /** CSS colour string for Canvas2D. */
     public String toCss() {
         if (a == 255) return "rgb(" + r + "," + g + "," + b + ")";

@@ -34,7 +34,6 @@ javax.sound.sampled sound
 java.net.http nethttp
 java.security.spec security
 java.security security
-java.time time
 com.google.gson.internal.bind json
 com.google.gson.internal json
 com.google.gson json"

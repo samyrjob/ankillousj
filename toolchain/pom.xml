@@ -20,6 +20,18 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- javac stops listing errors at 100 and says so in a footer easy to miss:
+           the count in build.log would be a floor, not the total. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-Xmaxerrs</arg>
+            <arg>10000</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.teavm</groupId>
         <artifactId>teavm-maven-plugin</artifactId>

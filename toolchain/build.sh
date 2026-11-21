@@ -92,6 +92,13 @@ fi
 
 # ── 5. compile ───────────────────────────────────────────────────────────────
 cp "$HERE/pom.xml" "$WORK/pom.xml"
+
+# ANKILLOUSJ_PREPARE_ONLY=1 stops here: the working copy is ready (sources ported, runtime and
+# replacements in place), for a compile by hand or a look at what the port produced.
+if [ "${ANKILLOUSJ_PREPARE_ONLY:-}" = 1 ]; then
+  echo "prepared: $WORK"
+  exit 0
+fi
 echo "5. compiling with TeaVM (this takes a minute)"
 echo
 

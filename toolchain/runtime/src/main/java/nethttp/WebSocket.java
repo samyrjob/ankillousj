@@ -73,6 +73,7 @@ public interface WebSocket {
     interface Builder {
         Builder header(String name, String value);
         Builder connectTimeout(time.Duration timeout);
+        Builder connectTimeout(java.time.Duration timeout);
         Builder subprotocols(String most, String... rest);
         CompletableFuture<WebSocket> buildAsync(URI uri, Listener listener);
     }

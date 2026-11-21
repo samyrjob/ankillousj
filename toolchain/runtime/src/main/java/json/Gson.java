@@ -96,9 +96,15 @@ public class Gson {
     }
 
     /** Generic like Gson's, so {@code JsonObject o = gson.fromJson(s, JsonObject.class)} compiles. */
-    @SuppressWarnings("unchecked")
     public <T> T fromJson(String text, Class<T> type) {
-        JsonElement parsed = Json.parse(text);
+        return fromJson(Json.parse(text), type);
+    }
+
+    /** From a tree already parsed: one element of an array read item by item. */
+    @SuppressWarnings("unchecked")
+    public <T> T fromJson(JsonElement parsed, Class<T> type) {
+        if (parsed == null) return null;
+        if (parsed.isJsonNull() && type != JsonElement.class) return null;
         if (type == JsonElement.class)   return (T) parsed;
         if (type == JsonObject.class)    return (T) parsed.getAsJsonObject();
         if (type == JsonArray.class)     return (T) parsed.getAsJsonArray();
