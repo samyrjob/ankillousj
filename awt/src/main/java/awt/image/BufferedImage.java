@@ -138,10 +138,14 @@ public class BufferedImage {
         if (canvas != null) return canvas;
         if (pixelCache == null) {
             HTMLDocument doc = HTMLDocument.current();
-            pixelCache = (HTMLCanvasElement) doc.createElement("canvas");
-            pixelCache.setWidth(getWidth());
-            pixelCache.setHeight(getHeight());
-            Native.blit(pixelCache, src);
+            HTMLCanvasElement copy = (HTMLCanvasElement) doc.createElement("canvas");
+            copy.setWidth(getWidth());
+            copy.setHeight(getHeight());
+            // Asked before the picture has arrived: there is nothing to copy yet. The empty
+            // answer is not kept, or the picture would read as blank for good.
+            if (getWidth() <= 0 || getHeight() <= 0) return copy;
+            Native.blit(copy, src);
+            pixelCache = copy;
         }
         return pixelCache;
     }

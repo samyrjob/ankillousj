@@ -25,11 +25,21 @@ import org.teavm.jso.dom.html.HTMLImageElement;
  *
  * <h3>What this does about it</h3>
  *
+ * Two answers, by who is asking.
+ *
+ * <p>A program thread — {@code main}, or anything started with
+ * {@code new Thread} — can wait without freezing anything: TeaVM compiles it
+ * to a coroutine, which hands the event loop back while it waits. For such a
+ * caller {@code read} is what the JDK's is: it returns once the picture is
+ * decoded, its size is right and its pixels can be read at once. A picture
+ * that cannot be fetched or decoded is an IOException, or null from a stream,
+ * as in the JDK.
+ *
+ * <p>Code called by the browser itself — a paint, a mouse or key event —
+ * cannot wait: the loop it would wait for is the one running it. There
  * {@link #read(String)} returns immediately with a BufferedImage whose pixels
  * arrive later. Drawing it before then is harmless — the canvas ignores an
- * incomplete image — and once decoded it appears on the next repaint. For a
- * game already painting at 60fps that is a frame or two of nothing, usually
- * invisible.
+ * incomplete image — and once decoded it appears on the next repaint.
  *
  * <p>The catch is {@code getWidth()} / {@code getHeight()}, which report 0
  * until the image loads. Code that scales or centres by those values will get
@@ -61,16 +71,32 @@ public final class ImageIO {
         base = prefix == null ? "" : prefix;
     }
 
-    /** Starts loading and returns immediately. Repeat calls share one image. */
+    /**
+     * Loads a picture by address. Repeat calls share one image.
+     *
+     * <p>From a program thread it returns the decoded picture, or throws when
+     * it cannot be had. From the browser's own calls it returns at once, the
+     * pixels to follow (see the class comment).
+     */
     public static BufferedImage read(String url) throws java.io.IOException {
         String resolved = resolve(url);
-        BufferedImage cached = CACHE.get(resolved);
-        if (cached != null) return cached;
+        BufferedImage bi = begin(resolved);
+        if (canWait() && !awaitDecoded(bi.element())) {
+            CACHE.remove(resolved);     // a later try may succeed: the failure is not kept
+            throw new java.io.IOException("Can't read the picture at " + url);
+        }
+        return bi;
+    }
 
-        HTMLImageElement img = newImage();
-        BufferedImage bi = new BufferedImage(img);
-        CACHE.put(resolved, bi);
-        setSrc(img, resolved);
+    /** The shared picture of an address, its load started if it was not: never waits. */
+    private static BufferedImage begin(String resolved) {
+        BufferedImage bi = CACHE.get(resolved);
+        if (bi == null) {
+            HTMLImageElement img = newImage();
+            bi = new BufferedImage(img);
+            CACHE.put(resolved, bi);
+            start(img, resolved, isForeign(resolved));
+        }
         return bi;
     }
 
@@ -93,7 +119,13 @@ public final class ImageIO {
     public static BufferedImage read(byte[] bytes, String mimeType) throws java.io.IOException {
         HTMLImageElement img = newImage();
         BufferedImage bi = new BufferedImage(img);
-        setSrc(img, blobUrl(toJs(bytes), mimeType));
+        String blob = blobUrl(toJs(bytes), mimeType);
+        start(img, blob, false);
+        if (canWait()) {
+            boolean decoded = awaitDecoded(img);
+            revoke(blob);                    // the picture holds its pixels now; the bytes can go
+            if (!decoded) return null;       // not a picture: the JDK's answer for bytes no reader takes
+        }
         return bi;
     }
 
@@ -126,7 +158,7 @@ public final class ImageIO {
         }
         int[] remaining = { urls.length };
         for (String url : urls) {
-            BufferedImage bi = read(url);
+            BufferedImage bi = begin(resolve(url));     // all at once, none waited for here
             onSettled(bi.element(), () -> {
                 if (--remaining[0] == 0) done.complete(null);
             });
@@ -137,6 +169,30 @@ public final class ImageIO {
     /** True once the pixels are available and the dimensions are meaningful. */
     public static boolean isLoaded(BufferedImage image) {
         return image != null && image.getWidth() > 0;
+    }
+
+    // ── waiting for a decode ──────────────────────────────────────────
+
+    /**
+     * Whether the caller is a program thread, which can wait, and not a call
+     * made by the browser (a paint, an event), which cannot. TeaVM keeps the
+     * running thread at hand; none is running during a call of the browser's.
+     */
+    @JSBody(script =
+            "return typeof $rt_nativeThread === 'function' && $rt_nativeThread() !== null;")
+    private static native boolean canWait();
+
+    /** Waits until the picture is decoded or has failed. True when it can be drawn and read. */
+    private static boolean awaitDecoded(HTMLImageElement img) {
+        if (!isSettled(img)) settle(img);
+        return naturalWidth(img) > 0;
+    }
+
+    @org.teavm.interop.Async
+    private static native Boolean settle(HTMLImageElement img);
+
+    private static void settle(HTMLImageElement img, org.teavm.interop.AsyncCallback<Boolean> callback) {
+        onSettled(img, () -> callback.complete(Boolean.TRUE));
     }
 
     public static void clearCache() {
@@ -163,6 +219,48 @@ public final class ImageIO {
     @JSBody(params = { "img", "src" }, script = "img.src = src;")
     private static native void setSrc(HTMLImageElement img, String src);
 
+    /**
+     * Starts a load. A picture from another site is asked for with CORS, so
+     * its pixels may be read (recolouring, composing, hit tests); when that
+     * site does not allow it, the picture is asked for again without: it can
+     * then be drawn, though not read. {@code __ankSettled} is set once the
+     * final outcome is known, which is what {@link #onSettled} waits for.
+     */
+    @JSBody(params = { "img", "src", "foreign" }, script =
+            "img.__ankSettled = false;"
+          + "var retried = !foreign;"
+          + "img.addEventListener('load', function() { img.__ankSettled = true; });"
+          + "img.addEventListener('error', function() {"
+          + "  if (!retried) {"
+          + "    retried = true;"
+          + "    img.removeAttribute('crossorigin');"
+          + "    img.src = src;"
+          + "  } else {"
+          + "    img.__ankSettled = true;"
+          + "    if (img.__ankFailed) img.__ankFailed();"
+          + "  }"
+          + "});"
+          + "if (foreign) img.crossOrigin = 'anonymous';"
+          + "img.src = src;")
+    private static native void start(HTMLImageElement img, String src, boolean foreign);
+
+    /** An address on another site than the page's: http(s) with another origin. */
+    @JSBody(params = "url", script =
+            "if (!/^https?:/i.test(url)) return false;"
+          + "try { return typeof location !== 'undefined' && new URL(url).origin !== location.origin; }"
+          + "catch (e) { return false; }")
+    private static native boolean isForeign(String url);
+
+    @JSBody(params = "img", script =
+            "return img.__ankSettled === true || (img.__ankSettled === undefined && img.complete === true);")
+    private static native boolean isSettled(HTMLImageElement img);
+
+    @JSBody(params = "img", script = "return img.naturalWidth || img.width || 0;")
+    private static native int naturalWidth(HTMLImageElement img);
+
+    @JSBody(params = "url", script = "try { URL.revokeObjectURL(url); } catch (e) { }")
+    private static native void revoke(String url);
+
     @JSBody(params = "a", script = "return new Uint8Array(a);")
     private static native JSObject toJs(byte[] a);
 
@@ -170,10 +268,16 @@ public final class ImageIO {
             "return URL.createObjectURL(new Blob([bytes], { type: mime }));")
     private static native String blobUrl(JSObject bytes, String mime);
 
-    /** Fires on load or error, so a broken asset cannot stall preload forever. */
+    /**
+     * Fires once, on the load or on the final failure (after the retry without
+     * CORS, see {@link #start}), so a broken asset cannot stall anything.
+     */
     @JSBody(params = { "img", "cb" }, script =
-            "if (img.complete) { cb(); return; }"
-          + "img.addEventListener('load', function() { cb(); });"
-          + "img.addEventListener('error', function() { cb(); });")
+            "if (img.__ankSettled === true || (img.__ankSettled === undefined && img.complete)) { cb(); return; }"
+          + "var done = false;"
+          + "var once = function() { if (!done) { done = true; cb(); } };"
+          + "img.addEventListener('load', once);"
+          + "img.__ankFailed = once;"
+          + "if (img.__ankSettled === undefined) img.addEventListener('error', once);")
     private static native void onSettled(HTMLImageElement img, Callback cb);
 }
