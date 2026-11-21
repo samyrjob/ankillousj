@@ -11,51 +11,75 @@ Compiles a Java desktop application for the browser. One command.
 ```
 
 `-Source` is the directory holding your packages — the one containing `main/`,
-`view/`, `model/` and so on. **It is never modified**; everything happens in a
-working copy under `build/work/`.
+`view/`, `model/` and so on. A program made of several modules gives them all
+(`-Source C:\a\src, C:\b\src`, or `a/src,b/src` for `build.sh`). **Nothing given
+is ever modified**; everything happens in a working copy under `build/work/`.
 
-What comes out is `build/web/`: the compiled JavaScript and an `index.html`
-that runs it.
+What comes out is `build/web/`: the compiled JavaScript, an `index.html` that
+runs it, and `assets/` (your resources).
 
 ```
-Serve it:  npx serve build\web
+Try it:  node serve.mjs          then open http://localhost:8080/
 ```
 
-Needs a JDK 17 or newer, Maven, and a network connection the first time so
-Maven can fetch TeaVM.
+Needs a JDK 17 or newer, and a network connection the first time (TeaVM, and
+Maven itself when it is not installed, are downloaded once). On Windows the
+`.ps1` scripts hand over to the `.sh` ones through Git's bash, so Git for
+Windows is needed too: one implementation, the same on every system.
+
+## Futura
+
+```powershell
+.\build-futura.ps1 -Futura C:\path\to\Futura              # dev: local backend and game server
+.\build-futura.ps1 -Futura C:\path\to\Futura -Env prod -Version 1.0.51
+```
+
+Gathers the game's two modules (client, shared) and writes the two classes its
+release build stamps — `config.BuildEnv` (dev or prod addresses) and
+`main.GameVersion` — then builds.
+
+To play the dev build in a tab: the dev backend and game server running, the
+gateway in front of the game server (`../gateway`), and `node serve.mjs`. The
+page signs in with the site's own account (see *The page* below).
 
 ## What the build does
 
 ```
-1. copy your sources into work/            untouched original
-2. rewrite JDK imports                     tools/port-imports.sh
+1. copy your sources into work/            untouched originals
+2. rewrite JDK imports                     ../awt/tools/port-imports.sh
 3. add the AnkillousJ runtime              runtime/
 4. overlay replacements                    overlay/
 5. add stand-ins for absent libraries      thirdparty/
-6. compile with TeaVM
+6. apply patches                           patches/
+7. compile with TeaVM
+8. copy the resources to web/assets
 ```
 
-Steps 4 and 5 are where the honesty lives. Some things genuinely have no
-browser equivalent, and the overlay is the explicit list of them rather than a
-pile of silent failures.
+Steps 4 to 6 are where the honesty lives. Some things genuinely have no
+browser equivalent, and these folders are the explicit list of them rather
+than a pile of silent failures.
 
-## The four directories
+`ANKILLOUSJ_PREPARE_ONLY=1 ./build.sh …` stops after step 6: the working copy
+is ready to look at, or to compile by hand.
+
+## The folders
 
 ### `runtime/` — what AnkillousJ provides
 
 | package | replaces |
 |---|---|
-| `awt` | `java.awt` over Canvas2D — `Graphics2D`, `Component`, events, `geom`, `image` |
+| `awt` | `java.awt` over Canvas2D — `Graphics2D` (transforms, clips, composites, dashes, gradients, textures), `Component`, events, `geom`, `image`, `datatransfer` |
 | `swing` | `SwingUtilities`, `JOptionPane`, `Timer`, `UIManager`, `ImageIcon` |
-| `concurrent` | `Executors`, `ExecutorService`, `CompletableFuture`, `Future` |
+| `concurrent` | `Executors`, `ExecutorService`, `CompletableFuture`, `Future`, `KeySets` |
 | `net` | `java.net.Socket` over WebSocket, with suspending reads |
 | `nethttp` | `HttpClient`, `WebSocket`, `HttpRequest`, `HttpResponse` |
 | `json` | a reflection-free replacement for Gson |
-| `imageio` | `ImageIO`, async under a synchronous API |
+| `imageio` | `ImageIO`: a picture is decoded when `read` returns, as in the JDK |
 | `sound` | `Clip`, `AudioSystem`, `FloatControl` over HTML audio |
 | `security` | Ed25519 verification, implemented rather than shimmed |
-| `time` | `Duration`, `Instant`, `Clock`, `LocalDateTime` |
-| `ankillousj` | `Resources`, `Platform`, the substitution policy |
+| `ankillousj` | `Resources`, `Platform`, HTML overlays, and the classes TeaVM lacks (atomic arrays, `java.util.prefs` over localStorage) |
+
+`java.time` is not here: TeaVM ships it, and the port leaves it alone.
 
 None of it is on your classpath at edit time. The rewrite in step 2 points your
 imports at it.
@@ -68,24 +92,27 @@ these need the same change made.
 | file | why |
 |---|---|
 | `main/Main.java` | builds a JFrame; `BrowserMain` is the entry point instead |
-| `main/BrowserMain.java` | the browser entry point — **edit this one** |
-| `main/GameWindow.java` | a window; the page is the window |
+| `main/BrowserMain.java` | the browser entry point: the desktop `Main`'s steps, with the session coming from the page |
+| `main/GameWindow.java` | the window is the page; the chat bar is an HTML input with the desktop class's own logic |
 | `main/FullscreenToggle.java` | the Fullscreen API, not a JFrame flag |
-| `view/room/StyledDialog.java` | HTML dialogs |
-| `view/room/RoomCreationDialog.java` | an HTML form |
-| `view/room/RoomSettingsDialog.java` | no-op pending an HTML version |
 | `view/overlay/FrozenOverlay.java` | an HTML curtain |
 | `view/chat/FocusCoordinator.java` | one canvas, so focus is trivial |
 | `ui/LoadingDialog.java` | an HTML progress overlay |
+| `ui/agents/DocumentDropTarget.java` | a file dropped from the desktop; not wired in a page yet, so it does nothing |
 
 Anything else still importing `javax.swing` is **reported by the build** rather
-than crashing it:
+than crashing it.
 
-```
-   These still use javax.swing and have no replacement in overlay/:
-     view/catalog/CatalogPanel.java
-   Add a replacement under overlay/ mirroring the same path.
-```
+### `patches/` — a few lines of one file
+
+A unified diff against the **ported** source, for when a file needs three
+lines changed and replacing it whole would mean keeping a copy of it up to
+date. A patch that no longer applies stops the build and says so: the source
+moved on, and the patch is to be brought up to its new text.
+
+| patch | why |
+|---|---|
+| `main/GamePanel.java.patch` | the game loop spins without ever pausing. A desktop thread may; in a page it freezes everything. The loop hands the page back until its next frame (`Platform.nextFrame`), and a tab that was hidden does not replay the frames it missed. |
 
 ### `thirdparty/` — libraries with no browser form
 
@@ -96,7 +123,9 @@ only so the imports resolve.
 ### `config/` — your glue
 
 `GameJsonReaders.java` — the explicit JSON readers that replace Gson's
-reflective binding. **This is yours to extend** as your DTOs change.
+reflective binding. **This is yours to extend** as your DTOs change: a type
+read with `fromJson(…, Some.class)` and not registered here fails at run time
+with a message naming it.
 
 ## What the rewrite does automatically
 
@@ -116,38 +145,73 @@ public class GamePanel extends awt.Component implements Runnable {
 
 That one declaration matters more than it looks. While the panel is a Swing
 component, every class that touches it receives `java.awt` types — on Futura it
-accounted for **twenty-one compile errors on its own**.
+accounted for **twenty-one compile errors on its own**. What the removed
+`super.paintComponent` did — clear the panel to its background — the runtime
+does at the start of every frame, with a graphics as fresh as Swing's.
 
 Only classes that both extend `JPanel` *and* override `paintComponent` are
 rewritten. A `JPanel` used as a container has no canvas equivalent, so it is
 left alone and shows up in the report instead.
 
 Also handled: `java.awt.*` and `javax.swing.*` wildcards, `com.google.gson`,
-`getResourceAsStream` becoming an HTTP fetch, and `System.exit` becoming
-`Platform.exit` — a page cannot exit, and every call site is a fatal-error path
-that wants different behaviour anyway.
+`getResourceAsStream` becoming an HTTP fetch, `System.exit` becoming
+`Platform.exit`, and two calls TeaVM's own classes lack, which move to the
+runtime: `ConcurrentHashMap.newKeySet()` and `Runtime.maxMemory()`.
 
-## Assets
+## Pictures
 
-Not copied — they are yours to place. Then, in `BrowserMain`:
+`ImageIO.read` returns a decoded picture, as the JDK's does, whenever the
+caller is a program thread (`main`, or anything started with `new Thread`):
+TeaVM compiles such a thread to a coroutine, which can wait for the browser's
+decoder without freezing anything. Code that composes or recolours pictures
+pixel by pixel right after reading them works unchanged.
 
-```java
-Resources.setBase("assets");
-ImageIO.setResourceBase("assets");
+Code called by the browser itself — a paint, a mouse or key event — cannot
+wait. There `read` returns at once and the pixels follow; drawing the picture
+before then draws nothing.
+
+A picture from another site is asked for with CORS so its pixels may be read;
+when that site does not allow it the picture is fetched again without, and can
+then be drawn but not read. Serve your pictures with
+`Access-Control-Allow-Origin` if the program reads their pixels.
+
+## The page
+
+`index.html` is the window. For Futura it is also the way in: with no session
+it signs the player in with the site's own account and asks for a game session
+exactly as the launcher does — nothing on the server changes:
+
+```
+POST /api/users/login                 (only when the site is not signed in already)
+POST /api/sso/generate-launcher
+POST /api/launcher/auth/handshake
+POST /api/launcher/auth/exchange      -> the game token
 ```
 
-Classpath paths keep their shape: `/res/tile/grass00.png` becomes
-`assets/res/tile/grass00.png`.
+The tokens stay in the page's memory. A page that already holds a session
+gives it before the game starts (`globalThis.__futuraSession = { jwt, refresh }`)
+or in the address (`#jwt=…&refresh=…`, erased as soon as it is read).
+`#offline` starts the game alone, with no session and no server: to look at
+what a build draws.
+
+`config.js` (optional, beside the page) names the servers when the defaults do
+not fit — a local page uses the local backend and gateway, any other the
+public ones:
+
+```js
+window.FUTURA_API = 'https://api.example.com'
+window.FUTURA_GATEWAY = 'wss://play.example.com/game'
+```
+
+The backend must accept the page's origin (CORS). `serve.mjs` serves on port
+8080 because that is the local origin Futura's backend already accepts.
 
 ## Networking
 
 A browser cannot open a TCP socket. If your protocol runs over `ServerSocket`,
-run the gateway in `../gateway` and point the client at it — one line, in
-`BrowserMain`:
-
-```java
-Socket.setUrlMapper((host, port) -> "ws://" + host + ":5556");
-```
+run the gateway in `../gateway` and the client's connection goes through it —
+`BrowserMain` sends the game's address to `ws://<host>:5556` unless the page
+names another gateway.
 
 Your server is not modified and does not learn anything changed.
 
@@ -157,35 +221,36 @@ Your server is not modified and does not learn anything changed.
 BUILD FAILED — see build/build.log
 ```
 
-Two failure modes, and they want different responses:
+Three failure modes, and they want different responses:
 
-**`error:`** — a source problem. Usually an import the rewrite missed, or a file
-needing an overlay replacement. Fixable here.
+**`error:`** — a source problem. Usually an import the rewrite missed, a method
+the runtime does not have yet, or a file needing an overlay replacement.
+Fixable here. Every error is listed: the build file lifts `javac`'s limit of a
+hundred.
 
-**`was not found`** — TeaVM cannot link a JDK class. Its class library is not
-complete. Either the class needs a stand-in, or the code path reaching it needs
-changing. `java.sql.Date` arriving through a library you never call is the
-classic case.
+**`was not found`** — TeaVM cannot link a JDK class or method. Its class
+library is not complete. A missing *class* gets a stand-in through the
+substitution policy (`runtime/…/ankillousj/AtomicSubstitution.java`); a missing
+*method* of a class TeaVM does have cannot be substituted, so the call is moved
+by the port (`port-imports.sh`, as for `newKeySet`).
 
-Note that `javac` caps its error display at 100 and mentions it in a footer
-that is easy to miss. The pom passes `-Xmaxerrs` so the count in the log is
-real.
+**`A PATCH DOES NOT APPLY`** — the lines a patch changes have moved on. Bring
+the patch up to the new text.
 
 ## Verified
 
-Run against a pristine copy of Futura's 132 source files:
+Run against Futura as of November 2026 — 230 source files, 70,000 lines:
 
 ```
-1. copied 132 source files
+1. copied 230 source files
 2. rewriting JDK imports
-   86 file(s), 341 line(s)
 3. added the AnkillousJ runtime
-   10 file(s) replaced
 4. added third-party stand-ins
 5. compiling with TeaVM
 
 BUILD SUCCESS
-  build/web/futura.js  (3.3M)
+  build/web/futura.js  (8.3M)
 ```
 
-and the output boots, renders, and reaches the network.
+and the output starts in Chrome: the game builds itself, loads its pictures
+and sounds, runs its loop and draws.

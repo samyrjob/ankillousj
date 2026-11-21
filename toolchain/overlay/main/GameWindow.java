@@ -222,6 +222,7 @@ public class GameWindow {
      * when it becomes visible, and shows the chat bar.
      */
     public void reveal() {
+        awt.Component.setPaintingEnabled(true);
         gamePanel.startGameThread();
         gamePanel.setupGame();
         gamePanel.notifyFriendsBadgeChanged();

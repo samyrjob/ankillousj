@@ -6,7 +6,7 @@ commercial licence, ever.
 ```powershell
 cd toolchain
 .\build.ps1 -Source C:\path\to\your\src
-npx serve build\web
+node serve.mjs
 ```
 
 One command from a Swing/AWT source tree to a running browser build.
@@ -28,8 +28,9 @@ Compiles with [TeaVM](https://teavm.org) and supplies what TeaVM does not: the
 whole AWT surface over Canvas2D, and replacements for the JDK corners a browser
 cannot reach.
 
-Verified on a 33,000-line isometric multiplayer game. It compiles, renders,
-handles input, and reaches its server — with the server unmodified.
+Verified on an isometric multiplayer game: 33,000 lines in July 2026, 70,000
+in November. It compiles, starts in Chrome, runs its loop and draws — with the
+server unmodified.
 
 ## What it cannot do, stated plainly
 
@@ -41,8 +42,15 @@ Three things have no browser equivalent, and no shim can invent one:
 - **Blocking dialogs.** `JOptionPane` stops the calling thread. Suspending in a
   browser freezes the event loop the dialog needs in order to be dismissed —
   that is a deadlock, not a delay. The prompts take callbacks instead.
-- **Synchronous image decode.** `ImageIO.read` returns immediately and the
-  pixels arrive later. `preload()` exists for when that matters.
+- **A thread that never pauses.** A desktop thread may spin: the others run
+  beside it. A page has one thread of execution, and a loop that never waits
+  freezes it. Such a loop is given one line (`Platform.nextFrame()`), by a
+  patch the build applies; see `toolchain/patches`.
+
+One thing that used to be on this list is not any more: `ImageIO.read` returns
+a decoded picture when a program thread calls it (TeaVM suspends the thread
+while the browser decodes). Only code the browser itself calls — a paint, an
+event — gets a picture whose pixels follow.
 
 Everything else is either implemented or reported.
 

@@ -69,6 +69,10 @@ public final class BrowserMain {
         Socket.setUrlMapper((host, port) ->
                 gateway != null && !gateway.isEmpty() ? gateway : "ws://" + host + ":" + DEFAULT_GATEWAY_PORT);
 
+        // Nothing is drawn until the window is revealed: the panel is long in the building (its
+        // pictures and rooms are fetched as it goes), and a frame from a half-built one fails.
+        awt.Component.setPaintingEnabled(false);
+
         if (isOffline()) {
             startOffline();
             return;

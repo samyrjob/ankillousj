@@ -14,13 +14,14 @@
   (TeaVM, and Maven itself when it is not installed, are downloaded once).
 #>
 param(
-  [Parameter(Mandatory=$true)][string]$Source,
+  # One folder, or several for a program made of modules:  -Source C:\a\src, C:\b\src
+  [Parameter(Mandatory=$true)][string[]]$Source,
   [string]$Output
 )
 
 $ErrorActionPreference = 'Stop'
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
-if (-not (Test-Path $Source)) { throw "no such directory: $Source" }
+foreach ($s in $Source) { if (-not (Test-Path $s)) { throw "no such directory: $s" } }
 if (-not $Output) { $Output = Join-Path $Here 'build' }
 
 function Find-GitBash {
@@ -46,5 +47,6 @@ function ConvertTo-BashPath([string]$path) {
 }
 
 $bash = Find-GitBash
-& $bash (ConvertTo-BashPath (Join-Path $Here 'build.sh')) (ConvertTo-BashPath $Source) (ConvertTo-BashPath $Output)
+$sources = ($Source | ForEach-Object { ConvertTo-BashPath $_ }) -join ','
+& $bash (ConvertTo-BashPath (Join-Path $Here 'build.sh')) $sources (ConvertTo-BashPath $Output)
 exit $LASTEXITCODE

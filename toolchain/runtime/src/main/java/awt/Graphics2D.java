@@ -115,6 +115,31 @@ public class Graphics2D extends Graphics {
     }
 
     /**
+     * A new frame of a component, as Swing begins one: the graphics is as new
+     * (no clip, no transform, plain stroke and composite, no hints, black), and
+     * the panel is filled with its background. Swing hands paint() a fresh
+     * Graphics each time and an opaque panel clears itself first; one canvas
+     * context serves every frame here, so both are done by hand. Without it
+     * whatever a frame left set would leak into the next, and what moved would
+     * leave a trail.
+     */
+    void beginFrame(Color background, int width, int height) {
+        while (clipDepth > 0) { ctx.restore(); clipDepth--; }
+        currentClip = null;
+        user.setToIdentity();
+        currentComposite = AlphaComposite.SrcOver;
+        currentStroke = new BasicStroke(1f);
+        currentPaint = null;
+        currentColor = background != null ? background : Color.BLACK;
+        hints.clear();
+        smooth = false;
+        applyAll();
+        ctx.fillRect(0, 0, width, height);
+        currentColor = Color.BLACK;
+        applyPaint();
+    }
+
+    /**
      * The canvas was sized for a pixel ratio (and so lost all its state, saved
      * levels included): {@code scale} is how many device pixels one unit is.
      */

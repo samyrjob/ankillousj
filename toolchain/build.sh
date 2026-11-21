@@ -2,14 +2,17 @@
 #
 # Compiles a Java desktop application for the browser.
 #
-#   ./build.sh <source-root> [output-dir]
+#   ./build.sh <source-root>[,<source-root>...] [output-dir]
 #
 # <source-root> is the directory holding your packages — the one containing
-# `main/`, `view/`, `model/` and so on. It is never modified: everything happens
-# in a working copy.
+# `main/`, `view/`, `model/` and so on. A program made of several modules gives
+# them all, separated by commas: they are compiled as one. Nothing given is ever
+# modified: everything happens in a working copy.
 #
-# What comes out is `<output-dir>/web/`, containing the compiled JavaScript and
-# an index.html that runs it.
+# What comes out is `<output-dir>/web/`: the compiled JavaScript, an index.html
+# that runs it, and `assets/` — the resources of each source root laid out the
+# usual way (`.../src/main/java` beside `.../src/main/resources`), or the
+# folders named in ANKILLOUSJ_ASSETS (commas between them).
 #
 # ── how it works ─────────────────────────────────────────────────────────────
 #
@@ -25,13 +28,16 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SRC="${1:?usage: build.sh <source-root> [output-dir]}"
+SRC="${1:?usage: build.sh <source-root>[,<source-root>...] [output-dir]}"
 OUT="${2:-$HERE/build}"
 
-if [ ! -d "$SRC" ]; then
-  echo "no such directory: $SRC" >&2
-  exit 1
-fi
+IFS=',' read -r -a SOURCES <<< "$SRC"
+for s in "${SOURCES[@]}"; do
+  if [ ! -d "$s" ]; then
+    echo "no such directory: $s" >&2
+    exit 1
+  fi
+done
 
 WORK="$OUT/work"
 JAVA="$WORK/src/main/java"
@@ -45,7 +51,9 @@ echo
 # ── 1. working copy ──────────────────────────────────────────────────────────
 rm -rf "$WORK"
 mkdir -p "$JAVA" "$RES"
-cp -r "$SRC"/* "$JAVA"/
+for s in "${SOURCES[@]}"; do
+  cp -r "$s"/* "$JAVA"/
+done
 echo "1. copied $(find "$JAVA" -name '*.java' | wc -l | tr -d ' ') source files"
 
 # ── 2. rewrite imports ───────────────────────────────────────────────────────
@@ -71,7 +79,13 @@ echo "   $overlaid file(s) replaced"
 
 # Anything else still importing javax.swing cannot compile. Report it rather
 # than letting the build fail with a wall of unrelated errors.
-remaining=$(grep -rl '^import javax\.swing' "$JAVA" --include='*.java' 2>/dev/null || true)
+# A file that names a Swing class in an import, or that keeps the wildcard import AND still
+# uses a widget. (A panel the port turned into a canvas keeps its wildcard import with nothing
+# left behind it: that is not a file to replace.)
+WIDGETS='JFrame|JDialog|JWindow|JPanel|JButton|JLabel|JTextField|JTextArea|JPasswordField|JScrollPane|JComponent|JMenu|JMenuBar|JMenuItem|JPopupMenu|JCheckBox|JRadioButton|JComboBox|JList|JTable|JTree|JSlider|JSpinner|JProgressBar|JTabbedPane|JSplitPane|JToolBar|JFileChooser|JColorChooser|JLayeredPane|BorderFactory|SwingConstants|KeyStroke|AbstractAction|BoxLayout|GroupLayout'
+named=$(grep -rlE '^import javax\.swing\.[A-Za-z]' "$JAVA" --include='*.java' 2>/dev/null || true)
+wild=$(grep -rlE '^import javax\.swing\.\*;' "$JAVA" --include='*.java' 2>/dev/null | xargs -r grep -lE "\b($WIDGETS)\b" 2>/dev/null || true)
+remaining=$(printf '%s\n' "$named" "$wild" | sed '/^$/d' | sort -u)
 if [ -n "$remaining" ]; then
   echo
   echo "   These still use javax.swing and have no replacement in overlay/:"
@@ -91,6 +105,26 @@ if [ -d "$HERE/config" ]; then
 fi
 
 # ── 5. compile ───────────────────────────────────────────────────────────────
+# Patches: a few lines of one file changed for the browser, where replacing the whole file
+# (overlay/) would mean keeping a copy of it up to date. Each is a unified diff against the
+# PORTED source. One that no longer applies stops the build: the source moved on, and the
+# patch is to be brought up to its new text.
+if [ -d "$HERE/patches" ]; then
+  patched=0
+  while IFS= read -r p; do
+    if ! (cd "$JAVA" && patch -p1 --forward --no-backup-if-mismatch -l < "$p" > "$OUT/patch.log" 2>&1); then
+      echo
+      echo "   A PATCH DOES NOT APPLY: ${p#"$HERE/"}"
+      sed 's/^/     /' "$OUT/patch.log"
+      echo "   The source it changes has moved on. Bring the patch up to the new text."
+      exit 1
+    fi
+    patched=$((patched + 1))
+    echo "   patched ${p#"$HERE/patches/"}"
+  done < <(find "$HERE/patches" -name '*.patch' | sort)
+  [ "$patched" -gt 0 ] && echo "   $patched patch(es) applied"
+fi
+
 cp "$HERE/pom.xml" "$WORK/pom.xml"
 
 # ANKILLOUSJ_PREPARE_ONLY=1 stops here: the working copy is ready (sources ported, runtime and
@@ -131,9 +165,27 @@ echo
 echo "BUILD SUCCESS"
 echo "  $OUT/web/futura.js  ($size)"
 echo
-echo "Serve it:  npx serve $OUT/web"
+# Assets: what the program reads from its classpath, served beside the page.
+ASSET_DIRS=()
+if [ -n "${ANKILLOUSJ_ASSETS:-}" ]; then
+  IFS=',' read -r -a ASSET_DIRS <<< "$ANKILLOUSJ_ASSETS"
+else
+  for s in "${SOURCES[@]}"; do
+    [ -d "$s/../resources" ] && ASSET_DIRS+=("$s/../resources")
+  done
+fi
+copied=0
+for a in "${ASSET_DIRS[@]:-}"; do
+  [ -n "$a" ] && [ -d "$a" ] || continue
+  mkdir -p "$OUT/web/assets"
+  cp -r "$a"/. "$OUT/web/assets"/
+  copied=$((copied + 1))
+done
+if [ "$copied" -gt 0 ]; then
+  echo "  $OUT/web/assets  ($(find "$OUT/web/assets" -type f | wc -l | tr -d ' ') files, from $copied folder(s))"
+else
+  echo "  No assets were found to copy. Put them in $OUT/web/assets,"
+  echo "  or name their folders in ANKILLOUSJ_ASSETS."
+fi
 echo
-echo "Assets are not copied — put them where index.html expects, and set the"
-echo "base in your entry point:"
-echo "    Resources.setBase(\"assets\");"
-echo "    ImageIO.setResourceBase(\"assets\");"
+echo "Try it:  node $HERE/serve.mjs $OUT/web      then open http://localhost:8080/"

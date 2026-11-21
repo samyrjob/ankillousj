@@ -231,10 +231,21 @@ public class Component {
     /** Starts the requestAnimationFrame loop. */
     public void start() { requestFrame(this::frame); }
 
+    /**
+     * Whether components paint. A program that builds its panel long before showing it (a
+     * loading screen first, as a desktop window stays hidden until it is ready) turns this
+     * off before constructing and on when it reveals: no frame is drawn from a panel that is
+     * still being built.
+     */
+    public static void setPaintingEnabled(boolean enabled) { paintingEnabled = enabled; }
+    public static boolean isPaintingEnabled()             { return paintingEnabled; }
+    private static boolean paintingEnabled = true;
+
     private void frame() {
-        if (dirty && graphics != null) {
+        if (paintingEnabled && dirty && graphics != null) {
             dirty = false;
             try {
+                graphics.beginFrame(background, width, height);
                 paint(graphics);
             } catch (RuntimeException | Error e) {
                 // An exception thrown inside requestAnimationFrame kills the
