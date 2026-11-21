@@ -1,21 +1,48 @@
 package main;
 
+import org.teavm.jso.JSBody;
+
 /**
- * No-op stand-in for the Swing implementation.
+ * Fullscreen, in a browser tab: the Fullscreen API on the page instead of a
+ * JFrame's undecorated mode. Same methods as the desktop class.
  *
- * This class was built on javax.swing widgets, which have no canvas
- * equivalent. It is one of the ten files earmarked for rebuilding as HTML
- * overlays rather than emulating.
- *
- * The public API is preserved so callers compile and link unchanged; the
- * methods do nothing, so a dialog simply does not appear. That is deliberate:
- * a missing dialog is obvious, whereas a silently-broken one is not.
+ * <p>A browser only enters fullscreen on a user's own gesture (a click, a
+ * key). The game asks from its fullscreen button and from F11, which are
+ * gestures, so the request is honoured.
  */
 public class FullscreenToggle {
 
-    public boolean isFullscreen() { return false; }
+    public FullscreenToggle() { }
 
-    public void toggle() { }
+    /** The desktop class is built with its window; a page needs none. */
+    public FullscreenToggle(Object window) { }
 
-    public void setFullscreen(boolean a0) { }
+    public boolean isFullscreen() { return active(); }
+
+    public void toggle() { setFullscreen(!isFullscreen()); }
+
+    public void setFullscreen(boolean on) {
+        if (on == active()) return;
+        if (on) enter(); else leave();
+    }
+
+    @JSBody(script =
+            "return typeof document !== 'undefined'"
+          + " && !!(document.fullscreenElement || document.webkitFullscreenElement);")
+    private static native boolean active();
+
+    @JSBody(script =
+            "try {"
+          + "  var el = document.documentElement;"
+          + "  var ask = el.requestFullscreen || el.webkitRequestFullscreen;"
+          + "  if (ask) { var p = ask.call(el); if (p && p.catch) p.catch(function() { }); }"
+          + "} catch (e) { }")
+    private static native void enter();
+
+    @JSBody(script =
+            "try {"
+          + "  var leave = document.exitFullscreen || document.webkitExitFullscreen;"
+          + "  if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"
+          + "} catch (e) { }")
+    private static native void leave();
 }

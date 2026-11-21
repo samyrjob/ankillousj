@@ -28,3 +28,22 @@ export const PROOF_WEB_JS = process.env.ANK_PROOF || join(repo, 'awt', 'web', 'p
 /** Where pictures go, with a trailing slash. Made on first use. */
 export const OUT = slash(process.env.ANK_OUT || join(here, 'out'))
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true })
+
+// The harness has no session to give and no server to reach: the game starts
+// alone, in its starting room (see overlay/main/BrowserMain). ANK_ONLINE=1
+// leaves the page's own choice in place.
+if (process.env.ANK_ONLINE !== '1') globalThis.__futuraOffline = true
+
+// Node has no sound. The game opens its clips at start (a car's horn), so the
+// element they are built on has to exist: one that plays nothing.
+if (typeof globalThis.Audio === 'undefined') {
+  globalThis.Audio = class {
+    constructor(src) { this.src = src || ''; this.volume = 1; this.loop = false; this.currentTime = 0; this.paused = true }
+    play() { this.paused = false; return Promise.resolve() }
+    pause() { this.paused = true }
+    load() {}
+    addEventListener() {}
+    removeEventListener() {}
+    cloneNode() { return new globalThis.Audio(this.src) }
+  }
+}

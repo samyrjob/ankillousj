@@ -2,31 +2,203 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Futura — AnkillousJ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Futura</title>
 <style>
-  html,body{margin:0;height:100%;background:#0d0e1c;overflow:hidden}
-  #c{display:block;width:100vw;height:100vh;cursor:default}
+  :root {
+    --page: #0d0e1c; --card: #191d36; --border: #2c3155; --input: #10121f;
+    --indigo: #6366f1; --indigo-light: #818cf8;
+    --gold: #f5a623; --gold-hover: #e6991a; --on-gold: #221a02;
+    --text: #e8e9f3; --muted: #8a8fb5; --faint: #5c6285; --bad: #ff8a8a;
+  }
+  html, body { margin: 0; height: 100%; background: var(--page); overflow: hidden;
+               font-family: system-ui, "Segoe UI", sans-serif; color: var(--text); }
+  #c { display: block; width: 100vw; height: 100vh; cursor: default; }
+
+  /* The way in: shown until the game has a session. */
+  #door { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center;
+          background: radial-gradient(900px 500px at 20% 10%, rgba(99,102,241,.22), transparent 60%),
+                      radial-gradient(800px 500px at 85% 90%, rgba(129,140,248,.14), transparent 60%), var(--page); }
+  #door.open { display: flex; }
+  .card { width: min(380px, calc(100vw - 32px)); box-sizing: border-box; padding: 28px 26px 22px;
+          background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+          box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+  .card h1 { margin: 0 0 4px; font-size: 26px; font-style: italic; font-weight: 700; color: var(--gold); }
+  .card p.lead { margin: 0 0 18px; font-size: 14px; color: var(--muted); }
+  label { display: block; margin: 12px 0 6px; font-size: 13px; color: var(--muted); }
+  input[type=email], input[type=password] {
+    width: 100%; box-sizing: border-box; padding: 11px 12px; font-size: 15px; color: var(--text);
+    background: var(--input); border: 1px solid var(--border); border-radius: 10px; outline: none; }
+  input[type=email]:focus, input[type=password]:focus { border-color: var(--indigo-light); }
+  button.play { width: 100%; margin-top: 18px; padding: 12px 14px; font-size: 15px; font-weight: 700;
+                color: var(--on-gold); background: var(--gold); border: 0; border-radius: 999px; cursor: pointer; }
+  button.play:hover { background: var(--gold-hover); }
+  button.play:disabled { opacity: .6; cursor: default; }
+  #say { min-height: 20px; margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+  #say.bad { color: var(--bad); }
+  .foot { margin-top: 14px; font-size: 12px; color: var(--faint); }
+  .foot a { color: var(--indigo-light); text-decoration: none; }
+  form[hidden] { display: none; }
 </style>
 </head>
 <body>
   <canvas id="c" width="1280" height="720"></canvas>
+
+  <div id="door">
+    <div class="card">
+      <h1>Futura</h1>
+      <p class="lead" id="lead">Checking your session…</p>
+      <form id="signin" hidden autocomplete="on">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button class="play" id="go" type="submit">Play</button>
+      </form>
+      <p id="say"></p>
+    </div>
+  </div>
+
+<script src="config.js" onerror="void 0"></script>
 <script src="futura.js"></script>
 <script>
+(function () {
+  'use strict';
+
+  // ── Where things are ────────────────────────────────────────────────
+  // config.js (optional, beside this page) may set FUTURA_API and
+  // FUTURA_GATEWAY. Without it: a local page talks to the local backend and
+  // gateway, any other page to the public ones.
+  var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var API = window.FUTURA_API || (local ? 'http://localhost:9090' : 'https://api.futura-game.com');
+  if (window.FUTURA_GATEWAY) globalThis.__futuraGateway = window.FUTURA_GATEWAY;
+
+  var canvas = document.getElementById('c');
+  var door = document.getElementById('door');
+  var lead = document.getElementById('lead');
+  var form = document.getElementById('signin');
+  var say = document.getElementById('say');
+  var go = document.getElementById('go');
+
   // AWT renders at native display resolution, so the canvas has to be told.
   // awt.Component does the scaling from the Java side; all this does is give
   // the element a CSS size for it to read.
-  const c = document.getElementById('c');
   function size() {
-    c.style.width = window.innerWidth + 'px';
-    c.style.height = window.innerHeight + 'px';
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   size();
   window.addEventListener('resize', size);
 
-  main([]);
-  c.focus();
+  function tell(text, bad) { say.textContent = text || ''; say.className = bad ? 'bad' : ''; }
+
+  function startGame() {
+    door.classList.remove('open');
+    main([]);
+    canvas.focus();
+  }
+
+  // ── The session ─────────────────────────────────────────────────────
+  // The same three calls the launcher makes, with the site's own sign-in in
+  // front of them. Nothing is kept: the tokens live in this page's memory.
+  function call(path, options) {
+    options = options || {};
+    options.credentials = 'include';
+    options.headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+    return fetch(API + path, options);
+  }
+
+  function deviceId() {
+    try {
+      var id = localStorage.getItem('futura.device');
+      if (!id) {
+        id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+        localStorage.setItem('futura.device', id);
+      }
+      return id;
+    } catch (e) { return 'browser'; }
+  }
+
+  /** From a signed-in site session to a game session. Resolves to true, or to why not. */
+  async function openGameSession() {
+    var sso = await call('/api/sso/generate-launcher', { method: 'POST' });
+    if (sso.status === 401 || sso.status === 403) return 'signin';
+    if (!sso.ok) return 'The server refused to start a session (' + sso.status + ').';
+    var ssoToken = (await sso.json()).launcherSsoToken;
+
+    var hand = await call('/api/launcher/auth/handshake', {
+      method: 'POST',
+      body: JSON.stringify({ ssoToken: ssoToken, deviceLabel: 'Browser', deviceFingerprint: deviceId() })
+    });
+    if (!hand.ok) return 'The server refused this browser (' + hand.status + ').';
+    var pair = await hand.json();
+
+    var game = await call('/api/launcher/auth/exchange', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + pair.accessToken }
+    });
+    if (game.status === 409) return 'Your account is already in the game somewhere else. Close it there first.';
+    if (!game.ok) return 'The server could not open the game (' + game.status + ').';
+    var jwt = (await game.json()).jwt;
+    if (!jwt) return 'The server sent no game session.';
+
+    globalThis.__futuraSession = { jwt: jwt, refresh: pair.refreshToken || '' };
+    return true;
+  }
+
+  async function enter() {
+    lead.textContent = 'Opening the game…';
+    tell('');
+    var result;
+    try { result = await openGameSession(); }
+    catch (e) { result = 'The server cannot be reached. Check your connection and try again.'; }
+    if (result === true) { startGame(); return; }
+    if (result === 'signin') {
+      lead.textContent = 'Sign in to play.';
+      form.hidden = false;
+      document.getElementById('email').focus();
+      return;
+    }
+    lead.textContent = 'Sign in to play.';
+    form.hidden = false;
+    tell(result, true);
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    go.disabled = true;
+    tell('Signing in…');
+    try {
+      var r = await call('/api/users/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: document.getElementById('email').value,
+                               password: document.getElementById('password').value })
+      });
+      document.getElementById('password').value = '';
+      if (!r.ok) { tell('Wrong email or password.', true); go.disabled = false; return; }
+    } catch (err) {
+      tell('The server cannot be reached. Check your connection and try again.', true);
+      go.disabled = false;
+      return;
+    }
+    form.hidden = true;
+    go.disabled = false;
+    enter();
+  });
+
+  // ── Which way in ────────────────────────────────────────────────────
+  var hash = location.hash || '';
+  if (globalThis.__futuraOffline === true || /(^|[#&])offline(&|$)/.test(hash)) {
+    startGame();                              // the game alone, to look at
+  } else if (globalThis.__futuraSession || /(^|[#&])jwt=/.test(hash)) {
+    startGame();                              // a session handed over by whoever opened this page
+  } else {
+    door.classList.add('open');
+    enter();
+  }
+})();
 </script>
 </body>
 </html>
