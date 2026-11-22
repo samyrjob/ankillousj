@@ -108,6 +108,14 @@ final class OfflineProbe {
             if (layouts == null || layouts.length != 1 || layouts[0].getWidth() != 5 || layouts[0].getDoorY() != 2
                     || !layouts[0].isStairs() || !"a".equals(layouts[0].getLayoutKey())) wrong.append(" RoomLayout");
 
+            model.room.Room stairs = gson.fromJson(
+                    ("{'roomId':'r2','roomName':'S','ownerUsername':'o','width':3,'height':2,'heightmap':'012/012',"
+                    + "'doorX':1,'doorY':1,'sea':true,'listed':false,'aiCount':4}").replace("'", q),
+                    model.room.Room.class);
+            if (stairs == null || !"012/012".equals(stairs.getHeightmap()) || stairs.getDoorX() != 1
+                    || stairs.getDoorY() != 1 || !stairs.isSea() || stairs.isListed() || stairs.getAiCount() != 4
+                    || stairs.getWidth() != 3) wrong.append(" Room");
+
             service.api.RoomApiClient.Unlock door = gson.fromJson(
                     "{'success':false,'reason':'WRONG','message':'no'}".replace("'", q),
                     service.api.RoomApiClient.Unlock.class);
@@ -139,6 +147,22 @@ final class OfflineProbe {
         int inbox = new service.api.AgentApprovalClient(config.AppConfig.getBackendUrl()).inbox().code;
         new service.api.CrmWorldClient().objectsIn("probe-room");
         log("offline: with the token given, the approvals inbox answered HTTP " + inbox);
+    }
+
+    /**
+     * What the rooms read from a backend hold. A room's shape, its door and
+     * its sea come with the room: a reader that skips them leaves every room
+     * flat, entered at the corner, and dry.
+     */
+    static void rooms(java.util.List<model.room.Room> rooms) {
+        int shaped = 0, doors = 0, seas = 0;
+        for (model.room.Room room : rooms) {
+            if (room.getHeightmap() != null && !room.getHeightmap().isBlank()) shaped++;
+            if (room.getDoorX() != 0 || room.getDoorY() != 0) doors++;
+            if (room.isSea()) seas++;
+        }
+        log("offline: " + rooms.size() + " rooms read, " + shaped + " with a shape of their own, "
+                + doors + " with their door away from the corner, " + seas + " by the sea");
     }
 
     /** Size, how much of it is drawn, and how long the game's own trim of it takes. */

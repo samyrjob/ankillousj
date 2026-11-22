@@ -211,6 +211,20 @@ public final class GameJsonReaders {
 
         if (o.has("tileMap")) room.setTileMap(intGrid(o, "tileMap"));
 
+        room.setAiCount(num(o, "aiCount", 0));
+        room.setSea(bool(o, "sea", false));
+        // Left alone while the backend does not say: such a room is listed (Room.isListed).
+        if (o.has("listed") && !o.get("listed").isJsonNull()) room.setListed(bool(o, "listed", true));
+
+        // The room's shape and its door. Unread, a room with stairs is drawn flat and
+        // everybody comes in at the corner. The game has no setter for these (Gson fills the
+        // fields themselves): patches/ opens them in the working copy.
+        room.heightmap = str(o, "heightmap", null);
+        room.doorX = num(o, "doorX", 0);
+        room.doorY = num(o, "doorY", 0);
+        if (o.has("allowedUsers") && o.get("allowedUsers").isJsonArray()) room.allowedUsers = strings(o, "allowedUsers");
+        if (o.has("bannedUsers") && o.get("bannedUsers").isJsonArray()) room.bannedUsers = strings(o, "bannedUsers");
+
         JsonArray owners = arr(o, "owners");
         if (owners.size() > 0) {
             List<String> list = new ArrayList<>();
@@ -224,6 +238,14 @@ public final class GameJsonReaders {
      * Furniture arrives as a bare map, so it is read as one rather than being
      * given a type it does not have on the server side either.
      */
+    private static java.util.Set<String> strings(JsonObject o, String field) {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        for (JsonElement e : o.getAsJsonArray(field)) {
+            if (!e.isJsonNull()) out.add(e.getAsString());
+        }
+        return out;
+    }
+
     private static Map<String, Object> readMap(JsonElement element) {
         Map<String, Object> map = new LinkedHashMap<>();
         JsonObject o = element.getAsJsonObject();

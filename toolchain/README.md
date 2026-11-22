@@ -116,11 +116,11 @@ moved on, and the patch is to be brought up to its new text.
 | `main/GamePanel.java.patch` | the game loop spins without ever pausing. A desktop thread may; in a page it freezes everything. The loop hands the page back until its next frame (`Platform.nextFrame`), and a tab that was hidden does not replay the frames it missed. |
 | `service/api/HttpClient.java.patch` | opens `ApiResponse` (a private class) to its reader in `config/` |
 | `model/room/FloorPlanResult.java.patch`, `model/room/RoomLayout.java.patch` | open their private fields to their readers in `config/` |
+| `model/room/Room.java.patch` | opens the fields the game has no setter for (the room's shape, its door, who may come in) to the room's reader |
 | `service/friend/FriendApiService.java.patch` | opens `SendRequestBody` (a private class) to its writer in `config/` |
 
-A patch applies exactly or not at all (`--fuzz=0`). For the four that open a
-type, that is the point: the day the type gains or renames a field the patch
-stops applying, and the build says so before a reader goes on ignoring it.
+A patch applies exactly or not at all (`--fuzz=0`): one that would only half
+fit is a change nobody has looked at.
 
 ### `thirdparty/` — libraries with no browser form
 
@@ -135,11 +135,21 @@ Gson's reflective binding. **This is yours to extend** as your DTOs change.
 
 A type read with `fromJson(…, Some.class)` and not registered would fail in
 the tab, where the game reaches that call: Futura's room settings all answered
-"Failed to update…" for want of one reader. So the build looks for them
-itself. It reads the calls (one that ends with a class literal, and
-`toJson(new Something(…))`) and stops, naming the type, when one has no reader
-or writer. `json-not-read.txt` names the types read only by code nothing
-calls.
+"Failed to update…" for want of one reader. Quieter and worse, a field its
+reader does not name stays empty and nothing says so: every room with stairs
+was drawn flat, because the room's reader was older than `heightmap`.
+
+So the build checks all of it before compiling (`json-check.pl`), and stops,
+naming what is missing:
+
+- a type the program reads with no reader (a call that ends with a class
+  literal: `fromJson(text, Room.class)`, `getList(path, Room[].class)`);
+- a type it writes with no writer (`toJson(new Something(…))`);
+- a field a reader does not read: every field Gson would fill (not static,
+  not transient) must be named by the reader.
+
+`json-not-read.txt` names what is left out on purpose: a type read only by
+code nothing calls, a field (`Type.field`).
 
 A type that keeps its fields private cannot be filled from here. A patch in
 `patches/` opens it in the working copy (`private` to `public`, nothing more)
@@ -247,8 +257,9 @@ http://localhost:8080/#offline&parts=http://localhost:9090/parts&picture=assets/
 
 composes an avatar from those parts and reads that item picture the way a
 room reads its furniture. Every offline start also checks the runtime's pixel
-reading and the game's JSON readers and writers. The console says what came of
-each (`overlay/main/OfflineProbe.java`). `&token=anything` sends two of the
+reading and the game's JSON readers and writers, and says what the rooms it
+read hold (how many with a shape, a door, a sea). The console says what came
+of each (`overlay/main/OfflineProbe.java`). `&token=anything` sends two of the
 game's requests with that token: the backend's log then shows whether a token
 leaves the tab (it names the token it rejects, with the path).
 
@@ -292,8 +303,9 @@ substitution policy (`runtime/…/ankillousj/AtomicSubstitution.java`); a missin
 *method* of a class TeaVM does have cannot be substituted, so the call is moved
 by the port (`port-imports.sh`, as for `newKeySet`).
 
-**`NO JSON READER`** / **`NO JSON WRITER`** — the program reads or writes a
-type as JSON and nothing says how. Add it to `config/GameJsonReaders.java`.
+**`NO JSON READER`** / **`NO JSON WRITER`** / **`A JSON READER does not read
+every field`** — the program reads or writes something as JSON and nothing
+says how. Add it to `config/GameJsonReaders.java`.
 
 **`A PATCH DOES NOT APPLY`** — the lines a patch changes have moved on. Bring
 the patch up to the new text.

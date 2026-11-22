@@ -181,6 +181,7 @@ public final class BrowserMain {
             log("GamePanel live: " + gp.getWidth() + "x" + gp.getHeight());
             gp.preloadEverything(null);
             log("preload done");
+            if (gp.roomController != null) OfflineProbe.rooms(gp.roomController.getAllRooms());
             window.reveal();
             log("game thread started");
         } catch (Throwable t) {
