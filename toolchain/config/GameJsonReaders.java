@@ -4,10 +4,16 @@ import json.JsonArray;
 import json.JsonElement;
 import json.JsonObject;
 import json.JsonReaders;
+import json.JsonWriters;
 
+import model.room.FloorPlanResult;
 import model.room.Room;
+import model.room.RoomLayout;
 import service.api.AgentApprovalClient;
 import service.api.AgentFileClient;
+import service.api.HttpClient;
+import service.api.RoomApiClient;
+import service.friend.FriendApiService;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -50,10 +56,73 @@ public final class GameJsonReaders {
         JsonReaders.register(AgentApprovalClient.Pending.class, GameJsonReaders::readPending);
         JsonReaders.register(AgentApprovalClient.Grant.class, GameJsonReaders::readGrant);
         JsonReaders.register(AgentFileClient.Doc.class, GameJsonReaders::readDoc);
+        JsonReaders.register(RoomApiClient.Unlock.class, GameJsonReaders::readUnlock);
 
-        // Types with package-private fields register themselves from their own
-        // static initialiser instead — see service.api.HttpClient.ApiResponse
-        // in the guide. The reader belongs beside the thing it reads.
+        // These keep their fields to themselves in the game (private, or a
+        // private class): a patch in patches/ opens them in the working copy,
+        // and changes nothing else. A patch that no longer applies stops the
+        // build: the type has changed, and so must its reader here.
+        JsonReaders.register(HttpClient.ApiResponse.class, GameJsonReaders::readApiResponse);
+        JsonReaders.register(FloorPlanResult.class, GameJsonReaders::readFloorPlanResult);
+        JsonReaders.register(RoomLayout.class, GameJsonReaders::readRoomLayout);
+
+        // What the game writes that is not a map or a list.
+        JsonWriters.register(FriendApiService.SendRequestBody.class, GameJsonReaders::writeSendRequest);
+    }
+
+    /**
+     * The backend's plain "done or not" answer: every room setting (walls,
+     * floor, free placement, name, password...), a kick, a placing by REST.
+     * Without it each of those is reported as failed though the backend did it.
+     */
+    private static HttpClient.ApiResponse readApiResponse(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        HttpClient.ApiResponse r = new HttpClient.ApiResponse();
+        r.success = bool(o, "success", false);
+        r.message = str(o, "message");
+        return r;
+    }
+
+    /** What changing a room's floor plan answers: the room as it is now, what was paid, what came back to the bag. */
+    private static FloorPlanResult readFloorPlanResult(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        FloorPlanResult r = new FloorPlanResult();
+        r.success = bool(o, "success", false);
+        r.message = str(o, "message");
+        r.room = o.has("room") && o.get("room").isJsonObject() ? readRoom(o.get("room")) : null;
+        r.credits = num(o, "credits", 0L);
+        r.returnedItems = num(o, "returnedItems", 0);
+        return r;
+    }
+
+    /** A room shape offered when a room is created. */
+    private static RoomLayout readRoomLayout(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        RoomLayout l = new RoomLayout();
+        l.layoutKey = str(o, "layoutKey");
+        l.name = str(o, "name");
+        l.description = str(o, "description");
+        l.category = str(o, "category");
+        l.width = num(o, "width", 0);
+        l.height = num(o, "height", 0);
+        l.heightmap = str(o, "heightmap");
+        l.doorX = num(o, "doorX", 0);
+        l.doorY = num(o, "doorY", 0);
+        return l;
+    }
+
+    /** The answer of a password room's door. */
+    private static RoomApiClient.Unlock readUnlock(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        return new RoomApiClient.Unlock(bool(o, "success", false), str(o, "reason"), str(o, "message"));
+    }
+
+    /** A friend request as it is sent. As Gson writes it: a field that is null is left out. */
+    private static JsonElement writeSendRequest(FriendApiService.SendRequestBody body) {
+        JsonObject o = new JsonObject();
+        if (body.toUsername != null) o.addProperty("toUsername", body.toUsername);
+        if (body.fromGender != null) o.addProperty("fromGender", body.fromGender);
+        return o;
     }
 
     /** One request waiting for the owner (the agents' approvals inbox). */

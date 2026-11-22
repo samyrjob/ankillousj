@@ -48,9 +48,10 @@ public class Gson {
         if (tree != null) return tree.toString();
 
         throw new UnsupportedOperationException(
-            "cannot serialise " + src.getClass().getSimpleName() + " without reflection, "
-            + "which is what drags Unsafe and serialization into a whole-program build. "
-            + "Build a JsonObject with addProperty, or pass a Map.");
+            "no JSON writer for " + src.getClass().getSimpleName() + ". Reflection is deliberately "
+            + "not used here. A Map, a list or an array describe themselves; for an application "
+            + "type register a writer:\n"
+            + "    JsonWriters.register(" + src.getClass().getSimpleName() + ".class, x -> ...);");
     }
 
     /** @return the value as a tree, or null if its shape is not self-describing */
@@ -92,7 +93,32 @@ public class Gson {
             return a;
         }
 
-        return null;
+        // An application type: written by the writer registered for it, if any.
+        return JsonWriters.write(src);
+    }
+
+    /**
+     * What Gson builds when asked for an Object: a map for an object, a list
+     * for an array, a Double for a number, as its callers expect.
+     */
+    private static Object natural(JsonElement e) {
+        if (e == null || e.isJsonNull()) return null;
+        if (e.isJsonObject()) {
+            java.util.Map<String, Object> map = new java.util.LinkedHashMap<>();
+            for (java.util.Map.Entry<String, JsonElement> entry : e.getAsJsonObject().entrySet()) {
+                map.put(entry.getKey(), natural(entry.getValue()));
+            }
+            return map;
+        }
+        if (e.isJsonArray()) {
+            java.util.List<Object> list = new java.util.ArrayList<>();
+            for (JsonElement item : e.getAsJsonArray()) list.add(natural(item));
+            return list;
+        }
+        JsonPrimitive p = e.getAsJsonPrimitive();
+        if (p.isBoolean()) return p.getAsBoolean();
+        if (p.isNumber()) return p.getAsDouble();
+        return p.getAsString();
     }
 
     /** Generic like Gson's, so {@code JsonObject o = gson.fromJson(s, JsonObject.class)} compiles. */
@@ -110,6 +136,7 @@ public class Gson {
         if (type == JsonArray.class)     return (T) parsed.getAsJsonArray();
         if (type == JsonPrimitive.class) return (T) parsed.getAsJsonPrimitive();
         if (type == String.class)        return (T) parsed.getAsString();
+        if (type == Object.class)        return (T) natural(parsed);
 
         // An explicitly registered reader, which is the alternative to
         // reflection. See JsonReaders.

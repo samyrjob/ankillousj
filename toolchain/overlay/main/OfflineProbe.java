@@ -81,6 +81,66 @@ final class OfflineProbe {
                 + ", after a write " + less + ", colours " + colours + ")");
     }
 
+    /**
+     * The game's JSON, each type on a sample of what the backend sends: read
+     * by its reader, written by its writer. No reflection looks inside a class
+     * here, so a type nobody wrote a reader for fails where the game uses it.
+     */
+    static void json() {
+        final String q = String.valueOf((char) 34);
+        json.Gson gson = new json.Gson();
+        StringBuilder wrong = new StringBuilder();
+        try {
+            service.api.HttpClient.ApiResponse done = gson.fromJson(
+                    "{'success':true,'message':'ok'}".replace("'", q), service.api.HttpClient.ApiResponse.class);
+            if (done == null || !done.success || !"ok".equals(done.message)) wrong.append(" ApiResponse");
+
+            model.room.FloorPlanResult plan = gson.fromJson(
+                    ("{'success':true,'message':'saved','credits':12,'returnedItems':3,"
+                    + "'room':{'roomId':'r1','roomName':'R','ownerUsername':'o'}}").replace("'", q),
+                    model.room.FloorPlanResult.class);
+            if (plan == null || !plan.isSuccess() || plan.getCredits() != 12 || plan.getReturnedItems() != 3
+                    || plan.getRoom() == null || !"r1".equals(plan.getRoom().getRoomId())) wrong.append(" FloorPlanResult");
+
+            model.room.RoomLayout[] layouts = gson.fromJson(
+                    "[{'layoutKey':'a','name':'A','category':'STAIRS','width':5,'height':6,'doorX':1,'doorY':2}]"
+                            .replace("'", q), model.room.RoomLayout[].class);
+            if (layouts == null || layouts.length != 1 || layouts[0].getWidth() != 5 || layouts[0].getDoorY() != 2
+                    || !layouts[0].isStairs() || !"a".equals(layouts[0].getLayoutKey())) wrong.append(" RoomLayout");
+
+            service.api.RoomApiClient.Unlock door = gson.fromJson(
+                    "{'success':false,'reason':'WRONG','message':'no'}".replace("'", q),
+                    service.api.RoomApiClient.Unlock.class);
+            if (door == null || door.success() || !"WRONG".equals(door.reason())) wrong.append(" Unlock");
+
+            Object any = gson.fromJson("{'a':[1,true,'x']}".replace("'", q), Object.class);
+            if (!(any instanceof java.util.Map)) wrong.append(" Object");
+
+            String request = gson.toJson(new service.friend.FriendApiService.SendRequestBody("bob", "MALE"));
+            if (!"{'toUsername':'bob','fromGender':'MALE'}".replace("'", q).equals(request)) {
+                wrong.append(" SendRequestBody=").append(request);
+            }
+            String setting = gson.toJson(java.util.Map.of("freePlacement", true));
+            if (!"{'freePlacement':true}".replace("'", q).equals(setting)) wrong.append(" Map=").append(setting);
+        } catch (RuntimeException e) {
+            wrong.append(" (").append(e.getMessage()).append(")");
+        }
+        log("offline: json " + (wrong.length() == 0 ? "read and written right" : "WRONG:" + wrong));
+    }
+
+    /**
+     * Sends two of the game's own requests with a token of the caller's
+     * choosing, to see what arrives: a backend names in its log the token it
+     * rejects, with the path, and a request that came without one leaves no
+     * line there.
+     */
+    static void requests(String token) {
+        auth.GameClientToken.set(token);
+        int inbox = new service.api.AgentApprovalClient(config.AppConfig.getBackendUrl()).inbox().code;
+        new service.api.CrmWorldClient().objectsIn("probe-room");
+        log("offline: with the token given, the approvals inbox answered HTTP " + inbox);
+    }
+
     /** Size, how much of it is drawn, and how long the game's own trim of it takes. */
     private static String describe(BufferedImage img) {
         int w = img.getWidth(), h = img.getHeight();

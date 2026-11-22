@@ -1,0 +1,19 @@
+(browser) Opens the friend request body to its writer in config/GameJsonReaders.java.
+--- a/service/friend/FriendApiService.java
++++ b/service/friend/FriendApiService.java
+@@ -413,11 +413,11 @@
+         }
+     }
+ 
+-    private static class SendRequestBody {
+-        String toUsername;
+-        String fromGender;
++    public static class SendRequestBody {
++        public String toUsername;
++        public String fromGender;
+ 
+-        SendRequestBody(String toUsername, String fromGender) {
++        public SendRequestBody(String toUsername, String fromGender) {
+             this.toUsername = toUsername;
+             this.fromGender = fromGender;
+         }

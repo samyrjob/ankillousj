@@ -1,0 +1,4 @@
+# Types the game's source hands to its JSON library in code that nothing calls.
+# The build wants a reader for every type read from JSON (see build.sh); the ones
+# named here are let through. One type a line.
+FriendRequest     # model.friend.FriendRequest.fromJson: called by nobody

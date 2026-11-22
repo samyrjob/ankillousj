@@ -165,13 +165,15 @@ public final class BrowserMain {
     private static void startOffline() {
         try {
             final String figure = avatar.LegacyLookFigures.figureFor(1).toString();
+            // The runtime checks itself at each offline start: it costs a few milliseconds.
+            OfflineProbe.pixels();
+            OfflineProbe.json();
             String parts = sessionValue("parts");
             if (parts != null && !parts.isEmpty()) OfflineProbe.look(parts, figure);
             String picture = sessionValue("picture");
-            if (picture != null && !picture.isEmpty()) {
-                OfflineProbe.pixels();
-                OfflineProbe.picture(picture);
-            }
+            if (picture != null && !picture.isEmpty()) OfflineProbe.picture(picture);
+            String token = sessionValue("token");
+            if (token != null && !token.isEmpty()) OfflineProbe.requests(token);
 
             log("constructing GamePanel (offline)...");
             GameWindow window = new GameWindow("WebPlayer", "MALE", "", 1, "", figure);

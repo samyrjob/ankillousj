@@ -112,7 +112,7 @@ fi
 if [ -d "$HERE/patches" ]; then
   patched=0
   while IFS= read -r p; do
-    if ! (cd "$JAVA" && patch -p1 --forward --no-backup-if-mismatch -l < "$p" > "$OUT/patch.log" 2>&1); then
+    if ! (cd "$JAVA" && patch -p1 --forward --no-backup-if-mismatch --fuzz=0 -l < "$p" > "$OUT/patch.log" 2>&1); then
       echo
       echo "   A PATCH DOES NOT APPLY: ${p#"$HERE/"}"
       sed 's/^/     /' "$OUT/patch.log"
@@ -123,6 +123,51 @@ if [ -d "$HERE/patches" ]; then
     echo "   patched ${p#"$HERE/patches/"}"
   done < <(find "$HERE/patches" -name '*.patch' | sort)
   [ "$patched" -gt 0 ] && echo "   $patched patch(es) applied"
+fi
+
+# Every type the program asks its JSON library to BUILD must have a reader, and every type it
+# hands it to WRITE a writer. The library cannot look inside a class here (no reflection), so
+# a type without one fails in the tab, when the game reaches that call. Found now instead, by
+# reading the calls: one that ends with a class literal -- fromJson(text, Room.class),
+# http.getList(path, Room[].class) -- and toJson(new Something(...)).
+if command -v perl >/dev/null 2>&1; then
+  json_scan() {   # $1: the perl loop body; prints "Type file" lines for every file but the JSON library's own
+    (cd "$JAVA" && find . -name '*.java' -not -path './json/*' -print0 | xargs -0 perl -0777 -ne '
+        s{/\*.*?\*/}{}gs; s{(^|[\s;{}])//[^\n]*}{$1}gm;
+        (my $f = $ARGV) =~ s{^\./}{};
+        '"$1" | sort -u)
+  }
+  read_asked="$(json_scan 'while (/\b(?:fromJson|get|getList|post|put|patch)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?,\s*([A-Za-z_][\w.]*)(?:\[\])?\.class\s*\)/g) { (my $t = $1) =~ s/.*\.//; print "$t $f\n"; }')"
+  write_asked="$(json_scan 'while (/\btoJson\s*\(\s*new\s+([A-Za-z_][\w.]*)\s*[(<]/g) { (my $t = $1) =~ s/.*\.//; print "$t $f\n"; }')"
+  readers="$( { json_scan 'while (/JsonReaders\.register\(\s*([A-Za-z_][\w.]*)\.class/g) { (my $t = $1) =~ s/.*\.//; print "$t\n"; }'
+                printf '%s\n' JsonElement JsonObject JsonArray JsonPrimitive String Object
+                sed -E 's/#.*//; s/[[:space:]]+//g' "$HERE/config/json-not-read.txt" 2>/dev/null; } | sort -u)"
+  writers="$( { json_scan 'while (/JsonWriters\.register\(\s*([A-Za-z_][\w.]*)\.class/g) { (my $t = $1) =~ s/.*\.//; print "$t\n"; }'
+                printf '%s\n' JsonObject JsonArray HashMap LinkedHashMap TreeMap ArrayList LinkedList HashSet; } | sort -u)"
+  without() {     # $1: "Type file" lines, $2: the types that are provided for
+    printf '%s\n' "$1" | while read -r type file; do
+      [ -z "$type" ] && continue
+      printf '%s\n' "$2" | grep -qx "$type" || echo "     $type   ($file)"
+    done
+  }
+  no_reader="$(without "$read_asked" "$readers")"
+  no_writer="$(without "$write_asked" "$writers")"
+  if [ -n "$no_reader$no_writer" ]; then
+    echo
+    if [ -n "$no_reader" ]; then
+      echo "   NO JSON READER for a type the program reads:"
+      printf '%s\n' "$no_reader"
+    fi
+    if [ -n "$no_writer" ]; then
+      echo "   NO JSON WRITER for a type the program writes:"
+      printf '%s\n' "$no_writer"
+    fi
+    echo "   It would fail in the tab, when the game reaches that call. Say how it is read or"
+    echo "   written in config/GameJsonReaders.java; or, for a type read by code that nothing"
+    echo "   calls, name it in config/json-not-read.txt."
+    exit 1
+  fi
+  echo "   JSON: $(printf '%s\n' "$read_asked" | awk 'NF {print $1}' | sort -u | wc -l | tr -d ' ') types read, each with its reader"
 fi
 
 cp "$HERE/pom.xml" "$WORK/pom.xml"

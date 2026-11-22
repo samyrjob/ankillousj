@@ -114,6 +114,13 @@ moved on, and the patch is to be brought up to its new text.
 | patch | why |
 |---|---|
 | `main/GamePanel.java.patch` | the game loop spins without ever pausing. A desktop thread may; in a page it freezes everything. The loop hands the page back until its next frame (`Platform.nextFrame`), and a tab that was hidden does not replay the frames it missed. |
+| `service/api/HttpClient.java.patch` | opens `ApiResponse` (a private class) to its reader in `config/` |
+| `model/room/FloorPlanResult.java.patch`, `model/room/RoomLayout.java.patch` | open their private fields to their readers in `config/` |
+| `service/friend/FriendApiService.java.patch` | opens `SendRequestBody` (a private class) to its writer in `config/` |
+
+A patch applies exactly or not at all (`--fuzz=0`). For the four that open a
+type, that is the point: the day the type gains or renames a field the patch
+stops applying, and the build says so before a reader goes on ignoring it.
 
 ### `thirdparty/` — libraries with no browser form
 
@@ -123,10 +130,20 @@ only so the imports resolve.
 
 ### `config/` — your glue
 
-`GameJsonReaders.java` — the explicit JSON readers that replace Gson's
-reflective binding. **This is yours to extend** as your DTOs change: a type
-read with `fromJson(…, Some.class)` and not registered here fails at run time
-with a message naming it.
+`GameJsonReaders.java` — the explicit JSON readers and writers that replace
+Gson's reflective binding. **This is yours to extend** as your DTOs change.
+
+A type read with `fromJson(…, Some.class)` and not registered would fail in
+the tab, where the game reaches that call: Futura's room settings all answered
+"Failed to update…" for want of one reader. So the build looks for them
+itself. It reads the calls (one that ends with a class literal, and
+`toJson(new Something(…))`) and stops, naming the type, when one has no reader
+or writer. `json-not-read.txt` names the types read only by code nothing
+calls.
+
+A type that keeps its fields private cannot be filled from here. A patch in
+`patches/` opens it in the working copy (`private` to `public`, nothing more)
+and its reader stays here with the others.
 
 ## What the rewrite does automatically
 
@@ -228,9 +245,12 @@ through the build, with nobody signed in:
 http://localhost:8080/#offline&parts=http://localhost:9090/parts&picture=assets/8864.png
 ```
 
-composes an avatar from those parts, reads that item picture the way a room
-reads its furniture, and checks the runtime's pixel reading; the console says
-what came of each (`overlay/main/OfflineProbe.java`).
+composes an avatar from those parts and reads that item picture the way a
+room reads its furniture. Every offline start also checks the runtime's pixel
+reading and the game's JSON readers and writers. The console says what came of
+each (`overlay/main/OfflineProbe.java`). `&token=anything` sends two of the
+game's requests with that token: the backend's log then shows whether a token
+leaves the tab (it names the token it rejects, with the path).
 
 `config.js` (optional, beside the page) names the servers when the defaults do
 not fit — a local page uses the local backend and gateway, any other the
@@ -271,6 +291,9 @@ library is not complete. A missing *class* gets a stand-in through the
 substitution policy (`runtime/…/ankillousj/AtomicSubstitution.java`); a missing
 *method* of a class TeaVM does have cannot be substituted, so the call is moved
 by the port (`port-imports.sh`, as for `newKeySet`).
+
+**`NO JSON READER`** / **`NO JSON WRITER`** — the program reads or writes a
+type as JSON and nothing says how. Add it to `config/GameJsonReaders.java`.
 
 **`A PATCH DOES NOT APPLY`** — the lines a patch changes have moved on. Bring
 the patch up to the new text.

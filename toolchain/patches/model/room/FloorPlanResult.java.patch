@@ -1,0 +1,23 @@
+(browser) Opens the fields to their reader in config/GameJsonReaders.java. A field added here needs reading there.
+--- a/model/room/FloorPlanResult.java
++++ b/model/room/FloorPlanResult.java
+@@ -10,14 +10,14 @@
+  */
+ public class FloorPlanResult {
+ 
+-    private boolean success;
+-    private String message;
++    public boolean success;
++    public String message;
+     /** The room with its new shape. */
+-    private Room room;
++    public Room room;
+     /** The owner's balance after paying. */
+-    private long credits;
++    public long credits;
+     /** Items that no longer fitted and went back to their owners' bags. */
+-    private int returnedItems;
++    public int returnedItems;
+ 
+     public FloorPlanResult() {}
+ 
