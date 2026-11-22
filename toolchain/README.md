@@ -231,6 +231,33 @@ given in the same file (`String.format(SOUND, n)`). A `%` anywhere else is
 left alone. `perl format-port.pl <sources> --list` names every format it
 reads; `--check` writes nothing.
 
+## Following the game
+
+The web version is made from the game's own sources, so it is only ever as
+new as its last build. `--if-changed` is for a build that starts by itself,
+each time the game is built:
+
+    ./build-futura.sh --if-changed <Futura folder> dev
+
+(`-IfChanged` on `build-futura.ps1`.) It differs from a plain build in three
+ways:
+
+- **Nothing changed, nothing built.** The build keeps a fingerprint of what it
+  was made from (`web/.built-from`): the game's sources and resources, this
+  toolchain (runtime, overlay, patches, config, the build scripts) and what is
+  stamped in (dev or prod, the version). The same fingerprint again: it says
+  so and stops, in a few seconds.
+- **Never two at once.** A build under way holds `build/.building`. A second
+  one started meanwhile stops at once: the first takes its changes too.
+- **It ends on the game as it is now.** When the game changed while it was
+  compiling, it builds again, three times at most.
+
+A build that fails changes nothing in `web/`: the last good version stays in
+place, because `build.sh` writes `web/` last.
+
+Futura starts it from its dev panel, after the client jar is built
+(`Futura_Devops/web-version.ps1`): in its own window, at low priority.
+
 ## Esc in fullscreen
 
 A browser keeps Esc for itself in fullscreen: it leaves, and the page is never

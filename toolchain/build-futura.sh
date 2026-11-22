@@ -2,7 +2,7 @@
 #
 # The web build of Futura, in one command.
 #
-#   ./build-futura.sh <Futura folder> [dev|prod] [version] [output-dir]
+#   ./build-futura.sh [--if-changed] <Futura folder> [dev|prod] [version] [output-dir]
 #
 # Futura's game is two modules (client, shared) and two classes its release
 # build stamps: config.BuildEnv (dev or prod addresses) and main.GameVersion.
@@ -14,12 +14,22 @@
 #
 # version: what the game says it is (its release number). Read from the game's
 # own build file when not given.
+#
+# --if-changed: for a build that starts by itself each time the game is built.
+# It builds only when the game or this toolchain changed since the last build,
+# never twice at once, and it ends on the game as it is now (see the end).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-FUTURA="${1:?usage: build-futura.sh <Futura folder> [dev|prod] [version] [output-dir]}"
+IF_CHANGED=false
+if [ "${1:-}" = "--if-changed" ]; then
+  IF_CHANGED=true
+  shift
+fi
+FUTURA="${1:?usage: build-futura.sh [--if-changed] <Futura folder> [dev|prod] [version] [output-dir]}"
 ENVIRONMENT="${2:-dev}"
 VERSION="${3:-}"
+if [ "$VERSION" = "-" ]; then VERSION=""; fi   # "-": not given (an empty argument does not survive every shell)
 OUT="${4:-$HERE/build}"
 
 case "$ENVIRONMENT" in
@@ -74,4 +84,47 @@ public final class GameVersion {
 EOF
 
 echo "Futura web build: $ENVIRONMENT, version $VERSION"
-exec bash "$HERE/build.sh" "$CLIENT,$SHARED,$STAMP" "$OUT"
+if ! $IF_CHANGED; then
+  exec bash "$HERE/build.sh" "$CLIENT,$SHARED,$STAMP" "$OUT"
+fi
+
+# ── only when something changed ──────────────────────────────────────────────
+# A build that is started by itself must cost nothing when nothing changed, must never run twice
+# at once, and must end on what the game is now, not on what it was when the build began.
+# A build that fails leaves the last good web version in place: build.sh writes web/ last.
+
+# What a build is made from: the game's sources and resources, this toolchain, and what is stamped in.
+made_from() {
+  {
+    echo "$ENVIRONMENT $VERSION"
+    for d in "$CLIENT" "$SHARED" "${CLIENT%/java}/resources" "${SHARED%/java}/resources" "$HERE/runtime" "$HERE/overlay" "$HERE/patches" "$HERE/config" "$HERE/thirdparty" "$HERE/../awt/tools"; do
+      if [ -d "$d" ]; then
+        (cd "$d" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 -r sha1sum)
+      fi
+    done
+    (cd "$HERE" && sha1sum build.sh build-futura.sh format-port.pl json-check.pl pom.xml index.html 2>/dev/null) || true
+  } | sha1sum | cut -d' ' -f1
+}
+
+LOCK="$OUT/.building"
+mkdir -p "$OUT"
+if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
+  echo "A web build is already running. It builds again by itself if the game changed meanwhile."
+  exit 0
+fi
+echo $$ > "$LOCK"
+trap 'rm -f "$LOCK"' EXIT
+
+BUILT="$OUT/web/.built-from"
+for round in 1 2 3; do
+  NOW="$(made_from)"
+  if [ -f "$OUT/web/futura.js" ] && [ "$(cat "$BUILT" 2>/dev/null)" = "$NOW" ]; then
+    if [ "$round" = 1 ]; then
+      echo "The web version is up to date: nothing changed in the game or in the toolchain."
+    fi
+    exit 0
+  fi
+  bash "$HERE/build.sh" "$CLIENT,$SHARED,$STAMP" "$OUT"
+  echo "$NOW" > "$BUILT"
+done
+echo "The game changed during three builds in a row. The web version is built from the last one read."

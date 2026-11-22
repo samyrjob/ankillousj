@@ -1,7 +1,7 @@
 <#
   The web build of Futura, in one command.
 
-    .\build-futura.ps1 -Futura C:\path\to\Futura [-Env dev|prod] [-Version 1.0.51] [-Output C:\path\to\out]
+    .\build-futura.ps1 -Futura C:\path\to\Futura [-Env dev|prod] [-Version 1.0.51] [-Output C:\path\to\out] [-IfChanged]
 
   Gathers the game's two modules (client, shared), writes the two classes its
   release build stamps (dev or prod addresses, the version), and builds.
@@ -13,7 +13,9 @@ param(
   [Parameter(Mandatory=$true)][string]$Futura,
   [ValidateSet('dev', 'prod')][string]$Env = 'dev',
   [string]$Version = '',
-  [string]$Output
+  [string]$Output,
+  # Builds only when the game or the toolchain changed since the last build (build-futura.sh --if-changed).
+  [switch]$IfChanged
 )
 
 $ErrorActionPreference = 'Stop'
@@ -42,5 +44,10 @@ function ConvertTo-BashPath([string]$path) {
 }
 
 $bash = Find-GitBash
-& $bash (ConvertTo-BashPath (Join-Path $Here 'build-futura.sh')) (ConvertTo-BashPath $Futura) $Env $Version (ConvertTo-BashPath $Output)
+# Never an empty argument: Windows PowerShell drops it, and the output folder then slides into the
+# version's place. build-futura.sh reads "-" as no version given.
+$versionArg = if ($Version) { $Version } else { '-' }
+$flags = @()
+if ($IfChanged) { $flags += '--if-changed' }
+& $bash (ConvertTo-BashPath (Join-Path $Here 'build-futura.sh')) @flags (ConvertTo-BashPath $Futura) $Env $versionArg (ConvertTo-BashPath $Output)
 exit $LASTEXITCODE
