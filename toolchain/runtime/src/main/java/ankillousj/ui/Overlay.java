@@ -105,8 +105,10 @@ public final class Overlay {
     }
 
     /** Wires a click handler onto an element inside the overlay, found by selector. */
-    public static void onClick(JSObject overlay, String selector, Action action) {
-        Native.onClick(overlay, selector, action);
+    public static void onClick(JSObject overlay, String selector, final Action action) {
+        // On the event dispatch thread, like a Swing button's listener: what the click starts may
+        // then wait (a request to the server), which a call of the browser's own could not.
+        Native.onClick(overlay, selector, () -> awt.EventQueue.invokeLater(action::run));
     }
 
     /** Reads the current value of an input inside the overlay. */

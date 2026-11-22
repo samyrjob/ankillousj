@@ -18,6 +18,12 @@ public class BrowserWebSocket implements WebSocket {
 
     /** Sends issued before the socket opens, replayed on open. */
     private final List<String> queued = new ArrayList<>();
+    /**
+     * The listener is called on a program thread, one call after the other in the order the
+     * browser gave them: what it does with a message may then wait (a fetch, a picture), which
+     * a call of the browser's own could not.
+     */
+    private final concurrent.ExecutorService deliver = concurrent.Executors.newSingleThreadExecutor();
     private boolean open;
 
     BrowserWebSocket(String url, List<String> protocols, String preamble,
@@ -34,13 +40,13 @@ public class BrowserWebSocket implements WebSocket {
                 for (String s : queued) Native.send(socket, s);
                 queued.clear();
                 ready.complete(this);
-                listener.onOpen(this);
+                deliver.execute(() -> listener.onOpen(this));
             },
-            text -> listener.onText(this, text, true),
+            text -> deliver.execute(() -> listener.onText(this, text, true)),
             (code, reason) -> {
                 inputClosed = true;
                 outputClosed = true;
-                listener.onClose(this, code, reason);
+                deliver.execute(() -> listener.onClose(this, code, reason));
             },
             () -> {
                 // The browser deliberately withholds the reason, to avoid
@@ -48,7 +54,7 @@ public class BrowserWebSocket implements WebSocket {
                 // report than that it failed.
                 RuntimeException e = new RuntimeException("websocket error");
                 if (!ready.isDone()) ready.completeExceptionally(e);
-                listener.onError(this, e);
+                deliver.execute(() -> listener.onError(this, e));
             });
     }
 

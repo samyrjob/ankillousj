@@ -1,36 +1,18 @@
 package concurrent;
 
-/** Handle on work the event loop has been asked to run later. */
-public class ScheduledFuture<V> implements Future<V> {
+/** The handle of a scheduled task: cancelling it stops the timer, and a repeating task's later runs. */
+public class ScheduledFuture<V> extends TaskFuture<V> {
 
-    private final int handle;
-    private final boolean periodic;
-    private boolean cancelled;
-    private boolean done;
-    private V value;
+    /** The browser timer waiting to start the next run; -1 when none is. */
+    int timer = -1;
 
-    ScheduledFuture(int handle, boolean periodic) {
-        this.handle = handle;
-        this.periodic = periodic;
-    }
-
-    void complete(V v) { this.value = v; this.done = true; }
-
-    /**
-     * Unlike get() on a completed Future, there is nothing sensible to return
-     * for work that has not run yet — and we cannot wait for it. Callers that
-     * need the result should use the scheduled task itself as the callback.
-     */
-    @Override public V get() { return value; }
-    @Override public V get(long timeout, java.util.concurrent.TimeUnit unit) { return value; }
-    @Override public boolean isDone() { return done; }
-    @Override public boolean isCancelled() { return cancelled; }
+    ScheduledFuture() { }
 
     @Override public boolean cancel(boolean mayInterruptIfRunning) {
-        if (done || cancelled) return false;
-        if (periodic) EventLoop.cancelInterval(handle);
-        else EventLoop.cancelTimeout(handle);
-        cancelled = true;
-        return true;
+        if (timer != -1) {
+            EventLoop.cancelTimeout(timer);
+            timer = -1;
+        }
+        return super.cancel(mayInterruptIfRunning);
     }
 }

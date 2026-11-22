@@ -17,6 +17,8 @@ public class AtomicSubstitution extends SimpleSubstitutionPolicy {
     public void contribute(SubstitutionSink sink) {
         sink.selectClasses(inPackage("java.util.concurrent.atomic", false))
             .replacePackage("java.util.concurrent.atomic", "ankillousj.atomic");
+        sink.selectClasses(inPackage("java.util.concurrent", false))
+            .replacePackage("java.util.concurrent", "ankillousj.juc");
         sink.selectClasses(inPackage("java.util.prefs", false))
             .replacePackage("java.util.prefs", "ankillousj.prefs");
     }

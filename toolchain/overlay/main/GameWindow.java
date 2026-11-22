@@ -69,12 +69,13 @@ public class GameWindow {
     private void initializeChatUI() {
         bar = createBar(PLACEHOLDER, MAX_CHAT_LEN,
                 view.shared.Theme.GOLD_LIGHT.toCss(), view.shared.Theme.GOLD_DARK.toCss(),
-                this::sendChatMessage,
-                this::onTextChanged,
-                this::onChatFocused,
-                this::onChatFieldLostFocus,
-                this::onEscape,
-                () -> gamePanel.stopWhisper());
+                // Each on the event dispatch thread, where the desktop's field listeners run.
+                () -> awt.EventQueue.invokeLater(this::sendChatMessage),
+                text -> awt.EventQueue.invokeLater(() -> onTextChanged(text)),
+                () -> awt.EventQueue.invokeLater(this::onChatFocused),
+                () -> awt.EventQueue.invokeLater(this::onChatFieldLostFocus),
+                () -> awt.EventQueue.invokeLater(this::onEscape),
+                () -> awt.EventQueue.invokeLater(() -> gamePanel.stopWhisper()));
 
         // "Whisper" on a person's card puts the chat bar in whisper mode.
         gamePanel.onWhisperChanged = this::showWhisperMode;

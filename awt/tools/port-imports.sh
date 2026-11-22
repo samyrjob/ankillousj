@@ -52,6 +52,7 @@ java.util.concurrent.ExecutorService concurrent.ExecutorService
 java.util.concurrent.ScheduledFuture concurrent.ScheduledFuture
 java.util.concurrent.Executors concurrent.Executors
 java.util.concurrent.Future concurrent.Future
+java.util.concurrent.CopyOnWriteArrayList concurrent.CopyOnWriteArrayList
 java.net.Socket net.Socket
 System.exit ankillousj.Platform.exit"
 
@@ -88,6 +89,9 @@ java.util.concurrent concurrent.ScheduledExecutorService ScheduledExecutorServic
 java.util.concurrent concurrent.Executors Executors
 java.util.concurrent concurrent.ScheduledFuture ScheduledFuture
 java.util.concurrent concurrent.ThreadFactory ThreadFactory
+java.util.concurrent concurrent.CopyOnWriteArrayList CopyOnWriteArrayList
+java.util.concurrent concurrent.Future Future
+java.util.concurrent concurrent.ScheduledFuture ScheduledFuture
 java.net net.Socket Socket
 java.awt awt.Color Color
 java.awt awt.Font Font

@@ -70,14 +70,14 @@ is ready to look at, or to compile by hand.
 |---|---|
 | `awt` | `java.awt` over Canvas2D — `Graphics2D` (transforms, clips, composites, dashes, gradients, textures), `Component`, events, `geom`, `image`, `datatransfer` |
 | `swing` | `SwingUtilities`, `JOptionPane`, `Timer`, `UIManager`, `ImageIcon` |
-| `concurrent` | `Executors`, `ExecutorService`, `CompletableFuture`, `Future`, `KeySets` |
+| `concurrent` | `Executors`, `ExecutorService` and the scheduled one, `CompletableFuture`, `Future`, `CopyOnWriteArrayList`, `KeySets`: on program threads (see *Waiting*) |
 | `net` | `java.net.Socket` over WebSocket, with suspending reads |
 | `nethttp` | `HttpClient`, `WebSocket`, `HttpRequest`, `HttpResponse` |
 | `json` | a reflection-free replacement for Gson |
 | `imageio` | `ImageIO`: a picture is decoded when `read` returns, as in the JDK |
 | `sound` | `Clip`, `AudioSystem`, `FloatControl` over HTML audio |
 | `security` | Ed25519 verification, implemented rather than shimmed |
-| `ankillousj` | `Resources`, `Platform`, HTML overlays, and the classes TeaVM lacks (atomic arrays, `java.util.prefs` over localStorage) |
+| `ankillousj` | `Resources`, `Platform`, HTML overlays, and the classes TeaVM lacks (atomic arrays, `java.util.prefs` over localStorage, three `java.util.concurrent` exceptions) |
 
 `java.time` is not here: TeaVM ships it, and the port leaves it alone.
 
@@ -93,6 +93,7 @@ these need the same change made.
 |---|---|
 | `main/Main.java` | builds a JFrame; `BrowserMain` is the entry point instead |
 | `main/BrowserMain.java` | the browser entry point: the desktop `Main`'s steps, with the session coming from the page |
+| `main/OfflineProbe.java` | what the offline start can show of a backend's public pictures (see *The page*) |
 | `main/GameWindow.java` | the window is the page; the chat bar is an HTML input with the desktop class's own logic |
 | `main/FullscreenToggle.java` | the Fullscreen API, not a JFrame flag |
 | `view/overlay/FrozenOverlay.java` | an HTML curtain |
@@ -158,17 +159,45 @@ Also handled: `java.awt.*` and `javax.swing.*` wildcards, `com.google.gson`,
 `Platform.exit`, and two calls TeaVM's own classes lack, which move to the
 runtime: `ConcurrentHashMap.newKeySet()` and `Runtime.maxMemory()`.
 
+## Waiting
+
+A desktop program waits all the time: for a page it fetches, a picture it
+reads, a result from another thread. A browser calls a page's code itself and
+what it calls may not wait — but a TeaVM thread is a coroutine, and may. So
+everything the program runs, it runs on threads:
+
+| on the desktop | here |
+|---|---|
+| the event dispatch thread: every listener, every paint | `awt.EventQueue`: one program thread running a queue. The browser's callbacks only queue; listeners and paints run there, in order, and may wait. |
+| `Executors` pools | pools of program threads, of the size asked for: a pool of four runs four tasks and queues the rest |
+| `Future.get`, `CompletableFuture.join` | wait, with the JDK's own signatures |
+| `javax.swing.Timer`, `SwingUtilities.invokeLater` | the event dispatch thread |
+| a WebSocket listener | a thread per socket, one message after the other |
+
+What cannot be done as on a desktop: answer the browser "I kept this key"
+after a listener has run. Whether a key is the game's alone is decided at
+once, by rule — all of them except chords with Ctrl or Meta, F5 and F12.
+
 ## Pictures
 
-`ImageIO.read` returns a decoded picture, as the JDK's does, whenever the
-caller is a program thread (`main`, or anything started with `new Thread`):
-TeaVM compiles such a thread to a coroutine, which can wait for the browser's
-decoder without freezing anything. Code that composes or recolours pictures
-pixel by pixel right after reading them works unchanged.
+`ImageIO.read` returns a decoded picture, as the JDK's does: the program runs
+on threads (see *Waiting*), and a thread waits for the browser's decoder
+without freezing anything. Code that composes or recolours pictures pixel by
+pixel right after reading them works unchanged.
 
-Code called by the browser itself — a paint, a mouse or key event — cannot
-wait. There `read` returns at once and the pixels follow; drawing the picture
-before then draws nothing.
+Reading pixels is the other half. To a Java program a picture is memory: it
+reads pixels one at a time by the million (a bounding box, a hit test), and a
+canvas answers each read through a call a thousand times dearer. So a few
+reads are asked of the browser as they come, and a picture read again and
+again is taken into memory whole, once, and answered from there until
+something draws into it; the canvas itself says so, whoever draws. The
+pictures held this way are bounded together (64 MB): the oldest is let go.
+Futura trims every item picture with such a scan: 20 ms for a 1024 x 1024
+one, where asking the canvas pixel by pixel froze the tab.
+
+An array a script FILLS crosses to it by reference (`@JSByRef`). TeaVM hands a
+script a copy of a Java array otherwise, and what is written into a copy never
+comes back: block reads were all zeros, and every avatar composed to nothing.
 
 A picture from another site is asked for with CORS so its pixels may be read;
 when that site does not allow it the picture is fetched again without, and can
@@ -192,7 +221,16 @@ The tokens stay in the page's memory. A page that already holds a session
 gives it before the game starts (`globalThis.__futuraSession = { jwt, refresh }`)
 or in the address (`#jwt=…&refresh=…`, erased as soon as it is read).
 `#offline` starts the game alone, with no session and no server: to look at
-what a build draws.
+what a build draws. It can also show a backend's public pictures coming
+through the build, with nobody signed in:
+
+```
+http://localhost:8080/#offline&parts=http://localhost:9090/parts&picture=assets/8864.png
+```
+
+composes an avatar from those parts, reads that item picture the way a room
+reads its furniture, and checks the runtime's pixel reading; the console says
+what came of each (`overlay/main/OfflineProbe.java`).
 
 `config.js` (optional, beside the page) names the servers when the defaults do
 not fit — a local page uses the local backend and gateway, any other the

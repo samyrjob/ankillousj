@@ -62,9 +62,13 @@ public class Toolkit {
         }
     }
 
+    /** Delivered on the event dispatch thread, like every other listener (see EventQueue). */
     private void dispatch(int id) {
-        AWTEvent event = new AWTEvent(this, id);
-        for (AWTEventListener l : listeners) l.eventDispatched(event);
+        if (listeners.isEmpty()) return;
+        final AWTEvent event = new AWTEvent(this, id);
+        EventQueue.invokeLater(() -> {
+            for (AWTEventListener l : new ArrayList<>(listeners)) l.eventDispatched(event);
+        });
     }
 
     public Dimension getScreenSize() {

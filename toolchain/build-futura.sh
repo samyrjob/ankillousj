@@ -38,8 +38,15 @@ for d in "$CLIENT" "$SHARED"; do
 done
 
 if [ -z "$VERSION" ]; then
-  VERSION="$(grep -E '^[[:space:]]*version[[:space:]]*=' "$FUTURA/Virtual_World/build.gradle.kts" 2>/dev/null \
-             | head -1 | sed -E 's/.*"([^"]+)".*/\1/' || true)"
+  # The build file says:   version = (findProperty("version") as String?) ... ?: "1.0.11-SNAPSHOT"
+  # What a build without -Pversion gets is the literal after the ?: , a few lines down.
+  GRADLE="$FUTURA/Virtual_World/build.gradle.kts"
+  VERSION="$(grep -A4 -E '^[[:space:]]*version[[:space:]]*=' "$GRADLE" 2>/dev/null \
+             | grep -oE '\?:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"([^"]+)"/\1/' || true)"
+  if [ -z "$VERSION" ]; then
+    VERSION="$(grep -oE '^[[:space:]]*version[[:space:]]*=[[:space:]]*"[^"]+"' "$GRADLE" 2>/dev/null \
+               | head -1 | sed -E 's/.*"([^"]+)"/\1/' || true)"
+  fi
   VERSION="${VERSION:-web}"
 fi
 

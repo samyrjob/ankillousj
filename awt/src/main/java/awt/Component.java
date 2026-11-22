@@ -241,25 +241,39 @@ public class Component {
     public static boolean isPaintingEnabled()             { return paintingEnabled; }
     private static boolean paintingEnabled = true;
 
+    /**
+     * The browser's frame: it only ASKS for a paint. The paint itself runs on
+     * the event dispatch thread, as Swing's does, where it may wait (a picture
+     * read on first use) and where it never overlaps a listener. One paint is
+     * asked for at a time: a frame that finds the last one still queued or
+     * running lets it be.
+     */
     private void frame() {
-        if (paintingEnabled && dirty && graphics != null) {
-            dirty = false;
-            try {
-                graphics.beginFrame(background, width, height);
-                paint(graphics);
-            } catch (RuntimeException | Error e) {
-                // An exception thrown inside requestAnimationFrame kills the
-                // loop silently — the page simply stops updating with no clue
-                // why. Reporting it and continuing turns that into something
-                // debuggable. The first failure is logged; the rest would be
-                // the same one sixty times a second.
-                if (!paintFailed) {
-                    paintFailed = true;
-                    reportPaintFailure(String.valueOf(e));
-                }
-            }
+        if (paintingEnabled && dirty && graphics != null && !paintQueued) {
+            paintQueued = true;
+            EventQueue.invokeLater(this::paintNow);
         }
         requestFrame(this::frame);
+    }
+
+    private boolean paintQueued;
+
+    private void paintNow() {
+        paintQueued = false;
+        if (!paintingEnabled || !dirty || graphics == null) return;
+        dirty = false;
+        try {
+            graphics.beginFrame(background, width, height);
+            paint(graphics);
+        } catch (RuntimeException | Error e) {
+            // A failed paint must not end painting: it is reported and the next
+            // frame tries again. The first failure is logged; the rest would be
+            // the same one sixty times a second.
+            if (!paintFailed) {
+                paintFailed = true;
+                reportPaintFailure(String.valueOf(e));
+            }
+        }
     }
 
     private boolean paintFailed;
@@ -313,55 +327,86 @@ public class Component {
              | ((domButtons & 2) != 0 ? awt.event.InputEvent.BUTTON3_DOWN_MASK : 0);
     }
 
+    // Every listener runs on the event dispatch thread (see EventQueue): the
+    // browser's callback reads what the event says, while it is there to read,
+    // and queues the delivery. A listener may then wait, as on a desktop; a
+    // browser's own call may not. The lists are walked as copies: a listener
+    // may add or remove one while it is being called.
+
+    /** The latest mouse move not delivered yet. Moves come faster than they are worth: only the last counts. */
+    private awt.event.MouseEvent pendingMove;
+
     private void bindMouse() {
         canvas.addEventListener("mousedown", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             pressed = true;
-            awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_PRESSED);
-            for (MouseListener l : mouseListeners) l.mousePressed(me);
+            final awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_PRESSED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mousePressed(me);
+            });
         });
         canvas.addEventListener("mouseup", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             pressed = domButtons(e) != 0;
-            awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_RELEASED);
-            for (MouseListener l : mouseListeners) l.mouseReleased(me);
+            final awt.event.MouseEvent me = toAwt(e, 1, awt.event.MouseEvent.MOUSE_RELEASED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mouseReleased(me);
+            });
         });
         canvas.addEventListener("click", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             int clicks = detailOf(e);
-            awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
-            for (MouseListener l : mouseListeners) l.mouseClicked(me);
+            final awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mouseClicked(me);
+            });
         });
         // The DOM fires "click" for the left button only; AWT clicks with every button.
         canvas.addEventListener("auxclick", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             int clicks = detailOf(e);
-            awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
-            for (MouseListener l : mouseListeners) l.mouseClicked(me);
+            final awt.event.MouseEvent me = toAwt(e, clicks > 0 ? clicks : 1, awt.event.MouseEvent.MOUSE_CLICKED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mouseClicked(me);
+            });
         });
         canvas.addEventListener("mouseenter", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_ENTERED);
-            for (MouseListener l : mouseListeners) l.mouseEntered(me);
+            final awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_ENTERED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mouseEntered(me);
+            });
         });
         canvas.addEventListener("mouseleave", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
-            awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_EXITED);
-            for (MouseListener l : mouseListeners) l.mouseExited(me);
+            final awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_EXITED);
+            EventQueue.invokeLater(() -> {
+                for (MouseListener l : new ArrayList<>(mouseListeners)) l.mouseExited(me);
+            });
         });
         // AWT splits movement by button state; the DOM does not.
         canvas.addEventListener("mousemove", (EventListener<org.teavm.jso.dom.events.MouseEvent>) e -> {
             // A button let go outside the canvas never said so here: the DOM's own count is the truth.
             pressed = domButtons(e) != 0;
-            if (pressed) {
-                awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_DRAGGED);
-                for (MouseMotionListener l : motionListeners) l.mouseDragged(me);
-            } else {
-                awt.event.MouseEvent me = toAwt(e, 0, awt.event.MouseEvent.MOUSE_MOVED);
-                for (MouseMotionListener l : motionListeners) l.mouseMoved(me);
-            }
+            boolean alreadyQueued = pendingMove != null;
+            pendingMove = toAwt(e, 0, pressed ? awt.event.MouseEvent.MOUSE_DRAGGED
+                                              : awt.event.MouseEvent.MOUSE_MOVED);
+            if (alreadyQueued) return;      // the queued delivery will take this newer one
+            EventQueue.invokeLater(() -> {
+                awt.event.MouseEvent me = pendingMove;
+                pendingMove = null;
+                if (me == null) return;
+                if (me.getID() == awt.event.MouseEvent.MOUSE_DRAGGED) {
+                    for (MouseMotionListener l : new ArrayList<>(motionListeners)) l.mouseDragged(me);
+                } else {
+                    for (MouseMotionListener l : new ArrayList<>(motionListeners)) l.mouseMoved(me);
+                }
+            });
         });
         canvas.addEventListener("wheel", (EventListener<WheelEvent>) e -> {
             double dy = e.getDeltaY();
-            MouseWheelEvent we = new MouseWheelEvent(this,
+            final MouseWheelEvent we = new MouseWheelEvent(this,
                     localX(e), localY(e),
                     dy > 0 ? 1 : (dy < 0 ? -1 : 0), dy / 100.0,
                     e.getShiftKey(), e.getCtrlKey(), e.getAltKey(), e.getMetaKey());
-            for (MouseWheelListener l : wheelListeners) l.mouseWheelMoved(we);
+            e.preventDefault();             // the wheel is the game's: the page behind does not scroll
+            EventQueue.invokeLater(() -> {
+                for (MouseWheelListener l : new ArrayList<>(wheelListeners)) l.mouseWheelMoved(we);
+            });
         });
         // right-click should reach the game, not the browser menu
         canvas.addEventListener("contextmenu",
@@ -376,51 +421,61 @@ public class Component {
         // listeners only when none of them kept it. A character key gives two
         // events, KEY_PRESSED then KEY_TYPED.
         canvas.addEventListener("keydown", (EventListener<KeyboardEvent>) e -> {
-            int code = awtKeyCode(domKeyCode(e));
-            char c = keyCharOf(e);
-            KeyboardFocusManager focus = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-
-            KeyEvent pressedEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, code, c,
-                    e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
-            boolean kept = focus.dispatchToDispatchers(pressedEvent);
-            if (!kept) for (KeyListener l : keyListeners) l.keyPressed(pressedEvent);
-
-            boolean typedKept = false;
-            KeyEvent typedEvent = null;
-            // AWT fires keyTyped only for characters, and never for a Ctrl or Meta chord.
-            if (c != KeyEvent.CHAR_UNDEFINED && !e.isCtrlKey() && !e.isMetaKey()) {
-                typedEvent = new KeyEvent(this, KeyEvent.KEY_TYPED, KeyEvent.VK_UNDEFINED, c,
-                        e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
-                typedKept = focus.dispatchToDispatchers(typedEvent);
-                if (!typedKept) for (KeyListener l : keyListeners) l.keyTyped(typedEvent);
-            }
-            if (kept || typedKept || pressedEvent.isConsumed()
-                    || (typedEvent != null && typedEvent.isConsumed()) || browserWouldAct(code, e)) {
-                e.preventDefault();
-            }
+            final int code = awtKeyCode(domKeyCode(e));
+            final char c = keyCharOf(e);
+            final boolean shift = e.isShiftKey(), ctrl = e.isCtrlKey(), alt = e.isAltKey(), meta = e.isMetaKey();
+            // AltGr is how many keyboards type @ # { [ and the like, and Windows reports it as
+            // Ctrl+Alt. It is typing, not a shortcut.
+            final boolean chord = (ctrl || meta) && !isAltGraph(e);
+            // Whether the browser acts on the key too has to be said now, before the game has
+            // seen it: the answer cannot wait for a listener that runs later.
+            if (gameKeepsKey(code, chord)) e.preventDefault();
+            EventQueue.invokeLater(() -> {
+                KeyboardFocusManager focus = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+                KeyEvent pressedEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, code, c, shift, ctrl, alt, meta);
+                if (!focus.dispatchToDispatchers(pressedEvent)) {
+                    for (KeyListener l : new ArrayList<>(keyListeners)) l.keyPressed(pressedEvent);
+                }
+                // AWT fires keyTyped only for characters, and never for a Ctrl or Meta chord.
+                if (c != KeyEvent.CHAR_UNDEFINED && !chord) {
+                    KeyEvent typedEvent = new KeyEvent(this, KeyEvent.KEY_TYPED, KeyEvent.VK_UNDEFINED, c,
+                            shift, ctrl, alt, meta);
+                    if (!focus.dispatchToDispatchers(typedEvent)) {
+                        for (KeyListener l : new ArrayList<>(keyListeners)) l.keyTyped(typedEvent);
+                    }
+                }
+            });
         });
         canvas.addEventListener("keyup", (EventListener<KeyboardEvent>) e -> {
-            KeyEvent ke = new KeyEvent(this, KeyEvent.KEY_RELEASED, awtKeyCode(domKeyCode(e)), keyCharOf(e),
+            final KeyEvent ke = new KeyEvent(this, KeyEvent.KEY_RELEASED, awtKeyCode(domKeyCode(e)), keyCharOf(e),
                     e.isShiftKey(), e.isCtrlKey(), e.isAltKey(), e.isMetaKey());
-            if (!KeyboardFocusManager.getCurrentKeyboardFocusManager().dispatchToDispatchers(ke)) {
-                for (KeyListener l : keyListeners) l.keyReleased(ke);
-            }
+            EventQueue.invokeLater(() -> {
+                if (!KeyboardFocusManager.getCurrentKeyboardFocusManager().dispatchToDispatchers(ke)) {
+                    for (KeyListener l : new ArrayList<>(keyListeners)) l.keyReleased(ke);
+                }
+            });
         });
         canvas.addEventListener("focus", (EventListener<org.teavm.jso.dom.events.Event>) e -> {
-            FocusEvent fe = new FocusEvent(this);
-            for (FocusListener l : focusListeners) l.focusGained(fe);
+            final FocusEvent fe = new FocusEvent(this);
+            EventQueue.invokeLater(() -> {
+                for (FocusListener l : new ArrayList<>(focusListeners)) l.focusGained(fe);
+            });
         });
         canvas.addEventListener("blur", (EventListener<org.teavm.jso.dom.events.Event>) e -> {
-            FocusEvent fe = new FocusEvent(this);
-            for (FocusListener l : focusListeners) l.focusLost(fe);
+            final FocusEvent fe = new FocusEvent(this);
+            EventQueue.invokeLater(() -> {
+                for (FocusListener l : new ArrayList<>(focusListeners)) l.focusLost(fe);
+            });
         });
     }
 
     private void bindResize() {
         addWindowResize(() -> {
             applyScaling();
-            ComponentEvent ce = new ComponentEvent(this);
-            for (ComponentListener l : componentListeners) l.componentResized(ce);
+            final ComponentEvent ce = new ComponentEvent(this);
+            EventQueue.invokeLater(() -> {
+                for (ComponentListener l : new ArrayList<>(componentListeners)) l.componentResized(ce);
+            });
             repaint();
         });
     }
@@ -465,25 +520,19 @@ public class Component {
     }
 
     /**
-     * Keys a browser acts on by itself while the game has the keyboard: it
-     * would scroll the page, move the focus off the canvas, go back a page or
-     * open its quick search. The game gets them; the browser does not. Chords
-     * with Ctrl or Meta are left to the browser (copy, paste, reload, new tab).
+     * Whether a key pressed while the game has the keyboard is the game's
+     * alone. Nearly all are: left to itself a browser would scroll the page,
+     * move the focus off the canvas, go back a page, open its quick search or
+     * its own fullscreen. What stays the browser's: chords with Ctrl or Meta
+     * (copy, paste, new tab), reload (F5) and its tools (F12).
      */
-    private static boolean browserWouldAct(int awtCode, KeyboardEvent e) {
-        if (e.isCtrlKey() || e.isMetaKey()) return false;
-        switch (awtCode) {
-            case KeyEvent.VK_TAB: case KeyEvent.VK_SPACE: case KeyEvent.VK_BACK_SPACE:
-            case KeyEvent.VK_LEFT: case KeyEvent.VK_UP: case KeyEvent.VK_RIGHT: case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_PAGE_UP: case KeyEvent.VK_PAGE_DOWN: case KeyEvent.VK_HOME: case KeyEvent.VK_END:
-            case KeyEvent.VK_SLASH: case KeyEvent.VK_QUOTE:
-            case KeyEvent.VK_F1: case KeyEvent.VK_F3: case KeyEvent.VK_F6: case KeyEvent.VK_F7:
-            case KeyEvent.VK_F9: case KeyEvent.VK_F10:
-                return true;
-            default:
-                return false;
-        }
+    private static boolean gameKeepsKey(int awtCode, boolean chord) {
+        if (chord) return false;
+        return awtCode != KeyEvent.VK_F5 && awtCode != KeyEvent.VK_F12;
     }
+
+    @JSBody(params = "e", script = "return !!(e.getModifierState && e.getModifierState('AltGraph'));")
+    private static native boolean isAltGraph(KeyboardEvent e);
 
     // ── JS interop ────────────────────────────────────────────────────
 

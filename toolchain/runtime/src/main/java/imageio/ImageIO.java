@@ -27,15 +27,16 @@ import org.teavm.jso.dom.html.HTMLImageElement;
  *
  * Two answers, by who is asking.
  *
- * <p>A program thread — {@code main}, or anything started with
- * {@code new Thread} — can wait without freezing anything: TeaVM compiles it
- * to a coroutine, which hands the event loop back while it waits. For such a
- * caller {@code read} is what the JDK's is: it returns once the picture is
- * decoded, its size is right and its pixels can be read at once. A picture
- * that cannot be fetched or decoded is an IOException, or null from a stream,
- * as in the JDK.
+ * <p>A program thread can wait without freezing anything: TeaVM compiles it
+ * to a coroutine, which hands the event loop back while it waits. That is
+ * {@code main}, anything started with {@code new Thread}, a task of an
+ * executor, and every listener and paint (they run on the event dispatch
+ * thread, see {@code awt.EventQueue}). For such a caller {@code read} is what
+ * the JDK's is: it returns once the picture is decoded, its size is right and
+ * its pixels can be read at once. A picture that cannot be fetched or decoded
+ * is an IOException, or null from a stream, as in the JDK.
  *
- * <p>Code called by the browser itself — a paint, a mouse or key event —
+ * <p>Only a call made by the browser itself — a callback handed to a script —
  * cannot wait: the loop it would wait for is the one running it. There
  * {@link #read(String)} returns immediately with a BufferedImage whose pixels
  * arrive later. Drawing it before then is harmless — the canvas ignores an
@@ -262,7 +263,7 @@ public final class ImageIO {
     private static native void revoke(String url);
 
     @JSBody(params = "a", script = "return new Uint8Array(a);")
-    private static native JSObject toJs(byte[] a);
+    private static native JSObject toJs(@org.teavm.jso.JSByRef byte[] a);
 
     @JSBody(params = { "bytes", "mime" }, script =
             "return URL.createObjectURL(new Blob([bytes], { type: mime }));")

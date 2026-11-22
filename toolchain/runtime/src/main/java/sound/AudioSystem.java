@@ -59,5 +59,5 @@ public final class AudioSystem {
     @org.teavm.jso.JSBody(params = { "bytes", "mime" }, script =
             "try { return URL.createObjectURL(new Blob([bytes], { type: mime })); }"
           + "catch (e) { return ''; }")
-    private static native String blobUrl(byte[] bytes, String mime);
+    private static native String blobUrl(@org.teavm.jso.JSByRef byte[] bytes, String mime);
 }

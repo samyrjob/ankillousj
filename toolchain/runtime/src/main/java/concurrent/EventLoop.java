@@ -5,11 +5,10 @@ import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
 
 /**
- * The browser's event loop, which is the only scheduler available here.
- *
- * Everything in this package is built on it. There are no threads: JavaScript
- * runs one task at a time and yields between them, so "concurrent" work is
- * interleaved rather than parallel.
+ * The browser's own scheduling: timers, and the turn that comes right after
+ * the current one. What runs from here runs as a call of the browser's — it
+ * cannot wait. Work that may wait is handed to a program thread instead (see
+ * {@link ExecutorService} and {@code awt.EventQueue}).
  */
 public final class EventLoop {
 
@@ -18,7 +17,6 @@ public final class EventLoop {
     @JSFunctor
     public interface Task extends JSObject { void run(); }
 
-    /** Runs after the current task finishes. This is what invokeLater means here. */
     @JSBody(params = "t", script = "return setTimeout(function() { t(); }, 0);")
     public static native int defer(Task t);
 
@@ -33,4 +31,18 @@ public final class EventLoop {
 
     @JSBody(params = "id", script = "clearInterval(id);")
     public static native void cancelInterval(int id);
+
+    /**
+     * Runs the task as soon as what is running now has finished its turn, and
+     * before anything else. This is how a waiting thread is woken: a thread
+     * cannot be resumed while another is running, and by then none is.
+     */
+    @JSBody(params = "t", script =
+            "if (typeof queueMicrotask === 'function') queueMicrotask(function() { t(); });"
+          + "else Promise.resolve().then(function() { t(); });")
+    public static native void soon(Task t);
+
+    /** The clock, in milliseconds. */
+    @JSBody(script = "return Date.now();")
+    public static native double now();
 }

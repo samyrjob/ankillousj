@@ -157,11 +157,24 @@ public final class BrowserMain {
     /**
      * No session and no server: the game alone, in its starting room. For a
      * look at what the build draws, and for the headless harness.
+     *
+     * <p>The address may name pictures a backend serves to anyone, to see them
+     * come through the build without signing in (see {@link OfflineProbe}):
+     * {@code #offline&parts=http://localhost:9090/parts&picture=assets/8864.png}
      */
     private static void startOffline() {
         try {
+            final String figure = avatar.LegacyLookFigures.figureFor(1).toString();
+            String parts = sessionValue("parts");
+            if (parts != null && !parts.isEmpty()) OfflineProbe.look(parts, figure);
+            String picture = sessionValue("picture");
+            if (picture != null && !picture.isEmpty()) {
+                OfflineProbe.pixels();
+                OfflineProbe.picture(picture);
+            }
+
             log("constructing GamePanel (offline)...");
-            GameWindow window = new GameWindow("WebPlayer", "MALE", "", 1, "");
+            GameWindow window = new GameWindow("WebPlayer", "MALE", "", 1, "", figure);
             GamePanel gp = window.getGamePanel();
             log("GamePanel live: " + gp.getWidth() + "x" + gp.getHeight());
             gp.preloadEverything(null);

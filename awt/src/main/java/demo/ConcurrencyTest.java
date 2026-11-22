@@ -89,7 +89,16 @@ public final class ConcurrencyTest {
     private static void submitRunsAndCompletes() {
         ExecutorService ex = Executors.newSingleThreadExecutor();
         Future<Integer> f = ex.submit(() -> 6 * 7);
-        check("submit(Callable) completes and get() works", f.isDone() && f.get() == 42);
+        // The task runs on a thread of the pool: not done yet, and get() waits for it.
+        boolean pending = !f.isDone();
+        Integer got = null;
+        try {
+            got = f.get();
+        } catch (Exception e) {
+            // reported by the check below
+        }
+        check("submit(Callable) runs on the pool and get() waits for it",
+                pending && f.isDone() && got != null && got == 42);
         ex.shutdown();
         check("shutdown() flags the executor", ex.isShutdown());
     }
@@ -147,24 +156,37 @@ public final class ConcurrencyTest {
     }
 
     private static void joinOnIncompleteIsLoud() {
-        CompletableFuture<String> f = new CompletableFuture<>();
-        boolean threw = false;
-        try {
-            f.join();
-        } catch (IllegalStateException e) {
-            threw = true;
-        }
-        // Better to fail loudly than to hang the page waiting for the loop we are on
-        check("join() on incomplete future throws rather than blocking", threw);
+        // A program thread waits: the result arrives from a timer, twenty milliseconds on.
+        final CompletableFuture<String> later = new CompletableFuture<>();
+        concurrent.EventLoop.delay(() -> later.complete("there"), 20);
+        check("join() waits for the result when a thread calls it", "there".equals(later.join()));
+
+        // A call of the browser's own cannot wait for the loop it is running on: it is told so,
+        // loudly, rather than hanging the page.
+        concurrent.EventLoop.defer(() -> {
+            boolean threw = false;
+            try {
+                new CompletableFuture<String>().join();
+            } catch (IllegalStateException e) {
+                threw = true;
+            }
+            check("join() on incomplete future throws rather than blocking, from a browser call", threw);
+        });
     }
 
     private static void invokeLaterOrdering() {
-        List<String> order = new ArrayList<>();
-        SwingUtilities.invokeLater(() -> order.add("later"));
+        final List<String> order = new ArrayList<>();
+        final boolean[] onDispatchThread = { false };
+        SwingUtilities.invokeLater(() -> {
+            order.add("later");
+            onDispatchThread[0] = SwingUtilities.isEventDispatchThread();
+        });
         order.add("now");
         check("invokeLater defers past the caller", order.size() == 1);
-        check("isEventDispatchThread is always true", SwingUtilities.isEventDispatchThread());
+        check("isEventDispatchThread is false off the dispatch thread", !SwingUtilities.isEventDispatchThread());
         SwingUtilities.invokeAndWait(() -> order.add("wait"));
-        check("invokeAndWait runs inline", order.contains("wait"));
+        check("invokeAndWait runs on the dispatch thread and the caller waits",
+                order.size() == 3 && order.get(1).equals("later") && order.get(2).equals("wait"));
+        check("isEventDispatchThread is true on the dispatch thread", onDispatchThread[0]);
     }
 }

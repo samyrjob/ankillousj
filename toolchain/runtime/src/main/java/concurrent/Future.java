@@ -1,21 +1,20 @@
 package concurrent;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
- * java.util.concurrent.Future.
+ * java.util.concurrent.Future, with the JDK's own signatures: code that
+ * catches what {@code get} may throw compiles here as it does there.
  *
- * IMPORTANT SEMANTIC DIFFERENCE. On the JVM {@code get()} blocks until the
- * result is ready. A browser cannot block — doing so would freeze the very
- * event loop that would produce the result. So a task submitted to an executor
- * here runs immediately and inline, and the Future it returns is already
- * complete by the time you hold it.
- *
- * That keeps {@code submit(...).get()} working, which is what most code does.
- * What it does not give you is parallelism: work is interleaved, not
- * simultaneous. Genuine parallelism needs Web Workers.
+ * <p>{@code get} waits when a program thread calls it. Called by the browser
+ * itself (a paint, an event) on a result that is not there yet, it cannot
+ * wait and says so with an IllegalStateException.
  */
 public interface Future<V> {
-    V get();
-    V get(long timeout, java.util.concurrent.TimeUnit unit);
+    V get() throws InterruptedException, ExecutionException;
+    V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
     boolean isDone();
     boolean isCancelled();
     boolean cancel(boolean mayInterruptIfRunning);

@@ -74,7 +74,7 @@ public final class Platform {
 
     @JSBody(script =
             "return typeof $rt_nativeThread === 'function' && $rt_nativeThread() !== null;")
-    private static native boolean inThread();
+    public static native boolean inThread();
 
     @org.teavm.interop.Async
     private static native Boolean awaitFrame();
@@ -99,5 +99,5 @@ public final class Platform {
     @JSBody(params = "m", script =
             "if (globalThis.__ankLog) globalThis.__ankLog(m);"
           + "else if (typeof console !== 'undefined') console.warn(m);")
-    private static native void report(String m);
+    public static native void report(String m);
 }

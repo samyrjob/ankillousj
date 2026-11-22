@@ -23,7 +23,13 @@ public class HttpClient {
     /**
      * Issues the request and waits. See the class docs: this blocks the page.
      */
+    @SuppressWarnings("unchecked")
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> handler) {
+        // A program thread waits for the answer without stopping the page. Only a call of the
+        // browser's own, which cannot wait, falls back on the request that blocks everything.
+        if (ankillousj.Platform.inThread()) {
+            return (HttpResponse<T>) sendAsync(request, (HttpResponse.BodyHandler<String>) handler).join();
+        }
         JSObject result = Native.sendSync(
                 request.method(),
                 request.uri().toString(),
