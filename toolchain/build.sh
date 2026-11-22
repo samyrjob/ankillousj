@@ -149,6 +149,17 @@ if [ -d "$HERE/patches" ]; then
   [ "$patched" -gt 0 ] && echo "   $patched patch(es) applied"
 fi
 
+# Format strings. TeaVM's formatter knows fewer conversions than the JDK's, and says so only
+# when the line runs: a %n in a line printed from the drawing left a room black. %n is
+# rewritten here, in the working copy; any other conversion the formatter does not know stops
+# the build. After the patches, which are written against the text as the program has it.
+# format-port.pl says what it reads, and how.
+if command -v perl >/dev/null 2>&1; then
+  perl "$HERE/format-port.pl" "$JAVA" || exit 1
+else
+  echo "   (no perl here: format strings are not checked)"
+fi
+
 # What the program hands to its JSON library is checked before anything is compiled: a type
 # with no reader or writer, a field its reader does not read. None of it fails at the build
 # by itself (nothing looks inside a class here): it fails in the tab, or says nothing and

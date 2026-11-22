@@ -9,7 +9,9 @@ import entity.player.SpriteCache;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * What the offline start can show of a backend's public pictures, without a
@@ -37,6 +39,51 @@ final class OfflineProbe {
         log("offline: look " + (composed ? "composed" : "NOT composed")
                 + (front == null ? "" : ", its front frame " + describe(front)));
         if (front != null) keep("look", front.source());
+    }
+
+    /**
+     * The formatter. It is TeaVM's own, not the JDK's: for the conversions the
+     * game's texts use (thousands, decimals, padding) it must print what a
+     * desktop prints, and it does not know every conversion. One the game uses
+     * it does not know: %n, which the build writes as a newline
+     * (format-port.pl). Said here: that the rewrite was done in this build, and
+     * whether this formatter has learned %n since.
+     */
+    static void formats() {
+        String[][] cases = {
+            { "1,234,567",        tried(() -> String.format(Locale.ROOT, "%,d", 1234567)) },
+            { "1,234,567.89",     tried(() -> String.format(Locale.ROOT, "%,.2f", 1234567.891)) },
+            { "1,234,568",        tried(() -> String.format(Locale.ROOT, "%,.0f", 1234567.6)) },
+            { "07:05",            tried(() -> String.format("%02d:%02d", 7, 5)) },
+            { "  7|ab         |", tried(() -> String.format("%3d|%-11s|", 7, "ab")) },
+            { "0.3 1.24 3.1416",  tried(() -> String.format(Locale.ROOT, "%.1f %.2f %.4f", 0.26, 1.239, Math.PI)) },
+            { "true null c 50%",  tried(() -> String.format("%b %s %s %d%%", true, null, 'c', 50)) },
+            { "ff FF 00042",      tried(() -> String.format("%x %X %05d", 255, 255, 42)) },
+            { "b-a-a",            tried(() -> String.format("%2$s-%1$s-%1$s", "a", "b")) },
+            // Written with %n here; the build is to have made it a newline before this was compiled.
+            { "line\n",           tried(() -> String.format("line%n")) },
+        };
+        int right = 0;
+        StringBuilder wrong = new StringBuilder();
+        for (String[] c : cases) {
+            if (c[0].equals(c[1])) right++;
+            else wrong.append(" [\"").append(c[1]).append("\" where a desktop prints \"").append(c[0]).append("\"]");
+        }
+        // Put together when the program runs, so that the build cannot rewrite it: the formatter's own answer.
+        String own = tried(() -> String.format("a%" + "n"));
+        log("offline: formats " + (wrong.length() == 0 ? "printed right (" + right + " of " + cases.length + ")"
+                        : "NOT printed right:" + wrong)
+                + "; the formatter itself " + ("a\n".equals(own) ? "knows %n now" : "has no %n (the build writes it as a newline)")
+                + "; thousands here: " + tried(() -> String.format("%,d", 1234567)));
+    }
+
+    /** What a format gives, or the name of what it threw. */
+    private static String tried(Supplier<String> format) {
+        try {
+            return format.get();
+        } catch (RuntimeException thrown) {
+            return thrown.getClass().getSimpleName() + ": " + thrown.getMessage();
+        }
     }
 
     /** Reads an item picture through the game's own loader. */

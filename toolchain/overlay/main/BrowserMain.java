@@ -168,6 +168,7 @@ public final class BrowserMain {
             // The runtime checks itself at each offline start: it costs a few milliseconds.
             OfflineProbe.pixels();
             OfflineProbe.json();
+            OfflineProbe.formats();
             String parts = sessionValue("parts");
             if (parts != null && !parts.isEmpty()) OfflineProbe.look(parts, figure);
             String picture = sessionValue("picture");

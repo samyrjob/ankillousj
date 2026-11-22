@@ -59,7 +59,12 @@ Steps 4 to 6 are where the honesty lives. Some things genuinely have no
 browser equivalent, and these folders are the explicit list of them rather
 than a pile of silent failures.
 
-`ANKILLOUSJ_PREPARE_ONLY=1 ./build.sh …` stops after step 6: the working copy
+Between steps 6 and 7 the working copy is read twice, for what compiles and
+fails later, in the tab: its format strings (`format-port.pl`, see *Format
+strings*) and what it reads and writes as JSON (`json-check.pl`, see
+`config/`).
+
+`ANKILLOUSJ_PREPARE_ONLY=1 ./build.sh …` stops after these: the working copy
 is ready to look at, or to compile by hand.
 
 ## The folders
@@ -200,6 +205,32 @@ Also handled: `java.awt.*` and `javax.swing.*` wildcards, `com.google.gson`,
 `Platform.exit`, and two calls TeaVM's own classes lack, which move to the
 runtime: `ConcurrentHashMap.newKeySet()` and `Runtime.maxMemory()`.
 
+## Format strings
+
+`String.format`, `printf` and `formatted` run on TeaVM's own formatter, which
+knows fewer conversions than the JDK's: `%b %c %d %f %h %o %s %x`, their
+capitals and `%%`, with an argument index (`%2$s`), the flags, a width and a
+precision. Not `%n`, not `%e` or `%g`, not a date (`%tY`).
+
+A conversion it does not know compiles, and throws when the line runs. Futura's
+sea printed its timing every ten seconds, from inside its drawing, with a line
+ending in `%n`: from then on every frame of a room by the sea stopped there.
+The sea was drawn, and nothing after it: a black room.
+
+So the build reads every format before compiling (`format-port.pl`):
+
+- `%n` is written as the newline it is in a browser, in the working copy;
+- any other conversion the formatter does not know stops the build, with the
+  file and the line;
+- a format known only when the program runs (`String.format(text(key), …)`)
+  cannot be read: such calls are listed, so that nobody takes them for checked.
+
+It reads the format where the JDK takes it: the first argument, the second
+after a `Locale`, the string `formatted` is called on, and what a name is
+given in the same file (`String.format(SOUND, n)`). A `%` anywhere else is
+left alone. `perl format-port.pl <sources> --list` names every format it
+reads; `--check` writes nothing.
+
 ## Waiting
 
 A desktop program waits all the time: for a page it fetches, a picture it
@@ -271,9 +302,11 @@ http://localhost:8080/#offline&parts=http://localhost:9090/parts&picture=assets/
 
 composes an avatar from those parts and reads that item picture the way a
 room reads its furniture. Every offline start also checks the runtime's pixel
-reading and the game's JSON readers and writers, and says what the rooms it
-read hold (how many with a shape, a door, a sea). The console says what came
-of each (`overlay/main/OfflineProbe.java`). `&token=anything` sends two of the
+reading, the game's JSON readers and writers and what the formatter prints
+(thousands, decimals, padding, and whether it has learned `%n`), and says
+what the rooms it read hold (how many with a shape, a door, a sea). The
+console says what came of each (`overlay/main/OfflineProbe.java`).
+`&token=anything` sends two of the
 game's requests with that token: the backend's log then shows whether a token
 leaves the tab (it names the token it rejects, with the path).
 
@@ -323,6 +356,10 @@ says how. Add it to `config/GameJsonReaders.java`.
 
 **`A PATCH DOES NOT APPLY`** — the lines a patch changes have moved on. Bring
 the patch up to the new text.
+
+**`A FORMAT CONVERSION THE BROWSER BUILD DOES NOT KNOW`** — a `%e`, a date, in
+a format string. It would compile and throw in the tab. Write it another way
+in the program, or teach `format-port.pl` to rewrite it, as it does `%n`.
 
 ## Verified
 
