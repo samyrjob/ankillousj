@@ -84,6 +84,13 @@ is ready to look at, or to compile by hand.
 None of it is on your classpath at edit time. The rewrite in step 2 points your
 imports at it.
 
+The runtime is added beside your sources, never over them: a runtime file with
+the path of one of yours stops the build (`THE RUNTIME HIDES A FILE OF THE
+PROGRAM`). It would take your file's place without a word, and your later
+changes to it would never reach the build. Futura's package `sound` has the
+name of the runtime's: that is how three of the game's own files sat in
+`runtime/` for months.
+
 ### `overlay/` — files that cannot port
 
 These **replace** files of the same path in your source. If your code changes,
@@ -100,6 +107,7 @@ these need the same change made.
 | `view/chat/FocusCoordinator.java` | one canvas, so focus is trivial |
 | `ui/LoadingDialog.java` | an HTML progress overlay |
 | `ui/agents/DocumentDropTarget.java` | a file dropped from the desktop; not wired in a page yet, so it does nothing |
+| `sound/RadioPlayer.java` | the radio. The desktop plays a station with JLayer (MP3) and JavaFX (HLS); here one audio element plays both, as browsers do by themselves |
 
 Anything else still importing `javax.swing` is **reported by the build** rather
 than crashing it.
@@ -124,9 +132,15 @@ fit is a change nobody has looked at.
 
 ### `thirdparty/` — libraries with no browser form
 
-Compile-time stand-ins for `javazoom` (MP3) and JavaFX Media. The browser
-decodes MP3 natively, so `sound.Clip` covers what these did; the stubs exist
-only so the imports resolve.
+Compile-time stand-ins for a library your program imports and a browser has no
+form of: classes with the same names that do nothing, so that the imports
+resolve.
+
+Empty today, and better so. A stand-in is silence where the library was:
+Futura's radio, written on JLayer and JavaFX, compiled against two of them
+and played nothing in a tab. It also asked the browser to download a stream
+that never ends. A replacement in `overlay/` does the job instead
+(`sound/RadioPlayer.java`).
 
 ### `config/` — your glue
 

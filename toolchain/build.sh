@@ -62,6 +62,22 @@ echo "2. rewriting JDK imports"
 bash "$HERE/../awt/tools/port-imports.sh" "$JAVA" --apply | tail -1 | sed 's/^/   /'
 
 # ── 3. the runtime and the overlay ───────────────────────────────────────────
+# The runtime is added BESIDE the program, never over it. A runtime file with the path of a
+# program file would take its place without a word, and the program's own file, with whatever
+# changed in it since, would never reach the build. (Three of Futura's sound classes sat in the
+# runtime folder for months: the game's package is named "sound", as the runtime's is.) What
+# replaces a program file goes in overlay/, where the build names it.
+hidden="$(cd "$HERE/runtime/src/main/java" && find . -name '*.java' | sed 's|^\./||' | while IFS= read -r f; do
+  if [ -f "$JAVA/$f" ]; then echo "     $f"; fi
+done)"
+if [ -n "$hidden" ]; then
+  echo
+  echo "   THE RUNTIME HIDES A FILE OF THE PROGRAM:"
+  printf '%s\n' "$hidden"
+  echo "   The program's own file would be dropped. What replaces a program file belongs in"
+  echo "   overlay/; anything else is to be taken out of runtime/."
+  exit 1
+fi
 cp -r "$HERE/runtime/src/main/java"/* "$JAVA"/
 cp -r "$HERE/runtime/src/main/resources"/* "$RES"/
 echo "3. added the AnkillousJ runtime"
@@ -95,8 +111,16 @@ if [ -n "$remaining" ]; then
 fi
 
 # ── 4. stand-ins for libraries with no browser form ──────────────────────────
-cp -r "$HERE/thirdparty"/* "$JAVA"/ 2>/dev/null || true
-echo "4. added third-party stand-ins"
+standins=0
+if [ -d "$HERE/thirdparty" ]; then
+  standins=$(find "$HERE/thirdparty" -name '*.java' | wc -l | tr -d ' ')
+fi
+if [ "$standins" -gt 0 ]; then
+  cp -r "$HERE/thirdparty"/* "$JAVA"/
+  echo "4. added third-party stand-ins ($standins files)"
+else
+  echo "4. no third-party stand-in needed"
+fi
 
 # Project glue, if the developer has customised it.
 if [ -d "$HERE/config" ]; then
