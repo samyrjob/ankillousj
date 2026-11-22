@@ -231,6 +231,22 @@ given in the same file (`String.format(SOUND, n)`). A `%` anywhere else is
 left alone. `perl format-port.pl <sources> --list` names every format it
 reads; `--check` writes nothing.
 
+## Esc in fullscreen
+
+A browser keeps Esc for itself in fullscreen: it leaves, and the page is never
+told. Futura takes Esc to get out of a car, so the first Esc left fullscreen
+and the car drove on.
+
+Where the browser has the Keyboard Lock API (Chrome, Edge), the runtime asks
+for Esc while the page is in fullscreen (`awt/Component`): a press reaches the
+program like any other key. A program that keeps it (a `KeyEventDispatcher`
+that answers true, a listener that consumes the event) stays in fullscreen.
+One that does not, leaves, as the browser would have. An Esc pressed anywhere
+but on the canvas (a text field) leaves too, and holding Esc always leaves:
+that is the browser's own way out, and nothing here can take it away.
+
+A browser without the API (Firefox, Safari) is as before: Esc leaves at once.
+
 ## Waiting
 
 A desktop program waits all the time: for a page it fetches, a picture it

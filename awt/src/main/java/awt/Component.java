@@ -416,6 +416,7 @@ public class Component {
     private void bindKeyboard() {
         // The canvas needs to be focusable to receive key events at all.
         makeFocusable(canvas);
+        escapeIsTheProgramsInFullscreen(canvas);
 
         // As AWT: each event goes to the KeyEventDispatchers first, and to the
         // listeners only when none of them kept it. A character key gives two
@@ -433,17 +434,25 @@ public class Component {
             EventQueue.invokeLater(() -> {
                 KeyboardFocusManager focus = KeyboardFocusManager.getCurrentKeyboardFocusManager();
                 KeyEvent pressedEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, code, c, shift, ctrl, alt, meta);
-                if (!focus.dispatchToDispatchers(pressedEvent)) {
+                boolean kept = focus.dispatchToDispatchers(pressedEvent);
+                if (!kept) {
                     for (KeyListener l : new ArrayList<>(keyListeners)) l.keyPressed(pressedEvent);
+                    kept = pressedEvent.isConsumed();
                 }
                 // AWT fires keyTyped only for characters, and never for a Ctrl or Meta chord.
                 if (c != KeyEvent.CHAR_UNDEFINED && !chord) {
                     KeyEvent typedEvent = new KeyEvent(this, KeyEvent.KEY_TYPED, KeyEvent.VK_UNDEFINED, c,
                             shift, ctrl, alt, meta);
-                    if (!focus.dispatchToDispatchers(typedEvent)) {
+                    if (focus.dispatchToDispatchers(typedEvent)) {
+                        kept = true;
+                    } else {
                         for (KeyListener l : new ArrayList<>(keyListeners)) l.keyTyped(typedEvent);
+                        kept = kept || typedEvent.isConsumed();
                     }
                 }
+                // Esc in fullscreen is the program's first (escapeIsTheProgramsInFullscreen). A program
+                // that does not keep it leaves fullscreen, as the browser would have done by itself.
+                if (code == KeyEvent.VK_ESCAPE && !kept) leaveFullscreen();
             });
         });
         canvas.addEventListener("keyup", (EventListener<KeyboardEvent>) e -> {
@@ -530,6 +539,50 @@ public class Component {
         if (chord) return false;
         return awtCode != KeyEvent.VK_F5 && awtCode != KeyEvent.VK_F12;
     }
+
+    /**
+     * In fullscreen, Esc goes to the program before it leaves fullscreen.
+     *
+     * A browser keeps Esc for itself in fullscreen: it leaves, and the page is not told. So the first
+     * Esc of somebody driving a car left fullscreen and the car drove on. Where the browser has the
+     * Keyboard Lock API (Chrome, Edge), the page asks for Esc while it is in fullscreen: a press then
+     * reaches the program like any key, and holding Esc still leaves, whatever the program does. What
+     * the program does not keep leaves fullscreen (see the keydown above), and so does an Esc pressed
+     * anywhere but on the canvas, a text field for one: nobody is left in fullscreen with a dead key.
+     * A browser without the API is as before: Esc leaves at once.
+     */
+    @JSBody(params = "canvas", script =
+            "if (typeof document === 'undefined' || document.__ankEscape) return;"
+          + "document.__ankEscape = true;"
+          + "var full = function() { return document.fullscreenElement || document.webkitFullscreenElement; };"
+          + "var hold = function() {"
+          + "  var keyboard = navigator.keyboard;"
+          + "  if (!keyboard || !keyboard.lock) return;"
+          + "  try {"
+          + "    if (full()) { var p = keyboard.lock(['Escape']); if (p && p.catch) p.catch(function() { }); }"
+          + "    else if (keyboard.unlock) keyboard.unlock();"
+          + "  } catch (e) { }"
+          + "};"
+          + "document.addEventListener('fullscreenchange', hold);"
+          + "hold();"
+          + "document.addEventListener('keydown', function(e) {"
+          + "  if (e.key !== 'Escape' || e.target === canvas || !full()) return;"
+          + "  try {"
+          + "    var leave = document.exitFullscreen || document.webkitExitFullscreen;"
+          + "    if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"
+          + "  } catch (x) { }"
+          + "});")
+    private static native void escapeIsTheProgramsInFullscreen(HTMLCanvasElement canvas);
+
+    /** Leaves fullscreen, if the page is in it. */
+    @JSBody(script =
+            "try {"
+          + "  if (typeof document === 'undefined') return;"
+          + "  if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;"
+          + "  var leave = document.exitFullscreen || document.webkitExitFullscreen;"
+          + "  if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"
+          + "} catch (e) { }")
+    private static native void leaveFullscreen();
 
     @JSBody(params = "e", script = "return !!(e.getModifierState && e.getModifierState('AltGraph'));")
     private static native boolean isAltGraph(KeyboardEvent e);
