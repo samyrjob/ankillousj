@@ -434,25 +434,17 @@ public class Component {
             EventQueue.invokeLater(() -> {
                 KeyboardFocusManager focus = KeyboardFocusManager.getCurrentKeyboardFocusManager();
                 KeyEvent pressedEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, code, c, shift, ctrl, alt, meta);
-                boolean kept = focus.dispatchToDispatchers(pressedEvent);
-                if (!kept) {
+                if (!focus.dispatchToDispatchers(pressedEvent)) {
                     for (KeyListener l : new ArrayList<>(keyListeners)) l.keyPressed(pressedEvent);
-                    kept = pressedEvent.isConsumed();
                 }
                 // AWT fires keyTyped only for characters, and never for a Ctrl or Meta chord.
                 if (c != KeyEvent.CHAR_UNDEFINED && !chord) {
                     KeyEvent typedEvent = new KeyEvent(this, KeyEvent.KEY_TYPED, KeyEvent.VK_UNDEFINED, c,
                             shift, ctrl, alt, meta);
-                    if (focus.dispatchToDispatchers(typedEvent)) {
-                        kept = true;
-                    } else {
+                    if (!focus.dispatchToDispatchers(typedEvent)) {
                         for (KeyListener l : new ArrayList<>(keyListeners)) l.keyTyped(typedEvent);
-                        kept = kept || typedEvent.isConsumed();
                     }
                 }
-                // Esc in fullscreen is the program's first (escapeIsTheProgramsInFullscreen). A program
-                // that does not keep it leaves fullscreen, as the browser would have done by itself.
-                if (code == KeyEvent.VK_ESCAPE && !kept) leaveFullscreen();
             });
         });
         canvas.addEventListener("keyup", (EventListener<KeyboardEvent>) e -> {
@@ -541,14 +533,15 @@ public class Component {
     }
 
     /**
-     * In fullscreen, Esc goes to the program before it leaves fullscreen.
+     * In fullscreen, Esc is the program's key, as it is on a desktop.
      *
      * A browser keeps Esc for itself in fullscreen: it leaves, and the page is not told. So the first
      * Esc of somebody driving a car left fullscreen and the car drove on. Where the browser has the
      * Keyboard Lock API (Chrome, Edge), the page asks for Esc while it is in fullscreen: a press then
-     * reaches the program like any key, and holding Esc still leaves, whatever the program does. What
-     * the program does not keep leaves fullscreen (see the keydown above), and so does an Esc pressed
-     * anywhere but on the canvas, a text field for one: nobody is left in fullscreen with a dead key.
+     * reaches the program like any other key, and the program says whether that leaves fullscreen
+     * (Futura: main.FullscreenEscape, the same class as on the desktop). Holding Esc still leaves,
+     * whatever the program does: that is the browser's own way out. An Esc pressed anywhere but on
+     * the canvas, in a text field for one, never reaches the program, so it leaves fullscreen here.
      * A browser without the API is as before: Esc leaves at once.
      */
     @JSBody(params = "canvas", script =
@@ -573,16 +566,6 @@ public class Component {
           + "  } catch (x) { }"
           + "});")
     private static native void escapeIsTheProgramsInFullscreen(HTMLCanvasElement canvas);
-
-    /** Leaves fullscreen, if the page is in it. */
-    @JSBody(script =
-            "try {"
-          + "  if (typeof document === 'undefined') return;"
-          + "  if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;"
-          + "  var leave = document.exitFullscreen || document.webkitExitFullscreen;"
-          + "  if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"
-          + "} catch (e) { }")
-    private static native void leaveFullscreen();
 
     @JSBody(params = "e", script = "return !!(e.getModifierState && e.getModifierState('AltGraph'));")
     private static native boolean isAltGraph(KeyboardEvent e);
