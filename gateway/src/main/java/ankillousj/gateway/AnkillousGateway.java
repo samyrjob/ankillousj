@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Bridges browser WebSocket connections to a plain TCP server.
@@ -55,7 +60,37 @@ import java.util.concurrent.ExecutorService;
  *   java ankillousj.gateway.AnkillousGateway --listen 5556 --target localhost:5555
  * </pre>
  *
- * No dependencies: RFC 6455 handshake and framing are implemented here, and
+ * <ul>
+ *   <li>{@code --bind HOST} — the address to listen on. Default: every
+ *       interface.</li>
+ *   <li>{@code --listen PORT} — the WebSocket port. Default 5556.</li>
+ *   <li>{@code --target HOST:PORT} — the TCP server. Default
+ *       {@code localhost:5555}.</li>
+ *   <li>{@code --ping SECONDS} — how often each browser is sent a WebSocket
+ *       ping. Default 30; 0 turns it off.</li>
+ *   <li>{@code --verbose} — one line per connection.</li>
+ * </ul>
+ *
+ * <h2>Behind a proxy</h2>
+ *
+ * In production the browser speaks {@code wss://} to a TLS proxy (nginx, often
+ * with a CDN such as Cloudflare in front), and the proxy forwards to the
+ * gateway on the same machine:
+ *
+ * <pre>
+ *   java -jar ankillous-gateway.jar --bind 127.0.0.1 --listen 5556 --target 127.0.0.1:5555 --ping 30
+ * </pre>
+ *
+ * {@code --bind 127.0.0.1} is what keeps the plain, unencrypted {@code ws://}
+ * port off the internet: only the proxy, on the same machine, can reach it.
+ * The ping is there because proxies close a WebSocket that carries nothing for
+ * a while — Cloudflare after about 100 seconds, nginx after 60 by default — and
+ * a connection where nothing happens can easily be silent that long. A
+ * ping frame is traffic, and the browser answers it with a pong on its own, so
+ * both directions stay awake. The proxy may forward any path (such as
+ * {@code /gateway}); the handshake accepts every path.
+ *
+ * <p>No dependencies: RFC 6455 handshake and framing are implemented here, and
  * the only JDK crypto used is the SHA-1 the handshake mandates.
  */
 public final class AnkillousGateway {
@@ -63,49 +98,165 @@ public final class AnkillousGateway {
     /** RFC 6455 §1.3 — the fixed GUID mixed into the handshake accept value. */
     private static final String WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
+    /** Under Cloudflare's ~100 s and nginx's default 60 s idle limits, with room to spare. */
+    public static final int DEFAULT_PING_SECONDS = 30;
+
+    /** What {@code new ServerSocket(port)} used: only the address is new. */
+    private static final int BACKLOG = 50;
+
+    static final String USAGE =
+              "usage: AnkillousGateway [--bind HOST] [--listen PORT] [--target HOST:PORT]"
+            + " [--ping SECONDS] [--verbose]\n"
+            + "  --bind HOST         address to listen on (default: every interface)\n"
+            + "  --listen PORT       WebSocket port (default 5556)\n"
+            + "  --target HOST:PORT  the TCP server (default localhost:5555)\n"
+            + "  --ping SECONDS      ping each browser this often, 0 = off (default "
+            + DEFAULT_PING_SECONDS + ")\n"
+            + "  --verbose           one line per connection";
+
+    /** null listens on every interface, as the gateway always did. */
+    private final String bindHost;
     private final int listenPort;
     private final String targetHost;
     private final int targetPort;
+    private final int pingSeconds;
     private final boolean verbose;
     private final ExecutorService pool = Executors.newCachedThreadPool();
+    /** One thread pings every connection; null when pings are off. */
+    private final ScheduledThreadPoolExecutor pinger;
 
+    /** Every interface, and pings every {@value #DEFAULT_PING_SECONDS} s — the command line's defaults. */
     public AnkillousGateway(int listenPort, String targetHost, int targetPort, boolean verbose) {
+        this(null, listenPort, targetHost, targetPort, DEFAULT_PING_SECONDS, verbose);
+    }
+
+    /**
+     * @param bindHost    the address to listen on, or null for every interface
+     * @param pingSeconds how often each browser is pinged; 0 never pings
+     */
+    public AnkillousGateway(String bindHost, int listenPort, String targetHost, int targetPort,
+                            int pingSeconds, boolean verbose) {
+        if (pingSeconds < 0) {
+            throw new IllegalArgumentException("pingSeconds is 0 (off) or more, not " + pingSeconds);
+        }
+        this.bindHost = bindHost;
         this.listenPort = listenPort;
         this.targetHost = targetHost;
         this.targetPort = targetPort;
+        this.pingSeconds = pingSeconds;
         this.verbose = verbose;
+        if (pingSeconds > 0) {
+            ScheduledThreadPoolExecutor s = new ScheduledThreadPoolExecutor(1, r -> {
+                Thread t = new Thread(r, "gateway-ping");
+                t.setDaemon(true);
+                return t;
+            });
+            // A closed connection's task leaves the queue at once, instead of
+            // sitting there until its next turn comes round.
+            s.setRemoveOnCancelPolicy(true);
+            this.pinger = s;
+        } else {
+            this.pinger = null;
+        }
     }
 
     public static void main(String[] args) throws IOException {
-        int listen = 5556;
-        String host = "localhost";
-        int port = 5555;
-        boolean verbose = false;
+        Options o;
+        try {
+            o = Options.parse(args);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            System.err.println(USAGE);
+            System.exit(1);
+            return;
+        }
+        new AnkillousGateway(o.bindHost, o.listenPort, o.targetHost, o.targetPort,
+                o.pingSeconds, o.verbose).run();
+    }
 
-        for (int i = 0; i < args.length; i++) {
-            switch (args[i]) {
-                case "--listen": listen = Integer.parseInt(args[++i]); break;
-                case "--target": {
-                    String[] parts = args[++i].split(":");
-                    host = parts[0];
-                    port = Integer.parseInt(parts[1]);
-                    break;
+    /**
+     * What the command line asked for. Parsed apart from {@link AnkillousGateway#main} so it
+     * can be checked without opening a socket.
+     */
+    public static final class Options {
+        /** null = every interface. */
+        public String bindHost = null;
+        public int listenPort = 5556;
+        public String targetHost = "localhost";
+        public int targetPort = 5555;
+        public int pingSeconds = DEFAULT_PING_SECONDS;
+        public boolean verbose = false;
+
+        private Options() { }
+
+        /** @throws IllegalArgumentException saying what is wrong with the command line */
+        public static Options parse(String[] args) {
+            Options o = new Options();
+            for (int i = 0; i < args.length; i++) {
+                String opt = args[i];
+                switch (opt) {
+                    case "--bind": o.bindHost = value(args, ++i, opt); break;
+                    case "--listen": o.listenPort = port(value(args, ++i, opt), opt); break;
+                    case "--target": {
+                        String t = value(args, ++i, opt);
+                        // the last colon, so an IPv6 literal such as [::1]:5555 still splits right
+                        int colon = t.lastIndexOf(':');
+                        if (colon <= 0) {
+                            throw new IllegalArgumentException("--target is HOST:PORT, not " + t);
+                        }
+                        o.targetHost = t.substring(0, colon);
+                        o.targetPort = port(t.substring(colon + 1), opt);
+                        break;
+                    }
+                    case "--ping": {
+                        int s = number(value(args, ++i, opt), opt);
+                        if (s < 0) {
+                            throw new IllegalArgumentException("--ping is 0 (off) or more seconds, not " + s);
+                        }
+                        o.pingSeconds = s;
+                        break;
+                    }
+                    case "--verbose": o.verbose = true; break;
+                    default: throw new IllegalArgumentException("unknown option: " + opt);
                 }
-                case "--verbose": verbose = true; break;
-                default:
-                    System.err.println("usage: AnkillousGateway [--listen PORT] "
-                            + "[--target HOST:PORT] [--verbose]");
-                    System.exit(1);
+            }
+            return o;
+        }
+
+        private static String value(String[] args, int i, String opt) {
+            if (i >= args.length || args[i].isEmpty()) {
+                throw new IllegalArgumentException(opt + " needs a value");
+            }
+            return args[i];
+        }
+
+        private static int number(String v, String opt) {
+            try {
+                return Integer.parseInt(v);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(opt + " takes a whole number, not " + v);
             }
         }
-        new AnkillousGateway(listen, host, port, verbose).run();
+
+        private static int port(String v, String opt) {
+            int p = number(v, opt);
+            if (p < 1 || p > 65535) {
+                throw new IllegalArgumentException(opt + ": " + p + " is not a port (1-65535)");
+            }
+            return p;
+        }
     }
 
     public void run() throws IOException {
-        ServerSocket server = new ServerSocket(listenPort);
+        // InetAddress.getByName(null) would mean loopback, not "every
+        // interface" — so with no --bind, null goes to ServerSocket untouched.
+        InetAddress address = bindHost == null ? null : InetAddress.getByName(bindHost);
+        ServerSocket server = new ServerSocket(listenPort, BACKLOG, address);
         System.out.println("AnkillousJ gateway");
-        System.out.println("  websocket  ws://localhost:" + listenPort);
+        System.out.println("  websocket  ws://" + (bindHost == null ? "localhost" : bindHost) + ":" + listenPort
+                + (bindHost == null ? "   (every interface)" : "   (this address only)"));
         System.out.println("  forwarding to  " + targetHost + ":" + targetPort);
+        System.out.println("  ping  " + (pingSeconds > 0 ? "every " + pingSeconds + " s" : "off"));
         System.out.println("  the game server is untouched and does not know this exists");
 
         while (true) {
@@ -116,6 +267,7 @@ public final class AnkillousGateway {
 
     private void handle(Socket browser) {
         Socket game = null;
+        ScheduledFuture<?> pings = null;
         try {
             browser.setTcpNoDelay(true);
             InputStream bIn = browser.getInputStream();
@@ -166,6 +318,12 @@ public final class AnkillousGateway {
             pump.setDaemon(true);
             pump.start();
 
+            // keep-alive, so a proxy in between does not close a quiet connection
+            if (pinger != null) {
+                pings = pinger.scheduleAtFixedRate(keepAlive(bOut, browser, g),
+                        pingSeconds, pingSeconds, TimeUnit.SECONDS);
+            }
+
             // browser -> server, on this thread
             String message;
             while ((message = readText(bIn)) != null) {
@@ -175,9 +333,36 @@ public final class AnkillousGateway {
         } catch (IOException e) {
             if (verbose) System.out.println("connection ended: " + e.getMessage());
         } finally {
+            if (pings != null) pings.cancel(false);
             closeQuietly(browser);
             closeQuietly(game);
         }
+    }
+
+    /**
+     * One connection's ping task. The scheduler thread is shared by every
+     * connection, so it never writes itself: a browser that stopped reading
+     * would block that write, and every other connection's ping would wait
+     * behind it. The write goes to the pool instead, and a connection whose
+     * last ping is still waiting is not sent a second one.
+     */
+    private Runnable keepAlive(OutputStream bOut, Socket browser, Socket game) {
+        AtomicBoolean waiting = new AtomicBoolean();
+        return () -> {
+            if (!waiting.compareAndSet(false, true)) return;
+            pool.execute(() -> {
+                try {
+                    sendPing(bOut);
+                } catch (IOException e) {
+                    // As with a failed text write: the connection is over. Closing
+                    // the browser socket ends handle(), which cancels this task.
+                    closeQuietly(browser);
+                    closeQuietly(game);
+                } finally {
+                    waiting.set(false);
+                }
+            });
+        };
     }
 
     private static void closeQuietly(Socket s) {
@@ -215,6 +400,8 @@ public final class AnkillousGateway {
             }
             if (lines.isEmpty()) return null;
 
+            // Every path is accepted and none is checked: a proxy forwards its
+            // own location (/gateway, say), and the path means nothing here.
             String[] request = lines.get(0).split(" ");
             if (request.length >= 2) {
                 String target = request[1];
@@ -344,6 +531,20 @@ public final class AnkillousGateway {
             }
             // A server must not mask (RFC 6455 §5.1)
             out.write(payload);
+            out.flush();
+        }
+    }
+
+    /**
+     * A ping with no payload. The browser answers with a pong by itself (RFC
+     * 6455 §5.5.2), which {@link #readText} skips; what matters is only that
+     * bytes cross every proxy in between. Same lock as {@link #sendText}, so a
+     * ping never lands inside a text frame.
+     */
+    public static void sendPing(OutputStream out) throws IOException {
+        synchronized (out) {
+            out.write(0x89);                             // FIN + ping
+            out.write(0);                                // unmasked, no payload
             out.flush();
         }
     }

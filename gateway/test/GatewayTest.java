@@ -39,9 +39,7 @@ public class GatewayTest {
         }, "fake-game-server").start();
 
         // --- the gateway ---
-        ServerSocket probe = new ServerSocket(0);
-        int gwPort = probe.getLocalPort();
-        probe.close();
+        int gwPort = freePort();
         AnkillousGateway gw = new AnkillousGateway(gwPort, "localhost", gamePort, false);
         new Thread(() -> { try { gw.run(); } catch (IOException ignored) { } }, "gateway").start();
         Thread.sleep(300);
@@ -52,13 +50,7 @@ public class GatewayTest {
         InputStream in = ws.getInputStream();
 
         String key = Base64.getEncoder().encodeToString("0123456789abcdef".getBytes());
-        out.write(("GET /game?X-Game-Version=1.4.2 HTTP/1.1\r\n"
-                 + "Host: localhost\r\n"
-                 + "Upgrade: websocket\r\n"
-                 + "Connection: Upgrade\r\n"
-                 + "Sec-WebSocket-Key: " + key + "\r\n"
-                 + "Sec-WebSocket-Version: 13\r\n\r\n").getBytes());
-        out.flush();
+        upgrade(out, "/game?X-Game-Version=1.4.2", key);
 
         String resp = readHeaders(in);
         check("handshake returns 101", resp.startsWith("HTTP/1.1 101"));
@@ -100,8 +92,80 @@ public class GatewayTest {
             "echo:chat caf\u00e9 \u2014 \u4f60\u597d".equals(AnkillousGateway.readText(in)));
 
         ws.close();
+
+        // --- the keep-alive, behind a proxy: --bind 127.0.0.1, path /gateway, --ping 1 ---
+        // A TCP server that accepts nothing and says nothing: the connection
+        // still opens (the backlog takes it), and no text frame can arrive,
+        // so the first thing the browser gets has to be the ping.
+        ServerSocket silent = new ServerSocket(0);
+        int pgPort = freePort();
+        AnkillousGateway pinging = new AnkillousGateway("127.0.0.1", pgPort,
+                "localhost", silent.getLocalPort(), 1, false);
+        new Thread(() -> { try { pinging.run(); } catch (IOException ignored) { } }, "gateway-ping-test").start();
+        Thread.sleep(300);
+
+        Socket idle = new Socket("127.0.0.1", pgPort);
+        idle.setSoTimeout(5000);
+        upgrade(idle.getOutputStream(), "/gateway", key);
+        InputStream idleIn = idle.getInputStream();
+        check("handshake accepts the path a proxy forwards (/gateway)",
+            readHeaders(idleIn).startsWith("HTTP/1.1 101"));
+        boolean pinged;
+        try {
+            pinged = idleIn.read() == 0x89 && idleIn.read() == 0x00;
+        } catch (SocketTimeoutException e) {
+            pinged = false;
+        }
+        check("a quiet browser is sent a ping frame (0x89, unmasked, empty)", pinged);
+        idle.close();
+
+        // --- the command line ---
+        AnkillousGateway.Options d = AnkillousGateway.Options.parse(new String[0]);
+        check("defaults: every interface, 5556 -> localhost:5555, ping 30",
+            d.bindHost == null && d.listenPort == 5556 && "localhost".equals(d.targetHost)
+                && d.targetPort == 5555 && d.pingSeconds == 30 && !d.verbose);
+
+        AnkillousGateway.Options p = AnkillousGateway.Options.parse(new String[] {
+            "--bind", "127.0.0.1", "--listen", "5556", "--target", "127.0.0.1:5555", "--ping", "30" });
+        check("the production command line parses",
+            "127.0.0.1".equals(p.bindHost) && p.listenPort == 5556
+                && "127.0.0.1".equals(p.targetHost) && p.targetPort == 5555 && p.pingSeconds == 30);
+
+        check("--ping 0 turns the keep-alive off",
+            AnkillousGateway.Options.parse(new String[] { "--ping", "0" }).pingSeconds == 0);
+        check("a negative --ping is refused", refused("--ping", "-1"));
+        check("an option without its value is refused", refused("--bind"));
+        check("--target without a port is refused", refused("--target", "localhost"));
+        check("an unknown option is refused", refused("--port", "5556"));
+
         System.out.println("\n" + pass + " passed, " + fail + " failed");
         System.exit(fail == 0 ? 0 : 1);
+    }
+
+    static boolean refused(String... args) {
+        try {
+            AnkillousGateway.Options.parse(args);
+            return false;
+        } catch (IllegalArgumentException e) {
+            return true;
+        }
+    }
+
+    static int freePort() throws IOException {
+        try (ServerSocket probe = new ServerSocket(0)) {
+            return probe.getLocalPort();
+        }
+    }
+
+    /** The upgrade request a browser sends, to whatever path it was given. */
+    static void upgrade(OutputStream out, String target, String key) throws IOException {
+        out.write(("GET " + target + " HTTP/1.1\r\n"
+                 + "Host: localhost\r\n"
+                 + "Upgrade: websocket\r\n"
+                 + "Connection: Upgrade\r\n"
+                 + "Sec-WebSocket-Key: " + key + "\r\n"
+                 + "Sec-WebSocket-Version: 13\r\n\r\n").getBytes());
+        out.flush();
     }
 
     static String readHeaders(InputStream in) throws IOException {
