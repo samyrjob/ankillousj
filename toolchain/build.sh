@@ -19,6 +19,7 @@
 #   thirdparty/         compile-time stand-ins for libraries with no browser form
 #   patches/            unified diffs against the ported sources, applied exactly
 #   json-not-read.txt   what json-check.pl is to leave alone (one name a line)
+#   regex-ok.txt        the regexes regex-check.pl lets through, each with the reason
 #   page/               copied as it is into <output-dir>/web/, beside the JS
 #   ankillousj.conf     key=value lines: main (the main class), js (the JS file)
 #
@@ -58,7 +59,7 @@ if [ "${1:-}" = --fingerprint ]; then
   fi
   # A toolchain with a piece missing has no fingerprint: a hash of what is left would look
   # like a real one.
-  for f in runtime ../awt/tools build.sh format-port.pl json-check.pl pom.xml; do
+  for f in runtime ../awt/tools build.sh format-port.pl json-check.pl regex-check.pl pom.xml; do
     if [ ! -e "$HERE/$f" ]; then
       echo "the toolchain is incomplete, no $HERE/$f" >&2
       exit 1
@@ -69,7 +70,7 @@ if [ "${1:-}" = --fingerprint ]; then
       echo "$d"
       (cd "$HERE/$d" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 -r sha1sum)
     done
-    (cd "$HERE" && sha1sum build.sh format-port.pl json-check.pl pom.xml)
+    (cd "$HERE" && sha1sum build.sh format-port.pl json-check.pl regex-check.pl pom.xml)
   } | sha1sum | cut -d' ' -f1
   exit 0
 fi
@@ -138,6 +139,7 @@ OVERLAY="$PROJECT/overlay"
 THIRDPARTY="$PROJECT/thirdparty"
 PATCHES="$PROJECT/patches"
 NOT_READ="$PROJECT/json-not-read.txt"
+REGEX_OK="$PROJECT/regex-ok.txt"
 PAGE="$PROJECT/page"
 
 # Both go into pom.xml as they are, and the JS name becomes a file name: nothing else gets
@@ -288,6 +290,21 @@ if command -v perl >/dev/null 2>&1; then
   perl "$HERE/json-check.pl" "$JAVA" "$NOT_READ" || exit 1
 else
   echo "   (no perl here: what is read and written as JSON is not checked)"
+fi
+
+# Regexes the browser matches by recursion: a group, or a class such as [^"], repeated by * or +
+# takes one level of the stack per repetition in TeaVM's java.util.regex, and a long text
+# overflows it (Futura's plafonds were missing for one room: a 2,498-character text read with
+# "([^"]*)"). The program's own files are read, not the working copy: the runtime is not the
+# program's, and the import rewrite leaves string literals alone. The overlay comes last, as it
+# is copied last. A project with no regex-ok.txt exempts nothing. regex-check.pl says what it
+# looks for, and how.
+if command -v perl >/dev/null 2>&1; then
+  REGEX_ROOTS="$SRC"
+  if [ -d "$OVERLAY" ]; then REGEX_ROOTS="$REGEX_ROOTS,$OVERLAY"; fi
+  perl "$HERE/regex-check.pl" "$REGEX_ROOTS" "$REGEX_OK" || exit 1
+else
+  echo "   (no perl here: regexes the browser matches by recursion are not looked for)"
 fi
 
 # The main class and the JS file are pom.xml properties: they are written into the working

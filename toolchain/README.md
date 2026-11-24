@@ -56,10 +56,11 @@ Steps 4 to 6 are where the honesty lives. Some things genuinely have no
 browser equivalent, and these folders are the explicit list of them rather
 than a pile of silent failures.
 
-Between steps 6 and 7 the working copy is read twice, for what compiles and
+Between steps 6 and 7 the program is read three times, for what compiles and
 fails later, in the tab: its format strings (`format-port.pl`, see *Format
-strings*) and what it reads and writes as JSON (`json-check.pl`, see
-*JSON readers* below).
+strings*), what it reads and writes as JSON (`json-check.pl`, see *JSON
+readers* below), and its regexes (`regex-check.pl`, see *Regular
+expressions*).
 
 `ANKILLOUSJ_PREPARE_ONLY=1 ./build.sh …` stops after these: the working copy
 is ready to look at, or to compile by hand.
@@ -78,6 +79,7 @@ file of any application.
   patches/            a few lines of one file, applied exactly
   thirdparty/         compile-time stand-ins
   json-not-read.txt   what the JSON check leaves alone
+  regex-ok.txt        the regexes the regex check lets through, each with the reason
   page/               copied as it is into web/: index.html, anything it loads
 ```
 
@@ -104,7 +106,7 @@ The main class and the JS name reach TeaVM as two properties of `pom.xml`
 <output-dir>\web` serves any project's build.
 
 `./build.sh --fingerprint` prints one sha1 of the toolchain itself (`runtime/`,
-the import rewrite, `build.sh`, the two checks, `pom.xml`) and nothing else. A
+the import rewrite, `build.sh`, the three checks, `pom.xml`) and nothing else. A
 project that rebuilds only when something changed adds it to what it hashes:
 it then knows the toolchain changed without knowing its insides.
 
@@ -220,6 +222,12 @@ A type that keeps its fields private cannot be filled from outside. A patch in
 `patches/` opens it in the working copy (`private` to `public`, nothing more)
 and its reader stays with the others.
 
+### `regex-ok.txt` — regexes that only read short text
+
+The regexes the browser matches by recursion that are let through, because
+what they read is always short: one a line, with the reason. See *Regular
+expressions*.
+
 ### `page/` — the window
 
 Copied as it is into `web/`, beside the compiled JavaScript. See *The page*.
@@ -280,6 +288,63 @@ after a `Locale`, the string `formatted` is called on, and what a name is
 given in the same file (`String.format(SOUND, n)`). A `%` anywhere else is
 left alone. `perl format-port.pl <sources> --list` names every format it
 reads; `--check` writes nothing.
+
+## Regular expressions
+
+`java.util.regex` in a browser is TeaVM's (0.15, a port of Apache Harmony's).
+Most repetitions run in a loop, as in the JDK. But a quantifier put on a term
+that is not a *leaf* is matched by recursion, one level of the browser's stack
+per repetition: a long text overflows it, and the call throws `RangeError:
+Maximum call stack size exceeded` where the desktop answers at once. Futura's
+plafonds were missing in the browser for one room: its answer held a "tiles"
+text of 2,498 characters, read with `"tiles":"([^"]*)"`.
+
+The rules, as TeaVM builds a pattern:
+
+- **repeated**: `*`, `+`, `{n,}`, and `{n,m}` or `{n}` above 64, reluctant
+  (`*?`) and possessive (`*+`) alike. `?` repeats at most once: always safe.
+- **not a leaf**: any group (`(…)`, `(?:…)`, `(?<name>…)`, the lookarounds), a
+  back reference, a class that may hold a character beyond the BMP (any
+  negated class `[^…]`, or one holding `\p{…}` `\P{…}` `\D` `\W` `\S` `\H` `\V`),
+  and those predefined classes on their own.
+- **a leaf**: a literal, a positive class of BMP characters (`[a-z0-9"]`),
+  `\d` `\w` `\s`, and `.`.
+
+So `"([^"]*)"` is recursive and `"(.*?)"` is not; `\S+` is, `[^\s]+` is too,
+`[a-z0-9_]+` is not.
+
+The build reads the program's own files before compiling (`regex-check.pl`):
+the source roots and the project's `overlay/` (an overlay file is read in place
+of the program file it replaces; the runtime is not the program's, and the
+patches are not read). It finds the regex of every `Pattern.compile`,
+`Pattern.matches`, and String's `matches`, `replaceAll`, `replaceFirst` and
+`split`, written as a string, as strings joined with `+` (what is not a string
+counts as plain text), or as a final `String` named in the same file. A
+recursive regex stops the build (`REGEX THE BROWSER MATCHES RECURSIVELY`), with
+the file, the line, the part repeated and the line to exempt it. A
+`Pattern.compile` whose regex is only known when the program runs is listed,
+so that nobody takes it for checked.
+
+The fix is to read the text another way: a JSON answer with its tree
+(`JsonParser.parseString`), a list with `split`, or a leaf where a negated class
+was. When what a regex reads is always short (one HTML tag, one JSON object of
+a few fields), it is named in the project's `regex-ok.txt`, one a line:
+
+```
+# <file under the source root> | <the string as written in the source, without its quotes> | <why its input is short>
+view/friend/FriendJoin.java | <[^>]*> | the regex only ever reads a chat line of at most 150 characters
+```
+
+The file may also be given by its name alone. For a regex made of several
+strings, the string named is the one holding the repeated part (or all of them
+written one after the other). The reason is what follows the last `|`, so it
+holds none. An exemption that no longer matches any recursive regex is
+reported, and stops nothing.
+
+```bash
+perl regex-check.pl --list <root>[,<root>...] [regex-ok.txt]   # every regex found, and what the browser does with it
+perl regex-check.pl --self-test                                # the rules on a table of patterns, PASS or FAIL each
+```
 
 ## Esc in fullscreen
 
@@ -419,6 +484,11 @@ the project's patch up to the new text.
 **`A FORMAT CONVERSION THE BROWSER BUILD DOES NOT KNOW`** — a `%e`, a date, in
 a format string. It would compile and throw in the tab. Write it another way
 in the program, or teach `format-port.pl` to rewrite it, as it does `%n`.
+
+**`REGEX THE BROWSER MATCHES RECURSIVELY`** — a group or a class such as `[^"]`
+repeated by `*` or `+`: a long text would overflow the tab's stack. Read the
+text without a regex, or, when it is always short, name the regex in the
+project's `regex-ok.txt` with the reason (see *Regular expressions*).
 
 ## Verified
 
