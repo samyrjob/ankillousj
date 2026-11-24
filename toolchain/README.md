@@ -67,6 +67,59 @@ strings*) and what it reads and writes as JSON (`json-check.pl`, see
 `ANKILLOUSJ_PREPARE_ONLY=1 ./build.sh …` stops after these: the working copy
 is ready to look at, or to compile by hand.
 
+## Projects
+
+An application keeps its browser adaptation in its own folder, an *AnkillousJ
+project*, in its own repository, beside its code: what it needs to run in a
+browser changes with its features, in the same commits. The toolchain holds no
+file of any application.
+
+```
+<project>/
+  ankillousj.conf     required: main=<main class>, js=<JS file name>
+  overlay/            files that replace or add program files     (see overlay/ below)
+  patches/            a few lines of one file, applied exactly    (see patches/ below)
+  thirdparty/         compile-time stand-ins                      (see thirdparty/ below)
+  json-not-read.txt   what the JSON check leaves alone            (see config/ below)
+  page/               copied as it is into web/: index.html, anything it loads
+```
+
+Everything but `ankillousj.conf` is optional. The conf is `key=value` lines;
+`#` starts a comment, spaces around the key and the value do not count:
+
+```
+main=main.BrowserMain
+js=app.js
+```
+
+```bash
+./build.sh --project <project> <source-root>[,<source-root>...] [output-dir]
+```
+
+```powershell
+.\build.ps1 -Project C:\path\to\project -Source C:\a\src, C:\b\src [-Output C:\out]
+```
+
+The main class and the JS name reach TeaVM as two properties of `pom.xml`
+(`ankillousj.main`, `ankillousj.js`), written into the working copy's pom, so
+`mvn` run by hand in `work/` builds the same thing. `.\play.ps1 -Web
+<output-dir>\web` serves any project's build.
+
+`./build.sh --fingerprint` prints one sha1 of the toolchain itself (`runtime/`,
+the import rewrite, `build.sh`, the two checks, `pom.xml`) and nothing else. A
+project that rebuilds only when something changed adds it to what it hashes:
+it then knows the toolchain changed without knowing its insides.
+
+A project pins the toolchain by tag (a file in the project that names it), and
+its release build uses exactly that tag; a dev build may use a local checkout
+and says when it is not the pinned one.
+
+Futura's project lives in the Futura repository, `Virtual_World/web`. The old
+way, `build.sh` without `--project` (the toolchain's own `overlay/`,
+`patches/`, `config/`, `index.html`, built as `main.BrowserMain` to
+`futura.js`), is kept only until those folders leave for Futura's project, at
+the next step of the split. The folders below describe them as they are today.
+
 ## The folders
 
 ### `runtime/` — what AnkillousJ provides

@@ -4,9 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ankillousj</groupId>
-  <artifactId>futura-web</artifactId>
+  <artifactId>ankillousj-app</artifactId>
   <version>0.1</version>
   <properties>
+    <!-- The application's main class and the JS file it compiles to. Placeholders here:
+         build.sh writes the build's own (from the project's ankillousj.conf) into the
+         working copy's pom, so mvn run by hand in work/ builds the same thing. -->
+    <ankillousj.main>app.Main</ankillousj.main>
+    <ankillousj.js>app.js</ankillousj.js>
     <teavm.version>0.15.0</teavm.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -42,9 +47,9 @@
             <phase>process-classes</phase>
             <goals><goal>compile</goal></goals>
             <configuration>
-              <mainClass>main.BrowserMain</mainClass>
+              <mainClass>${ankillousj.main}</mainClass>
               <targetDirectory>${project.build.directory}/js</targetDirectory>
-              <targetFileName>futura.js</targetFileName>
+              <targetFileName>${ankillousj.js}</targetFileName>
               <optimizationLevel>SIMPLE</optimizationLevel>
               <minifying>false</minifying>
             </configuration>

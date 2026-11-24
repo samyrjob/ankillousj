@@ -3,13 +3,16 @@
 
     .\play.ps1 [-Web <folder>] [-GameServer localhost:5555] [-Backend localhost:9090]
 
-  Starts the two things a browser tab needs beside the game's own servers:
+  Starts the two things a browser tab needs beside the application's own servers:
     - the gateway, which carries the tab's WebSocket to the game server's TCP port
     - a local web server for the built page, on port 8080
   then opens the page. Ctrl+C stops both.
 
-  The game's backend and game server must already be running (for Futura: the
-  usual dev services). This script only warns when they are not.
+  -Web is the build's web\ folder (<output-dir>\web of build.sh, any project's).
+  It must hold the page, index.html.
+
+  The application's backend and game server must already be running (its usual
+  dev services). This script only warns when they are not.
 #>
 param(
   [string]$Web,
@@ -23,8 +26,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
 if (-not $Web) { $Web = Join-Path $Here 'build\web' }
-if (-not (Test-Path (Join-Path $Web 'futura.js'))) {
-  throw "nothing built in $Web - run build.ps1 or build-futura.ps1 first"
+# The page is what every project's build has in common; the JS file is named by the project.
+if (-not (Test-Path (Join-Path $Web 'index.html'))) {
+  throw "nothing built in $Web (no index.html) - build the web version first"
 }
 
 function Test-Listening([string]$hostAndPort) {
@@ -66,7 +70,7 @@ try {
       "`"$(Join-Path $Here 'serve.mjs')`"", "`"$Web`"", $Port)
   Start-Sleep -Seconds 1
   Write-Host ""
-  Write-Host "Futura in a tab:  http://localhost:$Port/      (Ctrl+C here stops it)"
+  Write-Host "the page: http://localhost:$Port/      (Ctrl+C here stops it)"
   if (-not $NoBrowser) { Start-Process "http://localhost:$Port/" }
   Wait-Process -Id $server.Id
 } finally {

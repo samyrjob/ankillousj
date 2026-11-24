@@ -2,15 +2,36 @@
 #
 # Compiles a Java desktop application for the browser.
 #
-#   ./build.sh <source-root>[,<source-root>...] [output-dir]
+#   ./build.sh [--project <dir>] <source-root>[,<source-root>...] [output-dir]
+#   ./build.sh --fingerprint
 #
 # <source-root> is the directory holding your packages — the one containing
 # `main/`, `view/`, `model/` and so on. A program made of several modules gives
 # them all, separated by commas: they are compiled as one. Nothing given is ever
 # modified: everything happens in a working copy.
 #
-# What comes out is `<output-dir>/web/`: the compiled JavaScript, an index.html
-# that runs it, and `assets/` — the resources of each source root laid out the
+# --project <dir> is the application's AnkillousJ project: the folder where the
+# application keeps what it needs to run in a browser, beside its own code.
+# Everything in it is optional except the conf:
+#
+#   overlay/            files that replace or add program files
+#   thirdparty/         compile-time stand-ins for libraries with no browser form
+#   patches/            unified diffs against the ported sources, applied exactly
+#   json-not-read.txt   what json-check.pl is to leave alone (one name a line)
+#   page/               copied as it is into <output-dir>/web/, beside the JS
+#   ankillousj.conf     key=value lines: main (the main class), js (the JS file)
+#
+# Without --project the toolchain's own overlay/, thirdparty/, patches/, config/
+# and index.html are used, with main.BrowserMain and futura.js: that is Futura's
+# web version, kept here only until it lives in Futura's own project folder
+# (next step of the split). With --project none of those is read.
+#
+# --fingerprint prints one sha1 of the toolchain's own inputs (runtime/, the
+# import rewrite, this script, the checks, pom.xml) and nothing else: a project
+# compares it to tell that the toolchain changed without knowing its insides.
+#
+# What comes out is `<output-dir>/web/`: the compiled JavaScript, the page that
+# runs it, and `assets/` — the resources of each source root laid out the
 # usual way (`.../src/main/java` beside `.../src/main/resources`), or the
 # folders named in ANKILLOUSJ_ASSETS (commas between them).
 #
@@ -18,8 +39,8 @@
 #
 #   1. copy your sources into work/
 #   2. rewrite JDK imports onto the AnkillousJ runtime  (tools/port-imports.sh)
-#   3. overlay replacements for files that cannot port  (overlay/)
-#   4. add compile-time stand-ins for absent libraries  (thirdparty/)
+#   3. overlay replacements for files that cannot port  (the project's overlay/)
+#   4. add compile-time stand-ins for absent libraries  (the project's thirdparty/)
 #   5. compile everything with TeaVM
 #
 # Steps 3 and 4 are where the honesty lives: some things have no browser
@@ -28,8 +49,123 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-SRC="${1:?usage: build.sh <source-root>[,<source-root>...] [output-dir]}"
+USAGE='usage: build.sh [--project <dir>] <source-root>[,<source-root>...] [output-dir]
+       build.sh --fingerprint'
+
+# ── the toolchain's fingerprint ──────────────────────────────────────────────
+# What a build of any project depends on in the toolchain itself. A project's own folder is
+# not in it: the project hashes that itself, with its sources.
+if [ "${1:-}" = --fingerprint ]; then
+  if [ "$#" -ne 1 ]; then
+    echo "$USAGE" >&2
+    exit 1
+  fi
+  # A toolchain with a piece missing has no fingerprint: a hash of what is left would look
+  # like a real one.
+  for f in runtime ../awt/tools build.sh format-port.pl json-check.pl pom.xml; do
+    if [ ! -e "$HERE/$f" ]; then
+      echo "the toolchain is incomplete, no $HERE/$f" >&2
+      exit 1
+    fi
+  done
+  {
+    for d in runtime ../awt/tools; do
+      echo "$d"
+      (cd "$HERE/$d" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 -r sha1sum)
+    done
+    (cd "$HERE" && sha1sum build.sh format-port.pl json-check.pl pom.xml)
+  } | sha1sum | cut -d' ' -f1
+  exit 0
+fi
+
+PROJECT=""
+if [ "${1:-}" = --project ]; then
+  if [ -z "${2:-}" ]; then
+    echo "$USAGE" >&2
+    exit 1
+  fi
+  if [ ! -d "$2" ]; then
+    echo "no such project directory: $2" >&2
+    exit 1
+  fi
+  PROJECT="$(cd "$2" && pwd)"
+  shift 2
+fi
+
+SRC="${1:?$USAGE}"
 OUT="${2:-$HERE/build}"
+
+# ── where the application's browser adaptation is read from ──────────────────
+# Set once here; nothing below names a folder of the toolchain's own for these.
+if [ -n "$PROJECT" ]; then
+  CONF="$PROJECT/ankillousj.conf"
+  if [ ! -f "$CONF" ]; then
+    echo "the project has no ankillousj.conf: $CONF" >&2
+    echo "It names the main class and the JS file, one key=value a line:" >&2
+    echo "  main=main.BrowserMain" >&2
+    echo "  js=app.js" >&2
+    exit 1
+  fi
+  # One key of the conf: "#" starts a comment, spaces around the key and the value do not
+  # count, a Windows line end neither. Empty when the key is not there.
+  conf_get() {
+    local line k v
+    while IFS= read -r line || [ -n "$line" ]; do
+      line="${line%%#*}"
+      line="${line//$'\r'/}"
+      case "$line" in *=*) ;; *) continue ;; esac
+      k="${line%%=*}"
+      v="${line#*=}"
+      k="${k#"${k%%[![:space:]]*}"}"; k="${k%"${k##*[![:space:]]}"}"
+      v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"
+      if [ "$k" = "$1" ]; then
+        printf '%s' "$v"
+        return 0
+      fi
+    done < "$CONF"
+    return 0
+  }
+  MAIN="$(conf_get main)"
+  JS="$(conf_get js)"
+  for key in main js; do
+    if [ -z "$(conf_get "$key")" ]; then
+      echo "ankillousj.conf does not say $key=...: $CONF" >&2
+      echo "  main = the fully qualified main class (main.BrowserMain), js = the JS file (app.js)" >&2
+      exit 1
+    fi
+  done
+  BASE="$PROJECT"
+  GLUE=""
+  NOT_READ="$PROJECT/json-not-read.txt"
+  PAGE="$PROJECT/page"
+  PAGE_FILE=""
+else
+  # The old way, Futura's web version from the toolchain's own folders. It goes when those
+  # folders leave for Futura's project (step 2 of the split): nothing new is to rely on it.
+  MAIN="main.BrowserMain"
+  JS="futura.js"
+  BASE="$HERE"
+  GLUE="$HERE/config"
+  NOT_READ="$HERE/config/json-not-read.txt"
+  PAGE=""
+  PAGE_FILE="$HERE/index.html"
+fi
+OVERLAY="$BASE/overlay"
+THIRDPARTY="$BASE/thirdparty"
+PATCHES="$BASE/patches"
+
+# Both go into pom.xml as they are, and the JS name becomes a file name: nothing else gets
+# through, so a stray character cannot turn into a broken pom or a file somewhere else.
+CLASS_NAME='^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$'
+JS_NAME='^[A-Za-z0-9_][A-Za-z0-9_.-]*\.js$'
+if ! [[ "$MAIN" =~ $CLASS_NAME ]]; then
+  echo "the main class is not a Java class name: $MAIN" >&2
+  exit 1
+fi
+if ! [[ "$JS" =~ $JS_NAME ]]; then
+  echo "the JS file is not a plain file name ending in .js: $JS" >&2
+  exit 1
+fi
 
 IFS=',' read -r -a SOURCES <<< "$SRC"
 for s in "${SOURCES[@]}"; do
@@ -46,6 +182,9 @@ RES="$WORK/src/main/resources"
 echo "AnkillousJ"
 echo "  source : $SRC"
 echo "  output : $OUT"
+if [ -n "$PROJECT" ]; then
+  echo "  project: $PROJECT   ($MAIN -> $JS)"
+fi
 echo
 
 # ── 1. working copy ──────────────────────────────────────────────────────────
@@ -66,7 +205,7 @@ bash "$HERE/../awt/tools/port-imports.sh" "$JAVA" --apply | tail -1 | sed 's/^/ 
 # program file would take its place without a word, and the program's own file, with whatever
 # changed in it since, would never reach the build. (Three of Futura's sound classes sat in the
 # runtime folder for months: the game's package is named "sound", as the runtime's is.) What
-# replaces a program file goes in overlay/, where the build names it.
+# replaces a program file goes in the overlay, where the build names it.
 hidden="$(cd "$HERE/runtime/src/main/java" && find . -name '*.java' | sed 's|^\./||' | while IFS= read -r f; do
   if [ -f "$JAVA/$f" ]; then echo "     $f"; fi
 done)"
@@ -75,7 +214,7 @@ if [ -n "$hidden" ]; then
   echo "   THE RUNTIME HIDES A FILE OF THE PROGRAM:"
   printf '%s\n' "$hidden"
   echo "   The program's own file would be dropped. What replaces a program file belongs in"
-  echo "   overlay/; anything else is to be taken out of runtime/."
+  echo "   $OVERLAY/; anything else is to be taken out of runtime/."
   exit 1
 fi
 cp -r "$HERE/runtime/src/main/java"/* "$JAVA"/
@@ -84,13 +223,15 @@ echo "3. added the AnkillousJ runtime"
 
 # The overlay replaces files, so it is copied AFTER the sources.
 overlaid=0
-while IFS= read -r f; do
-  rel="${f#"$HERE/overlay/"}"
-  mkdir -p "$JAVA/$(dirname "$rel")"
-  cp "$f" "$JAVA/$rel"
-  overlaid=$((overlaid + 1))
-  echo "   replaced $rel"
-done < <(find "$HERE/overlay" -name '*.java')
+if [ -d "$OVERLAY" ]; then
+  while IFS= read -r f; do
+    rel="${f#"$OVERLAY/"}"
+    mkdir -p "$JAVA/$(dirname "$rel")"
+    cp "$f" "$JAVA/$rel"
+    overlaid=$((overlaid + 1))
+    echo "   replaced $rel"
+  done < <(find "$OVERLAY" -name '*.java')
+fi
 echo "   $overlaid file(s) replaced"
 
 # Anything else still importing javax.swing cannot compile. Report it rather
@@ -104,48 +245,49 @@ wild=$(grep -rlE '^import javax\.swing\.\*;' "$JAVA" --include='*.java' 2>/dev/n
 remaining=$(printf '%s\n' "$named" "$wild" | sed '/^$/d' | sort -u)
 if [ -n "$remaining" ]; then
   echo
-  echo "   These still use javax.swing and have no replacement in overlay/:"
+  echo "   These still use javax.swing and have no replacement in $OVERLAY/:"
   echo "$remaining" | sed "s#$JAVA/#     #"
-  echo "   Add a replacement under overlay/ mirroring the same path."
+  echo "   Add a replacement under $OVERLAY/ mirroring the same path."
   echo
 fi
 
 # ── 4. stand-ins for libraries with no browser form ──────────────────────────
 standins=0
-if [ -d "$HERE/thirdparty" ]; then
-  standins=$(find "$HERE/thirdparty" -name '*.java' | wc -l | tr -d ' ')
+if [ -d "$THIRDPARTY" ]; then
+  standins=$(find "$THIRDPARTY" -name '*.java' | wc -l | tr -d ' ')
 fi
 if [ "$standins" -gt 0 ]; then
-  cp -r "$HERE/thirdparty"/* "$JAVA"/
+  cp -r "$THIRDPARTY"/* "$JAVA"/
   echo "4. added third-party stand-ins ($standins files)"
 else
   echo "4. no third-party stand-in needed"
 fi
 
-# Project glue, if the developer has customised it.
-if [ -d "$HERE/config" ]; then
+# Project glue, if the developer has customised it. The old way only: a project keeps its
+# glue in its overlay, in the program's own packages.
+if [ -n "$GLUE" ] && [ -d "$GLUE" ]; then
   mkdir -p "$JAVA/ankillousj"
-  cp "$HERE/config"/*.java "$JAVA/ankillousj/" 2>/dev/null || true
+  cp "$GLUE"/*.java "$JAVA/ankillousj/" 2>/dev/null || true
 fi
 
 # ── 5. compile ───────────────────────────────────────────────────────────────
 # Patches: a few lines of one file changed for the browser, where replacing the whole file
-# (overlay/) would mean keeping a copy of it up to date. Each is a unified diff against the
+# (the overlay) would mean keeping a copy of it up to date. Each is a unified diff against the
 # PORTED source. One that no longer applies stops the build: the source moved on, and the
 # patch is to be brought up to its new text.
-if [ -d "$HERE/patches" ]; then
+if [ -d "$PATCHES" ]; then
   patched=0
   while IFS= read -r p; do
     if ! (cd "$JAVA" && patch -p1 --forward --no-backup-if-mismatch --fuzz=0 -l < "$p" > "$OUT/patch.log" 2>&1); then
       echo
-      echo "   A PATCH DOES NOT APPLY: ${p#"$HERE/"}"
+      echo "   A PATCH DOES NOT APPLY: ${p#"$BASE/"}"
       sed 's/^/     /' "$OUT/patch.log"
       echo "   The source it changes has moved on. Bring the patch up to the new text."
       exit 1
     fi
     patched=$((patched + 1))
-    echo "   patched ${p#"$HERE/patches/"}"
-  done < <(find "$HERE/patches" -name '*.patch' | sort)
+    echo "   patched ${p#"$PATCHES/"}"
+  done < <(find "$PATCHES" -name '*.patch' | sort)
   [ "$patched" -gt 0 ] && echo "   $patched patch(es) applied"
 fi
 
@@ -163,14 +305,24 @@ fi
 # What the program hands to its JSON library is checked before anything is compiled: a type
 # with no reader or writer, a field its reader does not read. None of it fails at the build
 # by itself (nothing looks inside a class here): it fails in the tab, or says nothing and
-# leaves a field empty. json-check.pl says what it looks for, and how.
+# leaves a field empty. json-check.pl says what it looks for, and how. A project with no
+# json-not-read.txt exempts nothing: json-check.pl reads the file only when it is there.
 if command -v perl >/dev/null 2>&1; then
-  perl "$HERE/json-check.pl" "$JAVA" "$HERE/config/json-not-read.txt" || exit 1
+  perl "$HERE/json-check.pl" "$JAVA" "$NOT_READ" || exit 1
 else
   echo "   (no perl here: what is read and written as JSON is not checked)"
 fi
 
-cp "$HERE/pom.xml" "$WORK/pom.xml"
+# The main class and the JS file are pom.xml properties: they are written into the working
+# copy's pom, so that mvn run by hand in work/ builds the same thing as this script.
+sed -e "s|<ankillousj.main>[^<]*</ankillousj.main>|<ankillousj.main>$MAIN</ankillousj.main>|" \
+    -e "s|<ankillousj.js>[^<]*</ankillousj.js>|<ankillousj.js>$JS</ankillousj.js>|" \
+    "$HERE/pom.xml" > "$WORK/pom.xml"
+if ! grep -q "<ankillousj.main>$MAIN</ankillousj.main>" "$WORK/pom.xml" \
+   || ! grep -q "<ankillousj.js>$JS</ankillousj.js>" "$WORK/pom.xml"; then
+  echo "   pom.xml has no <ankillousj.main> or <ankillousj.js> property to write: $HERE/pom.xml" >&2
+  exit 1
+fi
 
 # ANKILLOUSJ_PREPARE_ONLY=1 stops here: the working copy is ready (sources ported, runtime and
 # replacements in place), for a compile by hand or a look at what the port produced.
@@ -187,9 +339,9 @@ if ! (cd "$WORK" && "$MVN" -B -q process-classes 2>&1 | tee "$OUT/build.log" | g
   :
 fi
 
-if [ ! -s "$WORK/target/js/futura.js" ]; then
+if [ ! -s "$WORK/target/js/$JS" ]; then
   echo
-  echo "BUILD FAILED — see $OUT/build.log"
+  echo "BUILD FAILED — see $OUT/build.log   (no $JS was produced)"
   echo
   echo "The two failure modes worth knowing:"
   echo "  'error:'             a source problem. Usually an import the rewrite"
@@ -201,14 +353,19 @@ if [ ! -s "$WORK/target/js/futura.js" ]; then
 fi
 
 mkdir -p "$OUT/web"
-cp "$WORK/target/js/futura.js" "$OUT/web/"
-cp "$HERE/index.html" "$OUT/web/" 2>/dev/null || true
+cp "$WORK/target/js/$JS" "$OUT/web/"
+if [ -n "$PAGE" ] && [ -d "$PAGE" ]; then
+  cp -r "$PAGE"/. "$OUT/web"/
+fi
+if [ -n "$PAGE_FILE" ]; then
+  cp "$PAGE_FILE" "$OUT/web/" 2>/dev/null || true
+fi
 printf '{ "type": "commonjs" }\n' > "$OUT/web/package.json"
 
-size=$(du -h "$OUT/web/futura.js" | cut -f1)
+size=$(du -h "$OUT/web/$JS" | cut -f1)
 echo
 echo "BUILD SUCCESS"
-echo "  $OUT/web/futura.js  ($size)"
+echo "  $OUT/web/$JS  ($size)"
 echo
 # Assets: what the program reads from its classpath, served beside the page.
 ASSET_DIRS=()
@@ -233,4 +390,8 @@ else
   echo "  or name their folders in ANKILLOUSJ_ASSETS."
 fi
 echo
-echo "Try it:  node $HERE/serve.mjs $OUT/web      then open http://localhost:8080/"
+if [ -f "$OUT/web/index.html" ]; then
+  echo "Try it:  node $HERE/serve.mjs $OUT/web      then open http://localhost:8080/"
+else
+  echo "No page came with the build: an index.html that loads $JS goes in the project's page/."
+fi

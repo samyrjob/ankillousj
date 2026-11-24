@@ -220,7 +220,8 @@ if (@unread) {
 if (@problems) {
     print "\n";
     print "   $_\n" for @problems;
-    print "   Say how it is read or written in config/GameJsonReaders.java. What is left out on\n";
+    print "   Say how it is read or written in the program's JSON readers\n";
+    print "   (JsonReaders.register / JsonWriters.register). What is left out on\n";
     print "   purpose (a type read by code nothing calls, a field) is named in config/json-not-read.txt.\n";
     exit 1;
 }
