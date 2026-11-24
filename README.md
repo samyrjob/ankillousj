@@ -5,7 +5,7 @@ commercial licence, ever.
 
 ```powershell
 cd toolchain
-.\build.ps1 -Source C:\path\to\your\src
+.\build.ps1 -Project C:\path\to\your\project -Source C:\path\to\your\src
 node serve.mjs
 ```
 
@@ -45,7 +45,8 @@ Three things have no browser equivalent, and no shim can invent one:
 - **A thread that never pauses.** A desktop thread may spin: the others run
   beside it. A page has one thread of execution, and a loop that never waits
   freezes it. Such a loop is given one line (`Platform.nextFrame()`), by a
-  patch the build applies; see `toolchain/patches`.
+  patch the build applies, kept in the application's own project; see
+  `toolchain/README.md`, *Projects*.
 
 One thing that used to be on this list is not any more: `ImageIO.read` returns
 a decoded picture when a program thread calls it (TeaVM suspends the thread

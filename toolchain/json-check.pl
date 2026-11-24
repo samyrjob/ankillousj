@@ -222,7 +222,7 @@ if (@problems) {
     print "   $_\n" for @problems;
     print "   Say how it is read or written in the program's JSON readers\n";
     print "   (JsonReaders.register / JsonWriters.register). What is left out on\n";
-    print "   purpose (a type read by code nothing calls, a field) is named in config/json-not-read.txt.\n";
+    print "   purpose (a type read by code nothing calls, a field) is named in the project's json-not-read.txt.\n";
     exit 1;
 }
 printf "   JSON: %d types read, each with its reader; %d readers checked field by field\n",

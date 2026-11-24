@@ -2,7 +2,7 @@
 #
 # Compiles a Java desktop application for the browser.
 #
-#   ./build.sh [--project <dir>] <source-root>[,<source-root>...] [output-dir]
+#   ./build.sh --project <dir> <source-root>[,<source-root>...] [output-dir]
 #   ./build.sh --fingerprint
 #
 # <source-root> is the directory holding your packages — the one containing
@@ -12,6 +12,7 @@
 #
 # --project <dir> is the application's AnkillousJ project: the folder where the
 # application keeps what it needs to run in a browser, beside its own code.
+# It is required: the toolchain holds no application's files of its own.
 # Everything in it is optional except the conf:
 #
 #   overlay/            files that replace or add program files
@@ -20,11 +21,6 @@
 #   json-not-read.txt   what json-check.pl is to leave alone (one name a line)
 #   page/               copied as it is into <output-dir>/web/, beside the JS
 #   ankillousj.conf     key=value lines: main (the main class), js (the JS file)
-#
-# Without --project the toolchain's own overlay/, thirdparty/, patches/, config/
-# and index.html are used, with main.BrowserMain and futura.js: that is Futura's
-# web version, kept here only until it lives in Futura's own project folder
-# (next step of the split). With --project none of those is read.
 #
 # --fingerprint prints one sha1 of the toolchain's own inputs (runtime/, the
 # import rewrite, this script, the checks, pom.xml) and nothing else: a project
@@ -49,7 +45,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-USAGE='usage: build.sh [--project <dir>] <source-root>[,<source-root>...] [output-dir]
+USAGE='usage: build.sh --project <dir> <source-root>[,<source-root>...] [output-dir]
        build.sh --fingerprint'
 
 # ── the toolchain's fingerprint ──────────────────────────────────────────────
@@ -78,81 +74,71 @@ if [ "${1:-}" = --fingerprint ]; then
   exit 0
 fi
 
-PROJECT=""
-if [ "${1:-}" = --project ]; then
-  if [ -z "${2:-}" ]; then
-    echo "$USAGE" >&2
-    exit 1
-  fi
-  if [ ! -d "$2" ]; then
-    echo "no such project directory: $2" >&2
-    exit 1
-  fi
-  PROJECT="$(cd "$2" && pwd)"
-  shift 2
+# The project is required. An application's overlay, patches, page and JSON exemptions belong
+# to the application, so a build that quietly went on without them would produce a program
+# that compiles and then fails in the tab.
+if [ "${1:-}" != --project ]; then
+  echo "$USAGE" >&2
+  echo "An application's browser adaptation lives in its own project folder: name it with --project." >&2
+  exit 1
 fi
+if [ -z "${2:-}" ]; then
+  echo "$USAGE" >&2
+  exit 1
+fi
+if [ ! -d "$2" ]; then
+  echo "no such project directory: $2" >&2
+  exit 1
+fi
+PROJECT="$(cd "$2" && pwd)"
+shift 2
 
 SRC="${1:?$USAGE}"
 OUT="${2:-$HERE/build}"
 
 # ── where the application's browser adaptation is read from ──────────────────
-# Set once here; nothing below names a folder of the toolchain's own for these.
-if [ -n "$PROJECT" ]; then
-  CONF="$PROJECT/ankillousj.conf"
-  if [ ! -f "$CONF" ]; then
-    echo "the project has no ankillousj.conf: $CONF" >&2
-    echo "It names the main class and the JS file, one key=value a line:" >&2
-    echo "  main=main.BrowserMain" >&2
-    echo "  js=app.js" >&2
+# Set once here; nothing below names any other folder for these.
+CONF="$PROJECT/ankillousj.conf"
+if [ ! -f "$CONF" ]; then
+  echo "the project has no ankillousj.conf: $CONF" >&2
+  echo "It names the main class and the JS file, one key=value a line:" >&2
+  echo "  main=main.BrowserMain" >&2
+  echo "  js=app.js" >&2
+  exit 1
+fi
+# One key of the conf: "#" starts a comment, spaces around the key and the value do not
+# count, a Windows line end neither. Empty when the key is not there.
+conf_get() {
+  local line k v
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="${line//$'\r'/}"
+    case "$line" in *=*) ;; *) continue ;; esac
+    k="${line%%=*}"
+    v="${line#*=}"
+    k="${k#"${k%%[![:space:]]*}"}"; k="${k%"${k##*[![:space:]]}"}"
+    v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"
+    if [ "$k" = "$1" ]; then
+      printf '%s' "$v"
+      return 0
+    fi
+  done < "$CONF"
+  return 0
+}
+MAIN="$(conf_get main)"
+JS="$(conf_get js)"
+for key in main js; do
+  if [ -z "$(conf_get "$key")" ]; then
+    echo "ankillousj.conf does not say $key=...: $CONF" >&2
+    echo "  main = the fully qualified main class (main.BrowserMain), js = the JS file (app.js)" >&2
     exit 1
   fi
-  # One key of the conf: "#" starts a comment, spaces around the key and the value do not
-  # count, a Windows line end neither. Empty when the key is not there.
-  conf_get() {
-    local line k v
-    while IFS= read -r line || [ -n "$line" ]; do
-      line="${line%%#*}"
-      line="${line//$'\r'/}"
-      case "$line" in *=*) ;; *) continue ;; esac
-      k="${line%%=*}"
-      v="${line#*=}"
-      k="${k#"${k%%[![:space:]]*}"}"; k="${k%"${k##*[![:space:]]}"}"
-      v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"
-      if [ "$k" = "$1" ]; then
-        printf '%s' "$v"
-        return 0
-      fi
-    done < "$CONF"
-    return 0
-  }
-  MAIN="$(conf_get main)"
-  JS="$(conf_get js)"
-  for key in main js; do
-    if [ -z "$(conf_get "$key")" ]; then
-      echo "ankillousj.conf does not say $key=...: $CONF" >&2
-      echo "  main = the fully qualified main class (main.BrowserMain), js = the JS file (app.js)" >&2
-      exit 1
-    fi
-  done
-  BASE="$PROJECT"
-  GLUE=""
-  NOT_READ="$PROJECT/json-not-read.txt"
-  PAGE="$PROJECT/page"
-  PAGE_FILE=""
-else
-  # The old way, Futura's web version from the toolchain's own folders. It goes when those
-  # folders leave for Futura's project (step 2 of the split): nothing new is to rely on it.
-  MAIN="main.BrowserMain"
-  JS="futura.js"
-  BASE="$HERE"
-  GLUE="$HERE/config"
-  NOT_READ="$HERE/config/json-not-read.txt"
-  PAGE=""
-  PAGE_FILE="$HERE/index.html"
-fi
-OVERLAY="$BASE/overlay"
-THIRDPARTY="$BASE/thirdparty"
-PATCHES="$BASE/patches"
+done
+OVERLAY="$PROJECT/overlay"
+THIRDPARTY="$PROJECT/thirdparty"
+PATCHES="$PROJECT/patches"
+NOT_READ="$PROJECT/json-not-read.txt"
+PAGE="$PROJECT/page"
 
 # Both go into pom.xml as they are, and the JS name becomes a file name: nothing else gets
 # through, so a stray character cannot turn into a broken pom or a file somewhere else.
@@ -182,9 +168,7 @@ RES="$WORK/src/main/resources"
 echo "AnkillousJ"
 echo "  source : $SRC"
 echo "  output : $OUT"
-if [ -n "$PROJECT" ]; then
-  echo "  project: $PROJECT   ($MAIN -> $JS)"
-fi
+echo "  project: $PROJECT   ($MAIN -> $JS)"
 echo
 
 # ── 1. working copy ──────────────────────────────────────────────────────────
@@ -263,13 +247,6 @@ else
   echo "4. no third-party stand-in needed"
 fi
 
-# Project glue, if the developer has customised it. The old way only: a project keeps its
-# glue in its overlay, in the program's own packages.
-if [ -n "$GLUE" ] && [ -d "$GLUE" ]; then
-  mkdir -p "$JAVA/ankillousj"
-  cp "$GLUE"/*.java "$JAVA/ankillousj/" 2>/dev/null || true
-fi
-
 # ── 5. compile ───────────────────────────────────────────────────────────────
 # Patches: a few lines of one file changed for the browser, where replacing the whole file
 # (the overlay) would mean keeping a copy of it up to date. Each is a unified diff against the
@@ -280,7 +257,7 @@ if [ -d "$PATCHES" ]; then
   while IFS= read -r p; do
     if ! (cd "$JAVA" && patch -p1 --forward --no-backup-if-mismatch --fuzz=0 -l < "$p" > "$OUT/patch.log" 2>&1); then
       echo
-      echo "   A PATCH DOES NOT APPLY: ${p#"$BASE/"}"
+      echo "   A PATCH DOES NOT APPLY: ${p#"$PROJECT/"}"
       sed 's/^/     /' "$OUT/patch.log"
       echo "   The source it changes has moved on. Bring the patch up to the new text."
       exit 1
@@ -354,11 +331,8 @@ fi
 
 mkdir -p "$OUT/web"
 cp "$WORK/target/js/$JS" "$OUT/web/"
-if [ -n "$PAGE" ] && [ -d "$PAGE" ]; then
+if [ -d "$PAGE" ]; then
   cp -r "$PAGE"/. "$OUT/web"/
-fi
-if [ -n "$PAGE_FILE" ]; then
-  cp "$PAGE_FILE" "$OUT/web/" 2>/dev/null || true
 fi
 printf '{ "type": "commonjs" }\n' > "$OUT/web/package.json"
 
