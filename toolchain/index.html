@@ -66,9 +66,10 @@
   'use strict';
 
   // ── Where things are ────────────────────────────────────────────────
-  // config.js (optional, beside this page) may set FUTURA_API and
-  // FUTURA_GATEWAY. Without it: a local page talks to the local backend and
-  // gateway, any other page to the public ones.
+  // config.js (optional, beside this page) may set FUTURA_API,
+  // FUTURA_GATEWAY and FUTURA_SITE_ORIGINS (the sites that may frame this
+  // page, see "Framed by the site"). Without it: a local page talks to the
+  // local backend and gateway, any other page to the public ones.
   var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   var API = window.FUTURA_API || (local ? 'http://localhost:9090' : 'https://api.futura-game.com');
   if (window.FUTURA_GATEWAY) globalThis.__futuraGateway = window.FUTURA_GATEWAY;
@@ -93,6 +94,51 @@
   window.addEventListener('resize', size);
 
   function tell(text, bad) { say.textContent = text || ''; say.className = bad ? 'bad' : ''; }
+
+  // ── Framed by the site ──────────────────────────────────────────────
+  // The site (Futura_Front, app/web-game) opens this page in a frame over its own pages: its
+  // PLAY shows the game, its Menu button hides it with the game still running, its Disconnect
+  // button removes the frame. A frame cannot keep Esc in fullscreen (a browser gives Keyboard
+  // Lock to the top page only), so the site holds fullscreen for the game: the runtime and the
+  // game ask it through globalThis.__ankFullscreen, and the site says when fullscreen changes.
+  //   game -> site   { type: 'futura:fullscreen', on }        the game asks to enter / leave
+  //   site -> game   { type: 'futura:fullscreen-state', on }  whether the site's game layer is fullscreen
+  //   site -> game   { type: 'futura:focus' }                 the game is on screen again: keys to the canvas
+  // Only the site's own origins are heard and spoken to: config.js may list them
+  // (FUTURA_SITE_ORIGINS); a local page accepts any local site, any other page the public site.
+  // Not framed, or framed by anybody else: no bridge, the page is as it always was.
+  var site = siteOrigin();
+
+  function siteOrigin() {
+    if (window.parent === window) return null;
+    var origin = null;
+    try {
+      if (location.ancestorOrigins && location.ancestorOrigins.length) origin = location.ancestorOrigins[0];
+      else if (document.referrer) origin = new URL(document.referrer).origin;
+    } catch (e) { origin = null; }
+    if (!origin) return null;
+    var allowed = window.FUTURA_SITE_ORIGINS;
+    if (Array.isArray(allowed)) return allowed.indexOf(origin) >= 0 ? origin : null;
+    if (local) return /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ? origin : null;
+    return (origin === 'https://futura-game.com' || origin === 'https://www.futura-game.com') ? origin : null;
+  }
+
+  if (site) {
+    var framedFullscreen = false;
+    var tellSite = function (message) {
+      try { window.parent.postMessage(message, site); } catch (e) { }
+    };
+    globalThis.__ankFullscreen = {
+      active: function () { return framedFullscreen; },
+      enter: function () { tellSite({ type: 'futura:fullscreen', on: true }); },
+      leave: function () { tellSite({ type: 'futura:fullscreen', on: false }); }
+    };
+    window.addEventListener('message', function (e) {
+      if (e.source !== window.parent || e.origin !== site || !e.data || typeof e.data.type !== 'string') return;
+      if (e.data.type === 'futura:fullscreen-state') framedFullscreen = !!e.data.on;
+      else if (e.data.type === 'futura:focus') { try { canvas.focus(); } catch (x) { } }
+    });
+  }
 
   function startGame() {
     door.classList.remove('open');
@@ -135,10 +181,19 @@
     if (!hand.ok) return 'The server refused this browser (' + hand.status + ').';
     var pair = await hand.json();
 
-    var game = await call('/api/launcher/auth/exchange', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + pair.accessToken }
-    });
+    // A game closed a moment ago (the site's Disconnect, then PLAY at once) is still seen online
+    // until the server notices its connection closed: wait a few seconds before saying no.
+    var game;
+    for (var tries = 0; ; tries++) {
+      game = await call('/api/launcher/auth/exchange', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + pair.accessToken }
+      });
+      if (game.status !== 409 || tries >= 5) break;
+      door.classList.add('open');
+      lead.textContent = 'Closing your last game…';
+      await new Promise(function (resolve) { setTimeout(resolve, 1000); });
+    }
     if (game.status === 409) return 'Your account is already in the game somewhere else. Close it there first.';
     if (!game.ok) return 'The server could not open the game (' + game.status + ').';
     var jwt = (await game.json()).jwt;
@@ -155,6 +210,8 @@
     try { result = await openGameSession(); }
     catch (e) { result = 'The server cannot be reached. Check your connection and try again.'; }
     if (result === true) { startGame(); return; }
+    // Framed by the site, the door only opens when it has something to say: a sign-in or a refusal.
+    door.classList.add('open');
     if (result === 'signin') {
       lead.textContent = 'Sign in to play.';
       form.hidden = false;
@@ -195,7 +252,9 @@
   } else if (globalThis.__futuraSession || /(^|[#&])jwt=/.test(hash)) {
     startGame();                              // a session handed over by whoever opened this page
   } else {
-    door.classList.add('open');
+    // Framed by the site, the game's loading card is the first thing seen: the door opens only
+    // when it has something to say (sign in, a refusal, a wait).
+    if (!site) door.classList.add('open');
     enter();
   }
 })();

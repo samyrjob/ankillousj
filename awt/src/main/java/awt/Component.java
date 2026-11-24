@@ -543,12 +543,27 @@ public class Component {
      * whatever the program does: that is the browser's own way out. An Esc pressed anywhere but on
      * the canvas, in a text field for one, never reaches the program, so it leaves fullscreen here.
      * A browser without the API is as before: Esc leaves at once.
+     *
+     * A page framed by another (Futura's site frames the game) cannot have Keyboard Lock, because
+     * browsers give it to a top page only, so the framing page holds fullscreen and Esc and lends them
+     * through {@code globalThis.__ankFullscreen} ({@code active}, {@code enter}, {@code leave}). The
+     * runtime then asks it, never locks the keyboard itself, and an Esc pressed off the canvas leaves
+     * through it.
      */
     @JSBody(params = "canvas", script =
             "if (typeof document === 'undefined' || document.__ankEscape) return;"
           + "document.__ankEscape = true;"
-          + "var full = function() { return document.fullscreenElement || document.webkitFullscreenElement; };"
+          + "var host = function() {"
+          + "  var h = globalThis.__ankFullscreen;"
+          + "  return (h && typeof h.active === 'function') ? h : null;"
+          + "};"
+          + "var full = function() {"
+          + "  var h = host();"
+          + "  if (h) { try { return !!h.active(); } catch (e) { return false; } }"
+          + "  return document.fullscreenElement || document.webkitFullscreenElement;"
+          + "};"
           + "var hold = function() {"
+          + "  if (host()) return;"
           + "  var keyboard = navigator.keyboard;"
           + "  if (!keyboard || !keyboard.lock) return;"
           + "  try {"
@@ -560,6 +575,8 @@ public class Component {
           + "hold();"
           + "document.addEventListener('keydown', function(e) {"
           + "  if (e.key !== 'Escape' || e.target === canvas || !full()) return;"
+          + "  var h = host();"
+          + "  if (h) { try { h.leave(); } catch (x) { } return; }"
           + "  try {"
           + "    var leave = document.exitFullscreen || document.webkitExitFullscreen;"
           + "    if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"

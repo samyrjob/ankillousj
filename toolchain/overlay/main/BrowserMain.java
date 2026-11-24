@@ -43,6 +43,7 @@ import java.nio.charset.StandardCharsets;
  *   globalThis.__futuraGateway = "wss://play.example/game"   // default: ws://&lt;game host&gt;:5556
  *   globalThis.__futuraAssets  = "assets"                    // default
  *   globalThis.__futuraOffline = true    // no session, no server: the game alone, to look at
+ *   globalThis.__ankFullscreen = { active, enter, leave } // a page that frames the game holds fullscreen
  * </pre>
  */
 public final class BrowserMain {

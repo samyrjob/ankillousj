@@ -277,6 +277,16 @@ never reaches the program, so the runtime leaves fullscreen for it.
 
 A browser without the API (Firefox, Safari) is as before: Esc leaves at once.
 
+In a frame, the page cannot ask for Esc: a browser gives the Keyboard Lock API
+to a top-level page only. So when a site frames the page, the framing page
+holds fullscreen (its own element, which also keeps its buttons on screen) and
+asks for Esc, and it lends fullscreen to the program through
+`globalThis.__ankFullscreen = { active(), enter(), leave() }`. With that hook
+the runtime never locks the keyboard, asks the hook whether it is in
+fullscreen, and leaves through it for an Esc pressed off the canvas; Futura's
+`FullscreenToggle` asks it too. The Esc key still reaches the program, which
+has the focus in the frame.
+
 ## Waiting
 
 A desktop program waits all the time: for a page it fetches, a picture it
@@ -356,6 +366,45 @@ console says what came of each (`overlay/main/OfflineProbe.java`).
 game's requests with that token: the backend's log then shows whether a token
 leaves the tab (it names the token it rejects, with the path).
 
+### Framed by the site
+
+Futura's site opens this page in a frame over its own pages (`app/web-game` in
+Futura_Front): PLAY shows it, the site's Menu button hides it with the game
+still running, and Disconnect removes the frame, which closes the game. While
+framed, fullscreen is the site's (see *Esc in fullscreen*): the game asks the
+site for it, and the site says when it changes. They speak through
+`postMessage`:
+
+| from -> to | message | meaning |
+|---|---|---|
+| game -> site | `{ type: 'futura:fullscreen', on }` | the game asks to enter (`true`) or leave (`false`) fullscreen: its button, F11, its Esc rule, an Esc in a field of the page |
+| site -> game | `{ type: 'futura:fullscreen-state', on }` | whether the site's game layer is in fullscreen: at every change, and once when the frame has loaded |
+| site -> game | `{ type: 'futura:focus' }` | the game is on screen again: the keyboard goes to the canvas |
+
+The page hears the site's own origins only, and speaks to them only: the list
+`FUTURA_SITE_ORIGINS` in `config.js`; without it, any `http://localhost` or
+`http://127.0.0.1` origin, whatever its port, for a local page, and
+`https://futura-game.com` or `https://www.futura-game.com` for any other. A
+message must also come from the window that frames the page. Not framed, or
+framed by any other origin: there is no bridge, and the page is exactly as in
+a tab of its own. The bridge only guards the messages: in production the
+page's server should also send
+
+```
+Content-Security-Policy: frame-ancestors https://futura-game.com https://www.futura-game.com
+```
+
+so no other site can frame the game at all.
+
+Framed, the sign-in door stays closed unless it has something to say (sign
+in, a refusal, a wait), so the game's loading card is the first thing seen.
+
+A game closed a moment ago (the site's Disconnect, then PLAY at once) is still
+online for the backend until it notices the closed connection, and the
+exchange answers 409. The page then shows "Closing your last game…" and asks
+again, up to 5 times, 1 s apart, before it says the account is in the game
+somewhere else.
+
 `config.js` (optional, beside the page) names the servers when the defaults do
 not fit — a local page uses the local backend and gateway, any other the
 public ones:
@@ -363,6 +412,7 @@ public ones:
 ```js
 window.FUTURA_API = 'https://api.example.com'
 window.FUTURA_GATEWAY = 'wss://play.example.com/game'
+window.FUTURA_SITE_ORIGINS = ['https://futura-game.com']
 ```
 
 The backend must accept the page's origin (CORS). `serve.mjs` serves on port

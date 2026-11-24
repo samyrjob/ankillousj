@@ -9,6 +9,12 @@ import org.teavm.jso.JSBody;
  * <p>A browser only enters fullscreen on a user's own gesture (a click, a
  * key). The game asks from its fullscreen button and from F11, which are
  * gestures, so the request is honoured.
+ *
+ * <p>When a page frames the game (Futura's site does), that page holds
+ * fullscreen, because a browser gives Keyboard Lock (Esc in fullscreen) to a
+ * top page only. It lends it through {@code globalThis.__ankFullscreen}
+ * ({@code active}, {@code enter}, {@code leave}), set by index.html, and the
+ * requests go there.
  */
 public class FullscreenToggle {
 
@@ -27,12 +33,16 @@ public class FullscreenToggle {
     }
 
     @JSBody(script =
-            "return typeof document !== 'undefined'"
+            "var host = globalThis.__ankFullscreen;"
+          + "if (host && typeof host.active === 'function') return !!host.active();"
+          + "return typeof document !== 'undefined'"
           + " && !!(document.fullscreenElement || document.webkitFullscreenElement);")
     private static native boolean active();
 
     @JSBody(script =
-            "try {"
+            "var host = globalThis.__ankFullscreen;"
+          + "if (host && typeof host.active === 'function') { try { host.enter(); } catch (e) { } return; }"
+          + "try {"
           + "  var el = document.documentElement;"
           + "  var ask = el.requestFullscreen || el.webkitRequestFullscreen;"
           + "  if (ask) { var p = ask.call(el); if (p && p.catch) p.catch(function() { }); }"
@@ -40,7 +50,9 @@ public class FullscreenToggle {
     private static native void enter();
 
     @JSBody(script =
-            "try {"
+            "var host = globalThis.__ankFullscreen;"
+          + "if (host && typeof host.active === 'function') { try { host.leave(); } catch (e) { } return; }"
+          + "try {"
           + "  var leave = document.exitFullscreen || document.webkitExitFullscreen;"
           + "  if (leave) { var p = leave.call(document); if (p && p.catch) p.catch(function() { }); }"
           + "} catch (e) { }")
